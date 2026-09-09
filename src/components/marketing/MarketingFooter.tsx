@@ -97,9 +97,9 @@ export default function MarketingFooter() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                         {/* Company Info */}
                         <div className="md:col-span-2">
-                            <h3 className="font-heading text-xl font-bold mb-4">
-                                {COMPANY?.name || 'TapnLike'}
-                            </h3>
+                        <h3 className="font-heading text-xl font-bold mb-4">
+    {COMPANY?.productName || 'TapnLike'}
+</h3>
                             <p className="text-gray-400 text-sm max-w-sm">
                                 Connecting authentic creators with leading brands and music labels to drive real engagement.
                             </p>
@@ -135,7 +135,7 @@ export default function MarketingFooter() {
                     </div>
 
                     <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500">
-                        <p>© {new Date().getFullYear()} {COMPANY?.name || 'TapnLike'}. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} {COMPANY?.productName || 'TapnLike'}. All rights reserved.</p>
                     </div>
                 </div>
             </footer>
