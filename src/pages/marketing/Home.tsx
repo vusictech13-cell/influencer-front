@@ -1,4 +1,85 @@
 import { Link } from 'react-router-dom';
+import {
+    ArrowRight,
+    BarChart3,
+    CheckCircle2,
+    Instagram,
+    Search,
+    Shield,
+    Sparkles,
+    Target,
+    TrendingUp,
+    Users,
+    Zap,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { COMPANY } from '@/constants/company';
+
+const STEPS = [
+    {
+        step: '01',
+        title: 'Creators Join',
+        description:
+            'Creators create their profile and connect their Instagram account with authorization.',
+        icon: Instagram,
+    },
+    {
+        step: '02',
+        title: 'We Analyze',
+        description:
+            'MeloTap analyzes authorized creator and content metrics to build a detailed creator profile.',
+        icon: BarChart3,
+    },
+    {
+        step: '03',
+        title: 'Brands Discover',
+        description:
+            'Brands and labels search and filter creators based on relevant audience, content and performance characteristics.',
+        icon: Search,
+    },
+    {
+        step: '04',
+        title: 'Collaborate & Grow',
+        description:
+            'Brands select creators for campaigns designed to increase reach, engagement and content visibility.',
+        icon: TrendingUp,
+    },
+];
+
+const ANALYTICS_FEATURES = [
+    'Profile & account metrics',
+    'Reels engagement (likes, comments, views)',
+    'Content performance summaries',
+    'Engagement rate & influencer scoring',
+    'Reels performance distribution',
+    'Posting activity patterns',
+    'Creator classification (Vusic Rank)',
+    'Campaign suitability signals',
+];
+
+const WHY_CARDS = [
+    {
+        title: 'Data-Driven Discovery',
+        description: 'Find creators using meaningful performance and content signals.',
+        icon: Target,
+    },
+    {
+        title: 'Creator Intelligence',
+        description: 'Understand creator profiles beyond follower count.',
+        icon: Sparkles,
+    },
+    {
+        title: 'Campaign Matching',
+        description: 'Identify creators based on campaign requirements.',
+        icon: CheckCircle2,
+    },
+    {
+        title: 'Built for Brands & Labels',
+        description: 'One platform for influencer discovery and collaboration.',
+        icon: Users,
+    },
+];
 
 export default function Home() {
     return (
