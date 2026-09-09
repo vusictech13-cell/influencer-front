@@ -18,79 +18,81 @@ const FOOTER_LINKS = {
 
 export default function MarketingFooter() {
     return (
-        <footer className="border-t bg-muted/30">
-            <div className="container py-12">
-                <div className="grid gap-8 md:grid-cols-4">
-                    <div className="md:col-span-2 space-y-3">
-                        <div className="flex items-center gap-2">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
-                                M
-                            </div>
-                            <span className="text-lg font-bold">{COMPANY.productName}</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-                            {COMPANY.tagline}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            {COMPANY.productName} is operated by{' '}
-                            <span className="font-medium text-foreground">{COMPANY.legalName}</span>
-                        </p>
-                    </div>
+       <>
+            {/* =========================================================
+                FINAL CTA
+            ========================================================= */}
+            <section
+                id="join"
+                className="py-20 relative overflow-hidden"
+            >
 
-                    <div>
-                        <h3 className="font-semibold text-sm mb-3">Product</h3>
-                        <ul className="space-y-2">
-                            {FOOTER_LINKS.product.map((link) => (
-                                <li key={link.to}>
-                                    {link.to.startsWith('/#') ? (
-                                        <a
-                                            href={link.to}
-                                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                        >
-                                            {link.label}
-                                        </a>
-                                    ) : (
-                                        <Link
-                                            to={link.to}
-                                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                <div className="absolute inset-0 bg-brand-dark"></div>
 
-                    <div>
-                        <h3 className="font-semibold text-sm mb-3">Legal</h3>
-                        <ul className="space-y-2">
-                            {FOOTER_LINKS.legal.map((link) => (
-                                <li key={link.to}>
-                                    <Link
-                                        to={link.to}
-                                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                    >
-                                        {link.label}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+                <div
+                    className="absolute inset-0 opacity-20"
+                    style={{
+                        backgroundImage:
+                            'radial-gradient(#FFD700 2px, transparent 2px)',
+                        backgroundSize: '40px 40px',
+                    }}
+                />
 
-                <div className="mt-10 pt-6 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm text-muted-foreground">
-                    <p>
-                        &copy; {new Date().getFullYear()} {COMPANY.legalName}. All rights reserved.
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-yellow rounded-full mix-blend-multiply filter blur-[128px] opacity-20"></div>
+
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-brand-orange rounded-full mix-blend-multiply filter blur-[128px] opacity-20"></div>
+
+
+                <div className="container mx-auto px-6 relative z-10 text-center">
+
+                    <h2 className="font-heading font-bold text-4xl sm:text-5xl md:text-6xl text-white mb-6">
+                        Ready to tap into
+                        <br className="hidden sm:block" />
+                        your potential?
+                    </h2>
+
+                    <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+                        Join thousands of creators and brands already growing on
+                        TapnLike.
                     </p>
-                    <a
-                        href={`mailto:${COMPANY.supportEmail}`}
-                        className="hover:text-foreground transition-colors"
-                    >
-                        {COMPANY.supportEmail}
-                    </a>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+
+                        <div className="relative w-full sm:w-auto">
+
+                            <div className="absolute -top-3 -right-3 bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full z-10 shadow-lg animate-bounce">
+                                Limited Time
+                            </div>
+
+                            <Link
+                                to="/register"
+                                className="w-full sm:w-auto bg-brand-yellow hover:bg-yellow-400 text-brand-dark font-semibold text-lg px-10 py-4 rounded-full inline-flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)] hover:scale-105"
+                            >
+                                Join for Free
+
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth="2.5"
+                                    stroke="currentColor"
+                                    className="w-5 h-5"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                                    />
+                                </svg>
+                            </Link>
+                        </div>
+
+                        <p className="text-gray-400 text-sm mt-4 sm:mt-0 sm:ml-4">
+                            No credit card required.
+                        </p>
+                    </div>
                 </div>
-            </div>
-        </footer>
+            </section>
+       </>
     );
 }

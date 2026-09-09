@@ -17,11 +17,18 @@ module.exports = {
     },
     extend: {
       fontFamily: {
+        // Shadcn & Standard Fonts
         dm: ['"DM Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         manrope: ['Manrope', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         instrument: ['"Instrument Serif"', 'Georgia', 'serif'],
+        
+        // Custom Fonts required for design
+        sans: ['Inter', 'sans-serif'],
+        heading: ['Poppins', 'sans-serif'],
+        handwriting: ['Caveat', 'cursive'],
       },
       colors: {
+        // Shadcn UI HSL Mapped Variables
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -55,6 +62,16 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+
+        // Custom Brand Palette[cite: 1]
+        brand: {
+          yellow: '#FFD700',
+          orange: '#FF7F50',
+          dark: '#111827',
+          gray: '#6B7280',
+          lightbg: '#FFFBF5',
+          pinkbg: '#FFF0F5',
+        }
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -70,10 +87,33 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        "float-slow": {
+          "0%": { transform: "translateY(0px) rotate(var(--tw-rotate, 0deg))" },
+          "50%": { transform: "translateY(-10px) rotate(var(--tw-rotate, 0deg))" },
+          "100%": { transform: "translateY(0px) rotate(var(--tw-rotate, 0deg))" },
+        },
+        "float-medium": {
+          "0%": { transform: "translateY(0px) rotate(var(--tw-rotate, 0deg))" },
+          "50%": { transform: "translateY(-15px) rotate(var(--tw-rotate, 0deg))" },
+          "100%": { transform: "translateY(0px) rotate(var(--tw-rotate, 0deg))" },
+        },
+        "float-fast": {
+          "0%": { transform: "translateY(0px) rotate(var(--tw-rotate, 0deg))" },
+          "50%": { transform: "translateY(-8px) rotate(var(--tw-rotate, 0deg))" },
+          "100%": { transform: "translateY(0px) rotate(var(--tw-rotate, 0deg))" },
+        },
+        scan: {
+          "0%": { top: "0%" },
+          "100%": { top: "100%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "float-slow": "float-slow 4s ease-in-out infinite",
+        "float-medium": "float-medium 3s ease-in-out infinite",
+        "float-fast": "float-fast 2.5s ease-in-out infinite",
+        scan: "scan 3s linear infinite",
       },
     },
   },
