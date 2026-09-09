@@ -88,6 +88,78 @@ export default function MarketingFooter() {
                     </div>
                 </div>
             </section>
+
+            {/* =========================================================
+                FOOTER
+            ========================================================= */}
+  <footer className="bg-white border-t border-gray-100 py-12">
+    <div className="container mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            
+            {/* Company Info / Logo Section */}
+            <div className="md:col-span-2">
+                <Link
+                    to="/"
+                    className="flex items-center gap-2 shrink-0 mb-4"
+                >
+                    <span className="font-heading font-bold text-2xl tracking-tight text-brand-dark">
+                        tapnlike
+                    </span>
+
+                    <div className="w-1.5 h-1.5 rounded-full bg-brand-yellow" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-brand-orange" />
+                </Link>
+
+                <p className="text-gray-600 text-sm max-w-sm">
+                MeloTap is a technology platform operated by Vusic Records Pvt. Ltd., an Indian music technology company. MeloTap was developed to help brands and music businesses discover and collaborate with digital creators through data-driven technology.
+                </p>
+            </div>
+
+            {/* Product Links */}
+            <div>
+                <h4 className="font-bold text-brand-dark mb-4 text-sm uppercase tracking-wide">
+                    Product
+                </h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                    {FOOTER_LINKS.product.map((link) => (
+                        <li key={link.label}>
+                            <Link 
+                                to={link.to} 
+                                className="hover:text-brand-orange transition-colors"
+                            >
+                                {link.label}
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            {/* Legal Links */}
+            <div>
+                <h4 className="font-bold text-brand-dark mb-4 text-sm uppercase tracking-wide">
+                    Legal
+                </h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                    {FOOTER_LINKS.legal.map((link) => (
+                        <li key={link.label}>
+                            <Link 
+                                to={link.to} 
+                                className="hover:text-brand-orange transition-colors"
+                            >
+                                {link.label}
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+
+        {/* Bottom copyright section */}
+        <div className="border-t border-gray-100 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500">
+            <p>© {new Date().getFullYear()} {COMPANY?.productName || 'tapnlike'}. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
        </>
     );
 }
