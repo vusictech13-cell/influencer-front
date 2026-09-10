@@ -180,9 +180,9 @@
 }
 
 .tl-home .hero-visual {
-  position: absolute;
+  /* position: absolute;
   right: 0;
-  top: 0;
+  top: 0; */
   width: min(72vw, 980px);
   height: 100%;
   overflow: hidden;
@@ -191,7 +191,7 @@
 
 .tl-home .hero-photo {
   position: absolute;
-  right: 9%;
+  right: 13%;
   bottom: 0;
   height: 108%;
   width: auto;
@@ -207,7 +207,7 @@
   top: 10px;
   font-size: 1.95rem;
   text-align: right;
-  transform: rotate(11deg);
+  transform: rotate(337deg);
   z-index: 2;
   pointer-events: none;
   line-height: 0.95;
@@ -219,10 +219,10 @@
   margin-top: 4px;
 }
 
-.tl-home .growth-card {
+/* .tl-home .growth-card {
   position: absolute;
   right: 10%;
-  top: 42%;
+  top: 33%;
   z-index: 3;
   pointer-events: auto;
   background: #fff;
@@ -234,7 +234,43 @@
   gap: 10px;
   align-items: center;
   min-width: 142px;
-  transform: rotate(6deg);
+  transform: rotate(344deg);
+} */
+
+.tl-home .growth-card {
+  position: absolute;
+  right: 10%;
+  top: 33%;
+  z-index: 3;
+  pointer-events: auto;
+
+  /* Glass effect */
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+
+  /* Glass border */
+  border: 1px solid rgba(255, 255, 255, 0.55);
+
+  color: var(--ink);
+  border-radius: 16px;
+  padding: 11px 13px;
+
+  /* Soft depth */
+  box-shadow:
+    0 14px 32px rgba(11, 39, 68, 0.14),
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.12);
+
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 142px;
+
+  transform: rotate(344deg);
+
+  /* Slight shine */
+  overflow: hidden;
 }
 
 .tl-home .mini-bars {
