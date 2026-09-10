@@ -31,7 +31,7 @@ import CreatorMediaKit from './pages/creator/MediaKit';
 import CreatorSettings from './pages/creator/Settings';
 import CreatorReelStudio from './pages/creator/ReelStudio';
 import CreatorBulkReelUpload from './pages/creator/BulkReelUpload';
-import HomeRedirect from './components/auth/HomeRedirect';
+import HomeRedirect from './components/auth/HomeRedirect'; 
 import NotFound from './pages/NotFound';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminCreators from './pages/admin/Creators';
