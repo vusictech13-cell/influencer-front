@@ -24,7 +24,9 @@ module.exports = {
         
         // Custom Fonts required for design
         sans: ['Inter', 'sans-serif'],
-        heading: ['Poppins', 'sans-serif'],
+        heading: ['Outfit', 'Poppins', 'sans-serif'],
+        outfit: ['Outfit', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        jakarta: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         handwriting: ['Caveat', 'cursive'],
       },
       colors: {
@@ -66,11 +68,14 @@ module.exports = {
         // Custom Brand Palette[cite: 1]
         brand: {
           yellow: '#FFD700',
-          orange: '#FF7F50',
-          dark: '#111827',
-          gray: '#6B7280',
-          lightbg: '#FFFBF5',
-          pinkbg: '#FFF0F5',
+          orange: '#ff6a1a',
+          dark: '#0b2744',
+          gray: '#5b6d82',
+          lightbg: '#f4f8fc',
+          pinkbg: '#eaf6fc',
+          blue: '#00B4EB',
+          navy: '#0b2744',
+          ink: '#123050',
         }
       },
       borderRadius: {
