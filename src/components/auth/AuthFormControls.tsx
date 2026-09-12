@@ -75,7 +75,7 @@ export function AppleIcon() {
 
 export function AuthDivider({ children }: { children: ReactNode }) {
     return (
-        <div className="my-5 flex items-center gap-3 text-[9px] text-[#a0a2aa]">
+        <div className="my-4 flex items-center gap-3 text-[9px] text-[#a0a2aa]">
             <span className="h-px flex-1 bg-[#ededf1]" />
             {children}
             <span className="h-px flex-1 bg-[#ededf1]" />

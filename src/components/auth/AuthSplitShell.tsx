@@ -36,7 +36,7 @@ function ModeSwitch({ mode }: { mode: 'login' | 'signup' }) {
 
 function AuthVisualPanel() {
     return (
-        <section className="relative hidden min-h-[330px] overflow-hidden p-8 text-white max-[600px]:hidden sm:block lg:min-h-[720px] lg:p-[34px] bg-[linear-gradient(145deg,#17181e_5%,#32202e_53%,#8f2f59_100%)]">
+        <section className="relative hidden h-full min-h-0 overflow-hidden p-8 text-white lg:block lg:p-[34px] bg-[linear-gradient(145deg,#17181e_5%,#32202e_53%,#8f2f59_100%)]">
             <div className="pointer-events-none absolute -right-[180px] -top-[160px] h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(255,153,197,0.62),transparent_65%)]" />
             <div className="pointer-events-none absolute -bottom-[190px] -left-[170px] h-[430px] w-[430px] rounded-full bg-[radial-gradient(circle,rgba(233,64,138,0.42),transparent_65%)]" />
 
@@ -89,10 +89,10 @@ function AuthVisualPanel() {
     );
 }
 
-export function TrustPills({ items }: { items: string[] }) {
+export function TrustPills({ items, className }: { items: string[]; className?: string }) {
     const icons = [Shield, Check];
     return (
-        <div className="mb-[22px] flex flex-wrap gap-2">
+        <div className={cn('mb-[22px] flex flex-wrap gap-2', className)}>
             {items.map((item, index) => {
                 const Icon = icons[index] ?? Shield;
                 return (
@@ -125,17 +125,17 @@ export function AuthSplitShell({
     children: ReactNode;
 }) {
     return (
-        <div className="flex min-h-screen items-center justify-center bg-[#f4f4f7] p-0 font-manrope text-[#121318] sm:p-6">
-            <div className="grid min-h-screen w-full max-w-[1180px] overflow-hidden bg-white sm:min-h-[720px] sm:rounded-[28px] sm:border sm:border-[#e8e8ee] sm:shadow-[0_28px_80px_rgba(18,19,24,0.10)] lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="flex h-svh items-center justify-center overflow-hidden bg-[#f4f4f7] p-0 font-manrope text-[#121318] sm:p-6">
+            <div className="grid h-svh w-full max-w-[1180px] overflow-hidden bg-white sm:h-[min(720px,calc(100svh-3rem))] sm:rounded-[28px] sm:border sm:border-[#e8e8ee] sm:shadow-[0_28px_80px_rgba(18,19,24,0.10)] lg:grid-cols-[1.05fr_0.95fr]">
                 <AuthVisualPanel />
 
-                <section className="flex items-start justify-center bg-white px-5 py-8 sm:items-center sm:px-10 lg:px-[68px] lg:py-12">
+                <section className="flex h-full min-h-0 items-start justify-center overflow-y-auto bg-white px-5 py-6 sm:items-center sm:px-10 sm:py-8 lg:px-[68px]">
                     <div className="w-full max-w-[430px] pt-1.5 sm:pt-0">
-                        <div className="mb-6 flex justify-end sm:mb-[38px]">
+                        <div className="mb-4 flex justify-end sm:mb-6">
                             <ModeSwitch mode={mode} />
                         </div>
                         {children}
-                        <div className="mt-6 space-y-2 text-center">
+                        <div className="mt-4 space-y-2 text-center">
                             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] text-[#8b8e96]">
                                 <Link to="/privacy-policy" className="transition-colors hover:text-[#121318]">
                                     Privacy Policy

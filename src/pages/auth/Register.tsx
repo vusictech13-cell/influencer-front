@@ -68,14 +68,14 @@ export default function Register() {
 
     return (
         <AuthSplitShell mode="signup">
-            <h2 className="mb-2 font-manrope text-[34px] font-extrabold tracking-[-1.5px] text-[#121318]">
+            <h2 className="mb-2 font-manrope text-[28px] font-extrabold tracking-[-1.5px] text-[#121318] sm:text-[34px]">
                 Join Buzooka.
             </h2>
-            <p className="mb-[26px] text-[13px] leading-relaxed text-[#7c7f88]">
+            <p className="mb-4 text-[13px] leading-relaxed text-[#7c7f88]">
                 Create your account in under a minute. We'll ask a few creator questions after you sign up.
             </p>
 
-            <TrustPills items={['Your data is protected', 'Free to join']} />
+            <TrustPills className="mb-4" items={['Your data is protected', 'Free to join']} />
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 {error && (
@@ -86,63 +86,67 @@ export default function Register() {
 
                 <input type="hidden" {...register('role')} />
 
-                <AuthFieldLabel htmlFor="name">Full name</AuthFieldLabel>
-                <div className="mb-3.5">
-                    <input
-                        id="name"
-                        placeholder="Your name"
-                        className={authInputClassName}
-                        {...register('name')}
-                    />
-                    {errors.name && (
-                        <p className="mt-1.5 text-[11px] text-red-500">{errors.name.message}</p>
-                    )}
+                <div className="mb-3.5 grid grid-cols-2 gap-x-3 gap-y-3.5">
+                    <div>
+                        <AuthFieldLabel htmlFor="name">Full name</AuthFieldLabel>
+                        <input
+                            id="name"
+                            placeholder="Your name"
+                            className={authInputClassName}
+                            {...register('name')}
+                        />
+                        {errors.name && (
+                            <p className="mt-1.5 text-[11px] text-red-500">{errors.name.message}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <AuthFieldLabel htmlFor="email">Email address</AuthFieldLabel>
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="you@example.com"
+                            className={authInputClassName}
+                            {...register('email')}
+                        />
+                        {errors.email && (
+                            <p className="mt-1.5 text-[11px] text-red-500">{errors.email.message}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <AuthFieldLabel htmlFor="phone">Mobile number</AuthFieldLabel>
+                        <div className="relative">
+                            <div className="pointer-events-none absolute left-3.5 top-4 text-xs text-[#8a8d95]">+91</div>
+                            <input
+                                id="phone"
+                                type="tel"
+                                inputMode="numeric"
+                                maxLength={10}
+                                placeholder="98765 43210"
+                                className={cn(authInputClassName, 'pl-[50px]')}
+                                {...register('phone')}
+                            />
+                        </div>
+                        {errors.phone && (
+                            <p className="mt-1.5 text-[11px] text-red-500">{errors.phone.message}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <AuthFieldLabel htmlFor="password">Create password</AuthFieldLabel>
+                        <AuthPasswordInput
+                            id="password"
+                            placeholder="6+ characters"
+                            {...register('password')}
+                        />
+                        {errors.password && (
+                            <p className="mt-1.5 text-[11px] text-red-500">{errors.password.message}</p>
+                        )}
+                    </div>
                 </div>
 
-                <AuthFieldLabel htmlFor="email">Email address</AuthFieldLabel>
-                <div className="mb-3.5">
-                    <input
-                        id="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        className={authInputClassName}
-                        {...register('email')}
-                    />
-                    {errors.email && (
-                        <p className="mt-1.5 text-[11px] text-red-500">{errors.email.message}</p>
-                    )}
-                </div>
-
-                <AuthFieldLabel htmlFor="phone">Mobile number</AuthFieldLabel>
-                <div className="relative mb-1">
-                    <div className="pointer-events-none absolute left-3.5 top-4 text-xs text-[#8a8d95]">+91</div>
-                    <input
-                        id="phone"
-                        type="tel"
-                        inputMode="numeric"
-                        maxLength={10}
-                        placeholder="98765 43210"
-                        className={cn(authInputClassName, 'pl-[50px]')}
-                        {...register('phone')}
-                    />
-                </div>
-                <p className="mb-3.5 mt-1 text-[9px] text-[#8b8e96]">
-                    We'll use this for important account updates and verification.
-                </p>
-
-                <AuthFieldLabel htmlFor="password">Create password</AuthFieldLabel>
-                <div className="mb-2">
-                    <AuthPasswordInput
-                        id="password"
-                        placeholder="At least 6 characters"
-                        {...register('password')}
-                    />
-                    {errors.password && (
-                        <p className="mt-1.5 text-[11px] text-red-500">{errors.password.message}</p>
-                    )}
-                </div>
-
-                <p className="mb-4 mt-1.5 text-[9px] leading-relaxed text-[#999ca4]">
+                <p className="mb-4 text-[9px] leading-relaxed text-[#999ca4]">
                     By continuing, you agree to Buzooka's{' '}
                     <Link to="/terms-of-service" className="font-bold text-[#bd2b6b] hover:underline">
                         Terms of Use

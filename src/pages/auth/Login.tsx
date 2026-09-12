@@ -64,7 +64,7 @@ export default function Login() {
 
     return (
         <AuthSplitShell mode="login">
-            <h2 className="mb-2 font-manrope text-[34px] font-extrabold tracking-[-1.5px] text-[#121318]">
+            <h2 className="mb-2 font-manrope text-[28px] font-extrabold tracking-[-1.5px] text-[#121318] sm:text-[34px]">
                 Welcome back.
             </h2>
             <p className="mb-[26px] text-[13px] leading-relaxed text-[#7c7f88]">

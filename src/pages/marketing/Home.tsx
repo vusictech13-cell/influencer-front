@@ -98,7 +98,7 @@ export default function Home() {
                                 </a>
                             </div>
                         </div>
-                        <dl className="flex items-stretch">
+                        <dl className="flex items-stretch mt-6">
                             <div className="mr-[18px] border-r border-white/[0.32] pr-[18px] min-[820px]:mr-7 min-[820px]:pr-7">
                                 <dt className="font-outfit text-[1.7rem] font-extrabold leading-none tracking-[-0.03em]">10K+</dt>
                                 <dd className="mt-1.5 text-[0.82rem] opacity-85">Creators</dd>
