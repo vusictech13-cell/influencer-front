@@ -73,12 +73,12 @@ function AuthVisualPanel() {
                     <small className="mb-1 block text-[9px] text-brand-gray">Profile match</small>
                     <strong className="text-[15px] font-bold">94%</strong>
                 </div>
-                <div className="absolute left-[38px] top-[35px] z-[4] min-w-[145px] rotate-[4deg] rounded-[14px] bg-white/95 px-3.5 py-3 text-brand-ink shadow-[0_16px_35px_rgba(11,39,68,0.18)]">
+                <div className="absolute left-[38px] top-[48px] z-[4] min-w-[145px] rotate-[4deg] rounded-[14px] bg-white/95 px-3.5 py-3 text-brand-ink shadow-[0_16px_35px_rgba(11,39,68,0.18)]">
                     <small className="mb-1 block text-[9px] text-brand-gray">Creators earning</small>
                     <strong className="text-[15px] font-bold">₹2.84L+</strong>
                 </div>
 
-                <div className="absolute left-9 top-[270px] z-[5] text-xl text-[#ffe0cc]">✦</div>
+                <div className="absolute left-9 top-[310px] z-[5] text-xl text-[#ffe0cc]">✦</div>
                 <div className="absolute bottom-[155px] right-10 z-[5] text-xl text-[#ffe0cc]">✦</div>
                 <div className="absolute right-40 top-5 z-[5] text-xl text-[#ffe0cc]">•</div>
             </div>
