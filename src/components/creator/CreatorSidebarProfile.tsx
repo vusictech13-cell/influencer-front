@@ -38,7 +38,7 @@ export default function CreatorSidebarProfile() {
                     {instagram.display_name || instagram.username}
                 </span>
                 <span className="text-[10px] font-medium text-gray-500 truncate">@{instagram.username}</span>
-                <span className="text-[10px] font-medium text-[#87D8FF]">
+                <span className="text-[10px] font-medium text-[#00B4EB]">
                     Rank {rank.rank} {rank.label} · {formatCount(instagram.followers_count || 0)}
                 </span>
             </div>

@@ -38,7 +38,7 @@ export default function BrandWallet() {
                         <span className="text-[10px] font-bold uppercase tracking-widest">Available Balance</span>
                     </div>
                     {isLoading ? (
-                        <Loader2 className="animate-spin text-[#87D8FF]" size={24} />
+                        <Loader2 className="animate-spin text-[#00B4EB]" size={24} />
                     ) : (
                         <p className="text-4xl font-semibold text-gray-900">{formatCurrency(wallet?.balance ?? 0)}</p>
                     )}
@@ -50,7 +50,7 @@ export default function BrandWallet() {
                         <span className="text-[10px] font-bold uppercase tracking-widest">Locked in Campaigns</span>
                     </div>
                     {isLoading ? (
-                        <Loader2 className="animate-spin text-[#87D8FF]" size={24} />
+                        <Loader2 className="animate-spin text-[#00B4EB]" size={24} />
                     ) : (
                         <p className="text-4xl font-semibold text-amber-600">{formatCurrency(wallet?.locked_balance ?? 0)}</p>
                     )}
@@ -67,14 +67,14 @@ export default function BrandWallet() {
                             min={100}
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#87D8FF]"
+                            className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#00B4EB]"
                             placeholder="Enter amount"
                         />
                     </div>
                     <button
                         onClick={handleTopup}
                         disabled={toppingUp}
-                        className="px-6 py-3 bg-[#87D8FF] hover:bg-[#7bc8ef] disabled:opacity-60 text-gray-900 text-sm font-semibold rounded-xl flex items-center justify-center gap-2"
+                        className="px-6 py-3 bg-[#00B4EB] hover:bg-[#009fd4] disabled:opacity-60 text-gray-900 text-sm font-semibold rounded-xl flex items-center justify-center gap-2"
                     >
                         {toppingUp ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
                         Add Funds
@@ -87,7 +87,7 @@ export default function BrandWallet() {
                 <h2 className="text-sm font-semibold text-gray-900 px-4 pt-4 pb-2">Recent Transactions</h2>
                 {txLoading ? (
                     <div className="flex justify-center py-8">
-                        <Loader2 className="animate-spin text-[#87D8FF]" />
+                        <Loader2 className="animate-spin text-[#00B4EB]" />
                     </div>
                 ) : !transactions?.length ? (
                     <p className="text-sm text-gray-500 text-center py-8">No transactions yet.</p>

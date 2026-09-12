@@ -1,5 +1,5 @@
 import { useEffect, useState, type ComponentType, type ReactNode } from 'react';
-import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import {
     Check,
     Instagram,
@@ -11,6 +11,7 @@ import {
     Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Logo from '@/components/marketing/Logo';
 import { formatCount } from '@/utils/creator';
 import { getApiErrorMessage } from '@/api/axios';
 import { getInstagramOAuthErrorMessage, clearInstagramOAuthSearchParams } from '@/utils/socialAccounts';
@@ -56,26 +57,26 @@ function ChoiceCard({
             className={cn(
                 'flex min-h-[60px] items-center gap-3 rounded-2xl border bg-white px-3.5 py-3.5 text-left transition hover:-translate-y-px sm:min-h-[68px] sm:px-[18px] sm:py-[17px]',
                 selected
-                    ? 'border-[#e9408a] bg-[#fff4f8] shadow-[0_0_0_2px_rgba(233,64,138,0.07)]'
-                    : 'border-[#e8e8ee] hover:border-[#d7d7df]',
+                    ? 'border-[#ff6a1a] bg-[#eef7fc] shadow-[0_0_0_2px_rgba(255,106,26,0.07)]'
+                    : 'border-[#dce8f0] hover:border-[#d7d7df]',
             )}
         >
             <div
                 className={cn(
                     'grid h-9 w-9 flex-none place-items-center rounded-[11px]',
-                    selected ? 'bg-white text-[#e9408a]' : 'bg-[#f4f4f7] text-[#4b4d55]',
+                    selected ? 'bg-white text-[#ff6a1a]' : 'bg-[#f4f4f7] text-[#4b4d55]',
                 )}
             >
                 <Icon size={18} />
             </div>
             <div className="min-w-0">
-                <div className="text-sm font-bold text-[#111318]">{title}</div>
+                <div className="text-sm font-bold text-brand-ink">{title}</div>
                 <div className="mt-0.5 text-xs text-[#8a8c94]">{desc}</div>
             </div>
             <div
                 className={cn(
                     'ml-auto grid h-5 w-5 flex-none place-items-center rounded-full border text-[11px]',
-                    selected ? 'border-[#e9408a] bg-[#e9408a] text-white' : 'border-[#d7d7df] text-transparent',
+                    selected ? 'border-[#ff6a1a] bg-[#ff6a1a] text-white' : 'border-[#d7d7df] text-transparent',
                 )}
             >
                 ✓
@@ -100,8 +101,8 @@ function Pill({
             className={cn(
                 'rounded-[11px] border px-3 py-2 text-[13px] transition sm:px-3.5 sm:py-2.5',
                 selected
-                    ? 'border-[#e9408a] bg-[#fff1f7] font-bold text-[#bd2868]'
-                    : 'border-[#e8e8ee] bg-white text-[#111318]',
+                    ? 'border-[#ff6a1a] bg-[#e8f8fe] font-bold text-[#f05a0c]'
+                    : 'border-[#dce8f0] bg-white text-brand-ink',
             )}
         >
             {children}
@@ -126,7 +127,7 @@ function PrimaryButton({
             onClick={onClick}
             disabled={disabled}
             className={cn(
-                'rounded-xl bg-[#111318] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#25262b] disabled:cursor-not-allowed disabled:opacity-45 sm:px-5 sm:py-3.5',
+                'rounded-xl bg-brand-orange px-4 py-3 text-sm font-bold text-white transition hover:bg-[#25262b] disabled:cursor-not-allowed disabled:opacity-45 sm:px-5 sm:py-3.5',
                 className,
             )}
         >
@@ -158,7 +159,7 @@ function Progress({ value }: { value: number }) {
     return (
         <div className="mb-5 h-[5px] overflow-hidden rounded-full bg-[#eeeef3] sm:mb-[30px]">
             <span
-                className="block h-full rounded-full bg-[linear-gradient(90deg,#e9408a,#ff7bb4)] transition-all"
+                className="block h-full rounded-full bg-[linear-gradient(90deg,#ff6a1a,#ff8a3d)] transition-all"
                 style={{ width: `${value}%` }}
             />
         </div>
@@ -178,7 +179,7 @@ function InfoList({
     items: { icon: ComponentType<{ size?: number }>; title: string; body: string }[];
 }) {
     return (
-        <ul className="m-0 list-none rounded-[18px] border border-[#e8e8ee] bg-[#fbfbfd] px-3.5 py-1 sm:px-5">
+        <ul className="m-0 list-none rounded-[18px] border border-[#dce8f0] bg-[#fbfbfd] px-3.5 py-1 sm:px-5">
             {items.map((item, index) => (
                 <li
                     key={item.title}
@@ -188,7 +189,7 @@ function InfoList({
                         <item.icon size={15} />
                     </div>
                     <div>
-                        <strong className="mb-0.5 block text-xs text-[#111318]">{item.title}</strong>
+                        <strong className="mb-0.5 block text-xs text-brand-ink">{item.title}</strong>
                         <span className="block text-[12px] leading-relaxed text-[#858891]">{item.body}</span>
                     </div>
                 </li>
@@ -201,7 +202,7 @@ const INSTAGRAM_SECURITY = [
     {
         icon: Shield,
         title: 'Official Instagram authorization',
-        body: 'Instagram is connected through Instagram Login — Buzooka never asks you for your Instagram password. Facebook Login is optional later for Reels Studio.',
+        body: 'Instagram is connected through Instagram Login — TapnLike never asks you for your Instagram password. Facebook Login is optional later for Reels Studio.',
     },
     {
         icon: List,
@@ -211,7 +212,7 @@ const INSTAGRAM_SECURITY = [
     {
         icon: MessageSquareOff,
         title: 'No password or private messages',
-        body: 'Buzooka cannot see your Instagram password. We do not request access to your private messages through this connection.',
+        body: 'TapnLike cannot see your Instagram password. We do not request access to your private messages through this connection.',
     },
     {
         icon: ShieldCheck,
@@ -222,7 +223,7 @@ const INSTAGRAM_SECURITY = [
 
 const headingClass =
     'mb-2.5 text-[25px] font-extrabold leading-[1.12] tracking-[-1.1px] sm:mb-3 sm:text-[31px] sm:leading-[1.08] sm:tracking-[-1.7px] lg:text-[30px]';
-const bodyClass = 'mb-5 text-sm leading-relaxed text-[#70727b] sm:mb-7 sm:text-base';
+const bodyClass = 'mb-2 text-sm leading-relaxed text-[#70727b] sm:mb-7 sm:text-sm';
 
 function profileStrength(data: OnboardingData, connected: boolean) {
     let score = 0;
@@ -332,24 +333,22 @@ export default function Onboarding() {
     };
 
     return (
-        <div className="min-h-screen bg-white font-manrope text-[#111318] sm:bg-[#f6f7fb]">
+        <div className="min-h-screen bg-white font-jakarta text-brand-ink sm:bg-brand-lightbg">
             <div className="mx-auto w-full max-w-[1180px] px-0 py-0 sm:px-7 sm:py-7">
                 <div className="mb-4 flex items-center justify-between gap-3 px-4 pt-4 sm:mb-6 sm:px-0 sm:pt-0">
-                    <Link to="/" className="text-[20px] font-extrabold tracking-[-0.8px] sm:text-[22px]">
-                        Buzooka<span className="text-[#e9408a]">.</span>
-                    </Link>
+                    <Logo className="text-[1.2rem] text-brand-ink" />
                     <p className="hidden flex-1 px-4 text-center text-xs leading-relaxed text-[#777] lg:block">
                         Takes about <b className="font-semibold text-[#333]">2 minutes</b>.
                         {' '}Most information will be filled automatically from Instagram.
                     </p>
                     <div className="flex items-center gap-2 sm:gap-2.5">
-                        <div className="rounded-full border border-[#e8e8ee] bg-white px-3 py-1.5 text-xs text-[#777] sm:px-3.5 sm:py-2 sm:text-[13px]">
+                        <div className="rounded-full border border-[#dce8f0] bg-white px-3 py-1.5 text-xs text-[#777] sm:px-3.5 sm:py-2 sm:text-[13px]">
                             Step {step} of {ONBOARDING_STEPS.length}
                         </div>
                         <button
                             type="button"
                             onClick={() => logout(navigate)}
-                            className="inline-flex items-center gap-1.5 rounded-full border border-[#e8e8ee] bg-white px-3 py-1.5 text-xs font-semibold text-[#555] transition hover:border-[#e9408a] hover:bg-[#fff4f8] hover:text-[#e9408a] sm:px-3.5 sm:py-2 sm:text-[13px]"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-[#dce8f0] bg-white px-3 py-1.5 text-xs font-semibold text-[#555] transition hover:border-[#ff6a1a] hover:bg-[#eef7fc] hover:text-[#ff6a1a] sm:px-3.5 sm:py-2 sm:text-[13px]"
                         >
                             <LogOut size={13} />
                             Log out
@@ -358,7 +357,7 @@ export default function Onboarding() {
                 </div>
 
                 <div className="grid min-h-0 overflow-hidden border-0 bg-white shadow-none sm:min-h-[720px] sm:rounded-3xl sm:border sm:border-[#e7e7ed] sm:shadow-[0_18px_60px_rgba(20,20,40,0.07)] lg:grid-cols-[250px_1fr]">
-                    <aside className="hidden flex-col border-r border-[#ededf2] bg-[#fafafd] px-5 py-7 lg:flex">
+                    <aside className="hidden flex-col border-r border-[#ededf2] bg-[#f4fbff] px-5 py-7 lg:flex">
                         <p className="mb-[18px] ml-2.5 mt-1 text-xs uppercase tracking-[1px] text-[#999]">
                             Creator onboarding
                         </p>
@@ -371,14 +370,14 @@ export default function Onboarding() {
                                     key={label}
                                     className={cn(
                                         'mb-1.5 flex items-center gap-3 rounded-xl px-2.5 py-3 text-sm',
-                                        active ? 'bg-[#fff0f7] text-[#111]' : done ? 'text-[#333]' : 'text-[#8a8c94]',
+                                        active ? 'bg-[#e8f8fe] text-[#111]' : done ? 'text-[#333]' : 'text-[#8a8c94]',
                                     )}
                                 >
                                     <span
                                         className={cn(
                                             'grid h-[27px] w-[27px] place-items-center rounded-full text-xs font-bold',
                                             active
-                                                ? 'bg-[#e9408a] text-white'
+                                                ? 'bg-[#ff6a1a] text-white'
                                                 : done
                                                     ? 'bg-[#e9f8f0] text-[#15945a]'
                                                     : 'bg-[#ececf2] text-[#8a8c94]',
@@ -402,7 +401,7 @@ export default function Onboarding() {
                             <button
                                 type="button"
                                 onClick={() => logout(navigate)}
-                                className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2.5 text-sm font-semibold text-[#555] transition hover:bg-[#fff0f7] hover:text-[#e9408a]"
+                                className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2.5 text-sm font-semibold text-[#555] transition hover:bg-[#e8f8fe] hover:text-[#ff6a1a]"
                             >
                                 <LogOut size={15} />
                                 Log out
@@ -414,8 +413,8 @@ export default function Onboarding() {
                         <div className="w-full max-w-[650px]">
                             {step === 1 && (
                                 <>
-                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#e9408a]">
-                                        Welcome to Buzooka
+                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">
+                                        Welcome to TapnLike
                                     </p>
                                     <h1 className={headingClass}>
                                         Let's build your creator profile.
@@ -423,8 +422,8 @@ export default function Onboarding() {
                                     <p className={bodyClass}>
                                         A few quick questions help us match you with better brands, campaigns and opportunities.
                                     </p>
-                                    <div className="mb-5 flex items-center gap-3 rounded-[19px] border border-[#e8e8ee] p-3.5 sm:mb-7 sm:gap-4 sm:p-5">
-                                        <div className="grid h-11 w-11 flex-none place-items-center rounded-2xl bg-[#111318] text-white sm:h-[54px] sm:w-[54px]">
+                                    <div className="mb-5 flex items-center gap-3 rounded-[19px] border border-[#dce8f0] p-3.5 sm:mb-7 sm:gap-4 sm:p-5">
+                                        <div className="grid h-11 w-11 flex-none place-items-center rounded-2xl bg-brand-orange text-white sm:h-[54px] sm:w-[54px]">
                                             <Sparkles size={22} />
                                         </div>
                                         <div className="min-w-0">
@@ -440,7 +439,7 @@ export default function Onboarding() {
 
                             {step === 2 && (
                                 <>
-                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#e9408a]">About you</p>
+                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">About you</p>
                                     <h1 className={headingClass}>
                                         What best describes you?
                                     </h1>
@@ -471,7 +470,7 @@ export default function Onboarding() {
 
                             {step === 3 && (
                                 <>
-                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#e9408a]">Your content</p>
+                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">Your content</p>
                                     <h1 className={headingClass}>
                                         What do you create?
                                     </h1>
@@ -488,8 +487,8 @@ export default function Onboarding() {
                                                 className={cn(
                                                     'rounded-full border px-3 py-2 text-[13px] transition sm:px-3.5 sm:py-2.5',
                                                     data.contentCategories?.includes(item)
-                                                        ? 'border-[#e9408a] bg-[#fff1f7] font-bold text-[#bd2868]'
-                                                        : 'border-[#e8e8ee] bg-white',
+                                                        ? 'border-[#ff6a1a] bg-[#e8f8fe] font-bold text-[#f05a0c]'
+                                                        : 'border-[#dce8f0] bg-white',
                                                 )}
                                             >
                                                 {item}
@@ -514,7 +513,7 @@ export default function Onboarding() {
 
                             {step === 4 && (
                                 <>
-                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#e9408a]">
+                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">
                                         Connect account
                                     </p>
                                     <h1 className={headingClass}>
@@ -529,12 +528,12 @@ export default function Onboarding() {
                                             <p className="text-sm font-medium text-red-600">{connectError}</p>
                                             <p className="mt-1.5 text-xs leading-relaxed text-[#8b8d96]">
                                                 {/already connected|another (user|account)/i.test(connectError)
-                                                    ? 'This Instagram is linked to a different Buzooka account. '
+                                                    ? 'This Instagram is linked to a different TapnLike account. '
                                                     : 'If this account has an issue, '}
                                                 <button
                                                     type="button"
                                                     onClick={() => logout(navigate)}
-                                                    className="font-bold text-[#e9408a] underline-offset-2 hover:underline"
+                                                    className="font-bold text-[#ff6a1a] underline-offset-2 hover:underline"
                                                 >
                                                     log out
                                                 </button>
@@ -542,8 +541,8 @@ export default function Onboarding() {
                                             </p>
                                         </div>
                                     )}
-                                    <div className="mb-5 flex items-center gap-3 rounded-[19px] border border-[#e8e8ee] p-3.5 sm:gap-4 sm:p-4">
-                                        <div className="grid h-11 w-11 flex-none place-items-center rounded-2xl bg-[#111318] text-white sm:h-[54px] sm:w-[54px]">
+                                    <div className="mb-5 flex items-center gap-3 rounded-[19px] border border-[#dce8f0] p-3.5 sm:gap-4 sm:p-4">
+                                        <div className="grid h-11 w-11 flex-none place-items-center rounded-2xl bg-brand-orange text-white sm:h-[54px] sm:w-[54px]">
                                             <Instagram size={22} />
                                         </div>
                                         <div className="min-w-0">
@@ -582,14 +581,14 @@ export default function Onboarding() {
                                         </PrimaryButton>
                                     </ActionRow>
                                     <p className="mt-4 text-xs leading-relaxed text-[#8b8d96]">
-                                        You'll be redirected to Instagram's official authorization flow. Buzooka does not collect your Instagram password. Access is granted by Instagram using the permissions you approve.
+                                        You'll be redirected to Instagram's official authorization flow. TapnLike does not collect your Instagram password. Access is granted by Instagram using the permissions you approve.
                                     </p>
                                 </>
                             )}
 
                             {step === 5 && (
                                 <>
-                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#e9408a]">
+                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">
                                         Your creator goals
                                     </p>
                                     <h1 className={headingClass}>
@@ -661,8 +660,8 @@ export default function Onboarding() {
                                     <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-[#eaf9f1] text-[#15945a] sm:mb-[22px] sm:h-[78px] sm:w-[78px]">
                                         <Check size={28} />
                                     </div>
-                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#e9408a]">
-                                        Your Buzooka profile
+                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">
+                                        Your TapnLike profile
                                     </p>
                                     <h1 className={headingClass}>
                                         You're ready to be discovered.
@@ -670,7 +669,7 @@ export default function Onboarding() {
                                     <p className={bodyClass}>
                                         We've combined your answers with your Instagram data to build your creator profile.
                                     </p>
-                                    <div className="mb-4 rounded-[20px] border border-[#e8e8ee] p-3.5 text-left sm:p-5">
+                                    <div className="mb-4 rounded-[20px] border border-[#dce8f0] p-3.5 text-left sm:p-5">
                                         <div className="flex items-center gap-3 sm:gap-3.5">
                                             <div
                                                 className="h-11 w-11 flex-none rounded-full bg-[linear-gradient(145deg,#15161b,#6b6d77)] bg-cover bg-center sm:h-[54px] sm:w-[54px]"
@@ -699,21 +698,21 @@ export default function Onboarding() {
                                             </div>
                                         </div>
                                         <div className="mt-3.5 grid grid-cols-2 gap-2.5 sm:mt-[18px] sm:gap-3">
-                                            <div className="rounded-[14px] bg-[#f7f7fa] p-3 sm:p-3.5">
+                                            <div className="rounded-[14px] bg-brand-lightbg p-3 sm:p-3.5">
                                                 <strong className="block text-[13px]">{instagram ? formatCount(followers) : '—'}</strong>
                                                 <span className="text-xs text-[#858791]">Followers</span>
                                             </div>
-                                            <div className="rounded-[14px] bg-[#f7f7fa] p-3 sm:p-3.5">
+                                            <div className="rounded-[14px] bg-brand-lightbg p-3 sm:p-3.5">
                                                 <strong className="block text-[13px]">
                                                     {instagram ? `${engagement.toFixed(1)}%` : '—'}
                                                 </strong>
                                                 <span className="text-xs text-[#858791]">Engagement</span>
                                             </div>
-                                            <div className="rounded-[14px] bg-[#f7f7fa] p-3 sm:p-3.5">
+                                            <div className="rounded-[14px] bg-brand-lightbg p-3 sm:p-3.5">
                                                 <strong className="block text-[13px]">{data.location || 'India'}</strong>
                                                 <span className="text-xs text-[#858791]">Primary market</span>
                                             </div>
-                                            <div className="rounded-[14px] bg-[#f7f7fa] p-3 sm:p-3.5">
+                                            <div className="rounded-[14px] bg-brand-lightbg p-3 sm:p-3.5">
                                                 <strong className="block text-[13px]">
                                                     {data.languages?.length ? data.languages.slice(0, 2).join(' + ') : '—'}
                                                 </strong>
@@ -721,14 +720,14 @@ export default function Onboarding() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="rounded-[19px] border border-[#e8e8ee] p-3.5 text-left sm:p-5">
+                                    <div className="rounded-[19px] border border-[#dce8f0] p-3.5 text-left sm:p-5">
                                         <div className="mb-2.5 flex items-center justify-between">
                                             <strong className="text-sm">Profile strength</strong>
-                                            <b className="text-sm text-[#e9408a]">{strength}%</b>
+                                            <b className="text-sm text-[#ff6a1a]">{strength}%</b>
                                         </div>
                                         <div className="h-2 overflow-hidden rounded-full bg-[#eeeef3]">
                                             <span
-                                                className="block h-full rounded-full bg-[linear-gradient(90deg,#e9408a,#ff85b9)]"
+                                                className="block h-full rounded-full bg-[linear-gradient(90deg,#ff6a1a,#ff8a3d)]"
                                                 style={{ width: `${strength}%` }}
                                             />
                                         </div>

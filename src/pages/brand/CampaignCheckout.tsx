@@ -76,7 +76,7 @@ export default function CampaignCheckout() {
     if (!formData || !summary) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="animate-spin text-[#87D8FF]" />
+                <Loader2 className="animate-spin text-[#00B4EB]" />
             </div>
         );
     }
@@ -131,7 +131,7 @@ export default function CampaignCheckout() {
             </button>
 
             <div className="mb-8">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[#87D8FF] mb-1">Step 3 of 3</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#00B4EB] mb-1">Step 3 of 3</p>
                 <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Review & Pay</h1>
                 <p className="text-sm text-gray-500 mt-1">
                     Confirm your campaign details, check wallet balance, and add funds if needed before launching.
@@ -215,7 +215,7 @@ export default function CampaignCheckout() {
                 <div className="lg:col-span-3 space-y-4">
                     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
                         <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <Wallet size={16} className="text-[#87D8FF]" /> Wallet & billing
+                            <Wallet size={16} className="text-[#00B4EB]" /> Wallet & billing
                         </h2>
 
                         <div className="grid grid-cols-2 gap-4 mb-6">
@@ -269,7 +269,7 @@ export default function CampaignCheckout() {
                                         onClick={() => setTopupAmount(String(amt))}
                                         className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
                                             topupAmount === String(amt)
-                                                ? 'border-[#87D8FF] bg-[#87D8FF]/10 text-gray-900'
+                                                ? 'border-[#00B4EB] bg-[#00B4EB]/10 text-gray-900'
                                                 : 'border-gray-200 text-gray-600 hover:border-gray-300'
                                         }`}
                                     >
@@ -298,7 +298,7 @@ export default function CampaignCheckout() {
                                         min={100}
                                         value={topupAmount}
                                         onChange={(e) => setTopupAmount(e.target.value)}
-                                        className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#87D8FF]"
+                                        className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#00B4EB]"
                                         placeholder="Amount"
                                     />
                                 </div>
@@ -306,7 +306,7 @@ export default function CampaignCheckout() {
                                     type="button"
                                     onClick={handleTopup}
                                     disabled={toppingUp}
-                                    className="px-5 py-3 bg-[#87D8FF] hover:bg-[#7bc8ef] disabled:opacity-60 text-gray-900 text-sm font-semibold rounded-xl flex items-center gap-2 shrink-0"
+                                    className="px-5 py-3 bg-[#00B4EB] hover:bg-[#009fd4] disabled:opacity-60 text-gray-900 text-sm font-semibold rounded-xl flex items-center gap-2 shrink-0"
                                 >
                                     {toppingUp ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
                                     Add funds
@@ -340,7 +340,7 @@ export default function CampaignCheckout() {
                     {!canLaunch && !walletLoading && (
                         <p className="text-xs text-center text-gray-500">
                             Add funds above to enable launch, or manage wallet in{' '}
-                            <Link to="/brand/wallet" className="text-[#87D8FF] hover:underline">
+                            <Link to="/brand/wallet" className="text-[#00B4EB] hover:underline">
                                 Wallet settings
                             </Link>
                         </p>

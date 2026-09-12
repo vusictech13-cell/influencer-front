@@ -32,7 +32,7 @@ function Chip({
             type="button"
             onClick={onClick}
             className={`rounded-full px-3 py-1.5 text-[11px] font-bold ${
-                selected ? 'bg-[#111318] text-white' : 'border border-[#e9e9ef] bg-white text-[#6f727b]'
+                selected ? 'bg-brand-orange text-white' : 'border border-[#dce8f0] bg-white text-[#6f727b]'
             }`}
         >
             {children}
@@ -127,14 +127,14 @@ export default function CreatorProfile() {
                         Keep this current so brands can match you with the right campaigns.
                     </p>
                 </div>
-                <div className="rounded-[13px] border border-[#e9e9ef] bg-white px-3 py-2 text-xs">
-                    Profile strength <strong className="text-[#e9408a]">{strength}%</strong>
+                <div className="rounded-[13px] border border-[#dce8f0] bg-white px-3 py-2 text-xs">
+                    Profile strength <strong className="text-[#ff6a1a]">{strength}%</strong>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_.85fr]">
                 <div className="space-y-4">
-                    <div className="rounded-[18px] border border-[#e9e9ef] bg-white p-5">
+                    <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                         <FieldLabel>Creator type</FieldLabel>
                         <p className="text-sm font-bold">{creatorTypeLabel(current?.creatorType)}</p>
                         <p className="mt-1 text-[11px] text-[#8b8d95]">
@@ -142,7 +142,7 @@ export default function CreatorProfile() {
                         </p>
                     </div>
 
-                    <div className="rounded-[18px] border border-[#e9e9ef] bg-white p-5">
+                    <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                         <FieldLabel>Location</FieldLabel>
                         <div className="flex flex-wrap gap-2">
                             {LOCATIONS.map((item) => (
@@ -153,7 +153,7 @@ export default function CreatorProfile() {
                         </div>
                     </div>
 
-                    <div className="rounded-[18px] border border-[#e9e9ef] bg-white p-5">
+                    <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                         <FieldLabel>Content categories</FieldLabel>
                         <div className="flex flex-wrap gap-2">
                             {CONTENT_CATEGORIES.map((item) => (
@@ -164,7 +164,7 @@ export default function CreatorProfile() {
                         </div>
                     </div>
 
-                    <div className="rounded-[18px] border border-[#e9e9ef] bg-white p-5">
+                    <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                         <FieldLabel>Languages</FieldLabel>
                         <div className="flex flex-wrap gap-2">
                             {LANGUAGES.map((item) => (
@@ -177,10 +177,10 @@ export default function CreatorProfile() {
                 </div>
 
                 <div className="space-y-4">
-                    <div id="rates" className="rounded-[18px] border border-[#e9e9ef] bg-white p-5">
+                    <div id="rates" className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                         <FieldLabel>Collaboration rates</FieldLabel>
                         <p className="mb-4 text-[11px] text-[#8b8d95]">
-                            These rates help Buzooka estimate your earning potential for brands.
+                            These rates help TapnLike estimate your earning potential for brands.
                         </p>
                         {[
                             { key: 'reel' as const, label: 'Reel' },
@@ -197,28 +197,28 @@ export default function CreatorProfile() {
                                         setRates((prev) => ({ ...prev, [item.key]: Number(event.target.value) || undefined }));
                                         setSaved(false);
                                     }}
-                                    className="h-11 w-full rounded-xl border border-[#e9e9ef] px-3 text-sm outline-none focus:border-[#e9408a]"
+                                    className="h-11 w-full rounded-xl border border-[#dce8f0] px-3 text-sm outline-none focus:border-[#ff6a1a]"
                                     placeholder="0"
                                 />
                             </label>
                         ))}
                     </div>
 
-                    <div className="rounded-[18px] border border-[#e9e9ef] bg-white p-5">
+                    <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                         {error && <p className="mb-3 text-xs text-red-500">{error}</p>}
                         {saved && <p className="mb-3 text-xs text-[#168d58]">Profile saved.</p>}
                         <button
                             type="button"
                             onClick={save}
                             disabled={saveOnboarding.isPending}
-                            className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#111318] py-3 text-[12px] font-extrabold text-white disabled:opacity-60"
+                            className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-brand-orange py-3 text-[12px] font-extrabold text-white disabled:opacity-60"
                         >
                             {saveOnboarding.isPending ? <Loader2 size={16} className="animate-spin" /> : 'Save profile'}
                         </button>
                         <button
                             type="button"
                             onClick={() => navigate('/creator/media-kit')}
-                            className="mt-2 w-full rounded-[10px] border border-[#e9e9ef] py-3 text-[12px] font-bold"
+                            className="mt-2 w-full rounded-[10px] border border-[#dce8f0] py-3 text-[12px] font-bold"
                         >
                             Preview media kit
                         </button>

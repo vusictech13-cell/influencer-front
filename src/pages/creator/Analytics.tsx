@@ -8,7 +8,7 @@ export default function CreatorAnalytics() {
     if (isLoading) {
         return (
             <div className="flex min-h-[400px] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-[#e9408a]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#ff6a1a]" />
             </div>
         );
     }

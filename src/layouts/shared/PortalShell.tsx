@@ -17,7 +17,6 @@ type PortalShellProps = {
     afterNav?: ReactNode;
     headerActions?: ReactNode;
     headerLeft?: ReactNode;
-    accent?: 'cyan' | 'pink';
 };
 
 export default function PortalShell({
@@ -32,7 +31,6 @@ export default function PortalShell({
     afterNav,
     headerActions,
     headerLeft,
-    accent = 'cyan',
 }: PortalShellProps) {
     const location = useLocation();
     const navigate = useNavigate();
@@ -45,7 +43,7 @@ export default function PortalShell({
     };
 
     return (
-        <div className={`flex h-screen min-h-0 w-full font-sans overflow-hidden ${accent === 'pink' ? 'bg-[#f7f7fa] text-[#121318] font-manrope' : 'bg-[#fcfcfc] text-gray-900 selection:bg-[#87D8FF]/30'}`}>
+        <div className="flex h-screen min-h-0 w-full overflow-hidden bg-brand-lightbg font-jakarta text-brand-ink selection:bg-brand-blue/20">
             <PortalSidebar
                 logoIcon={logoIcon}
                 logoIconClassName={logoIconClassName}
@@ -57,7 +55,6 @@ export default function PortalShell({
                 logoutLabel={logoutLabel}
                 footer={sidebarFooter}
                 afterNav={afterNav}
-                accent={accent}
             />
 
             {mobileOpen && (
@@ -65,7 +62,7 @@ export default function PortalShell({
                     <button
                         type="button"
                         aria-label="Close menu"
-                        className="absolute inset-0 bg-black/30"
+                        className="absolute inset-0 bg-brand-navy/30"
                         onClick={() => setMobileOpen(false)}
                     />
                     <div className="relative h-full min-h-0 w-[238px] overflow-hidden shadow-xl">
@@ -80,29 +77,28 @@ export default function PortalShell({
                             logoutLabel={logoutLabel}
                             footer={sidebarFooter}
                             afterNav={afterNav}
-                            accent={accent}
                             alwaysShow
                         />
                     </div>
                 </div>
             )}
 
-            <main className="flex-1 flex flex-col h-full overflow-hidden relative min-w-0">
-                <header className={`h-[72px] flex-shrink-0 flex items-center justify-between gap-3 px-4 md:px-8 bg-white border-b ${accent === 'pink' ? 'border-[#e9e9ef]' : 'border-gray-50'}`}>
+            <main className="relative flex h-full min-w-0 flex-1 flex-col overflow-hidden">
+                <header className="flex h-[72px] flex-shrink-0 items-center justify-between gap-3 border-b border-[#dce8f0] bg-white px-4 md:px-8">
                     <button
                         type="button"
-                        className="grid h-[37px] w-[37px] flex-none place-items-center rounded-[10px] border border-[#e9e9ef] bg-white text-[#6f727b] md:hidden"
+                        className="grid h-[37px] w-[37px] flex-none place-items-center rounded-[10px] border border-[#dce8f0] bg-white text-brand-gray md:hidden"
                         onClick={() => setMobileOpen((open) => !open)}
                         aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
                     >
                         {mobileOpen ? <X size={16} /> : <Menu size={16} />}
                     </button>
                     {headerLeft || (
-                        <h1 className="text-sm font-semibold text-gray-800 tracking-tight">{headerTitle}</h1>
+                        <h1 className="font-outfit text-sm font-semibold tracking-tight text-brand-ink">{headerTitle}</h1>
                     )}
                     {headerActions}
                 </header>
-                <div className={`flex-1 overflow-y-auto ${accent === 'pink' ? 'p-4 md:px-8 md:py-7' : 'p-6 md:p-8'}`}>{children}</div>
+                <div className="flex-1 overflow-y-auto p-4 md:px-8 md:py-7">{children}</div>
             </main>
         </div>
     );

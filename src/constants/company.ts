@@ -1,5 +1,5 @@
 export const COMPANY = {
-    productName: 'MeloTap',
+    productName: 'TapnLike',
     legalName: 'Vusic Records Pvt. Ltd.',
     tagline: 'Influencer marketing platform for brands, music labels and creators.',
     website: 'https://app.melotap.com',

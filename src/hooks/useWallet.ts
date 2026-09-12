@@ -89,7 +89,7 @@ export function useRazorpayTopup() {
                     description: 'Brand Wallet Top-up',
                     order_id: order.orderId,
                     prefill: order.prefill,
-                    theme: { color: '#87D8FF' },
+                    theme: { color: '#00B4EB' },
                     handler: async (response: {
                         razorpay_order_id: string;
                         razorpay_payment_id: string;

@@ -233,7 +233,7 @@ export default function BrandCampaignSubmissions({ campaignId }: BrandCampaignSu
                         {hasFilters && (
                             <button
                                 onClick={clearFilters}
-                                className="text-xs font-semibold text-[#87D8FF] hover:underline"
+                                className="text-xs font-semibold text-[#00B4EB] hover:underline"
                             >
                                 Clear filters
                             </button>
@@ -244,7 +244,7 @@ export default function BrandCampaignSubmissions({ campaignId }: BrandCampaignSu
 
             {isLoading ? (
                 <div className="flex items-center justify-center py-20">
-                    <Loader2 className="h-8 w-8 animate-spin text-[#87D8FF]" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#00B4EB]" />
                 </div>
             ) : submissions.length === 0 ? (
                 <div className="py-16 text-center px-6">
@@ -292,7 +292,7 @@ export default function BrandCampaignSubmissions({ campaignId }: BrandCampaignSu
                                                 href={sub.submission_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-xs text-[#87D8FF] hover:underline flex items-center gap-1 truncate"
+                                                className="text-xs text-[#00B4EB] hover:underline flex items-center gap-1 truncate"
                                             >
                                                 <ExternalLink size={12} className="flex-shrink-0" />
                                                 <span className="truncate">{sub.submission_url}</span>

@@ -85,7 +85,7 @@ export default function BrandLogoUploader({ value, onChange }: BrandLogoUploader
                         type="button"
                         onClick={() => inputRef.current?.click()}
                         disabled={isPending}
-                        className="text-xs font-medium text-[#87D8FF] hover:underline"
+                        className="text-xs font-medium text-[#00B4EB] hover:underline"
                     >
                         Change
                     </button>
@@ -102,7 +102,7 @@ export default function BrandLogoUploader({ value, onChange }: BrandLogoUploader
                     type="button"
                     onClick={() => inputRef.current?.click()}
                     disabled={isPending}
-                    className="w-full h-11 border border-dashed border-gray-300 rounded-xl flex items-center justify-center text-xs font-medium text-gray-500 hover:bg-gray-50 hover:border-[#87D8FF]/50 cursor-pointer transition-colors gap-2"
+                    className="w-full h-11 border border-dashed border-gray-300 rounded-xl flex items-center justify-center text-xs font-medium text-gray-500 hover:bg-gray-50 hover:border-[#00B4EB]/50 cursor-pointer transition-colors gap-2"
                 >
                     {isPending ? (
                         <Loader2 size={14} className="animate-spin" />

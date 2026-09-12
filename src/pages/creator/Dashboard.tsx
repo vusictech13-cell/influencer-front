@@ -63,7 +63,7 @@ function KpiCard({
         <button
             type="button"
             onClick={onClick}
-            className="min-h-[90px] rounded-[15px] border border-[#e9e9ef] bg-white px-[15px] py-3.5 text-left"
+            className="min-h-[90px] rounded-[15px] border border-[#dce8f0] bg-white px-[15px] py-3.5 text-left"
         >
             <div className="mb-2.5 flex items-center justify-between">
                 <div className="text-[11px] text-[#858791]">{label}</div>
@@ -72,7 +72,7 @@ function KpiCard({
                 </div>
             </div>
             <div className="flex items-baseline gap-1.5">
-                <strong className="text-[26px] tracking-[-1px] text-[#121318]">{value}</strong>
+                <strong className="text-[26px] tracking-[-1px] text-brand-ink">{value}</strong>
                 {delta ? <span className="text-[11px] font-bold text-[#15945a]">{delta}</span> : null}
             </div>
             <div className="mt-1.5 text-[11px] text-[#989aa2]">{foot}</div>
@@ -154,7 +154,7 @@ export default function CreatorDashboard() {
         : strength < 100
           ? {
                 title: 'Your next best move',
-                copy: 'Finish the remaining profile details so Buzooka can match you with better campaigns.',
+                copy: 'Finish the remaining profile details so TapnLike can match you with better campaigns.',
                 cta: 'Finish profile',
                 to: '/creator/profile',
             }
@@ -198,7 +198,7 @@ export default function CreatorDashboard() {
             <div className="mx-auto max-w-[1420px]">
                 <div className="mb-5 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
                     <div>
-                        <h1 className="mb-1.5 text-[31px] font-extrabold leading-[1.06] tracking-[-1.3px]">
+                        <h1 className="mb-1.5 font-outfit text-[31px] font-extrabold leading-[1.06] tracking-[-1.3px]">
                             Hey, {firstName} 👋
                         </h1>
                         <p className="m-0 text-[13px] text-[#777a83]">
@@ -208,7 +208,7 @@ export default function CreatorDashboard() {
                     <button
                         type="button"
                         onClick={() => navigate('/creator/profile')}
-                        className="flex items-center gap-2.5 rounded-[13px] border border-[#e9e9ef] bg-white px-3 py-2"
+                        className="flex items-center gap-2.5 rounded-[13px] border border-[#dce8f0] bg-white px-3 py-2"
                     >
                         <img src={avatar} alt="" className="h-[35px] w-[35px] rounded-full object-cover" />
                         <div className="text-left">
@@ -266,7 +266,7 @@ export default function CreatorDashboard() {
                     <button
                         type="button"
                         onClick={() => navigate('/creator/campaigns')}
-                        className="text-[11px] font-bold text-[#bd2868]"
+                        className="text-[11px] font-bold text-[#f05a0c]"
                     >
                         View all →
                     </button>
@@ -275,7 +275,7 @@ export default function CreatorDashboard() {
                 <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2 xl:grid-cols-3">
                     {campaignsLoading ? (
                         <div className="col-span-full flex justify-center py-10">
-                            <Loader2 className="h-6 w-6 animate-spin text-[#e9408a]" />
+                            <Loader2 className="h-6 w-6 animate-spin text-[#ff6a1a]" />
                         </div>
                     ) : featured.length === 0 ? (
                         <p className="col-span-full py-8 text-sm text-[#8b8d95]">No available campaigns right now. Check back soon.</p>
@@ -297,9 +297,9 @@ export default function CreatorDashboard() {
                 </div>
 
                 <div className="mb-4 mr-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.45fr_.75fr]">
-                    <div className="relative min-h-[290px] overflow-hidden rounded-[21px] bg-[linear-gradient(130deg,#13151c_0%,#292332_55%,#572443_100%)] p-[27px] text-white">
-                        <div className="pointer-events-none absolute -right-[70px] -top-[120px] h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(233,64,138,0.72),transparent_65%)]" />
-                        <div className="pointer-events-none absolute bottom-[-170px] right-[90px] h-[240px] w-[240px] rounded-full bg-[radial-gradient(circle,rgba(255,135,184,0.32),transparent_65%)]" />
+                    <div className="relative min-h-[290px] overflow-hidden rounded-[21px] bg-[linear-gradient(145deg,#00B4EB_0%,#0094d4_48%,#0b2744_100%)] p-[27px] text-white">
+                        <div className="pointer-events-none absolute -right-[70px] -top-[120px] h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(255,106,26,0.72),transparent_65%)]" />
+                        <div className="pointer-events-none absolute bottom-[-170px] right-[90px] h-[240px] w-[240px] rounded-full bg-[radial-gradient(circle,rgba(255,138,61,0.32),transparent_65%)]" />
                         <div className="relative z-[1] max-w-[58%] max-sm:max-w-full max-sm:pb-24">
                             <div className="mb-[18px] inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/10 px-2.5 py-1.5 text-[9px] text-[#e9e9ed]">
                                 ✦ Recommended for you
@@ -315,14 +315,14 @@ export default function CreatorDashboard() {
                             <button
                                 type="button"
                                 onClick={scrollToCampaigns}
-                                className="rounded-[10px] bg-white px-3.5 py-2.5 text-[11px] font-extrabold text-[#111318]"
+                                className="rounded-[10px] bg-white px-3.5 py-2.5 text-[11px] font-extrabold text-brand-ink"
                             >
                                 Explore opportunities →
                             </button>
                         </div>
                         <div className="absolute bottom-0 right-[15px] z-[1] h-[86%] w-[46%] max-sm:right-[-4px] max-sm:h-[45%] max-sm:w-[42%]">
-                            <div className="absolute right-[42%] top-[25%] h-[95px] w-[95px] rounded-full bg-[linear-gradient(145deg,#fff,#f9dce8)] opacity-20 blur-[1px]" />
-                            <div className="absolute bottom-[11%] right-[12%] h-[245px] w-[165px] rotate-[7deg] overflow-hidden rounded-[24px] border-[5px] border-white/12 bg-[linear-gradient(180deg,#ffb0cc,#e9408a_48%,#4b1d38)] shadow-[0_22px_40px_rgba(0,0,0,0.28)] max-sm:right-0 max-sm:rotate-[4deg] max-sm:scale-[.8]">
+                            <div className="absolute right-[42%] top-[25%] h-[95px] w-[95px] rounded-full bg-[linear-gradient(145deg,#fff,#ffe0cc)] opacity-20 blur-[1px]" />
+                            <div className="absolute bottom-[11%] right-[12%] h-[245px] w-[165px] rotate-[7deg] overflow-hidden rounded-[24px] border-[5px] border-white/12 bg-[linear-gradient(180deg,#ffd4b8,#ff6a1a_48%,#0b2744)] shadow-[0_22px_40px_rgba(11,39,68,0.28)] max-sm:right-0 max-sm:rotate-[4deg] max-sm:scale-[.8]">
                                 <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent_0_40%,rgba(255,255,255,0.28)_42%,transparent_50%)]" />
                                 <div className="absolute left-[62px] top-[23px] h-[42px] w-[42px] rounded-full bg-[#202126]" />
                                 <div className="absolute left-[35px] top-[48px] h-[132px] w-[94px] rounded-[50px_50px_24px_24px] bg-[linear-gradient(145deg,#292631,#15161b)]" />
@@ -333,7 +333,7 @@ export default function CreatorDashboard() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col justify-between rounded-[21px] border border-[#e9e9ef] bg-white p-[22px]">
+                    <div className="flex flex-col justify-between rounded-[21px] border border-[#dce8f0] bg-white p-[22px]">
                         <div>
                             <div className="text-[10px] font-extrabold uppercase tracking-[1.1px] text-[#8b8d95]">
                                 Your earning potential
@@ -342,27 +342,27 @@ export default function CreatorDashboard() {
                             <div className="text-[10px] text-[#8f9199]">Estimated monthly collaboration potential</div>
                             <div className="my-[18px] h-2 overflow-hidden rounded-full bg-[#efeff3]">
                                 <span
-                                    className="block h-full rounded-full bg-[linear-gradient(90deg,#e9408a,#ff86b8)]"
+                                    className="block h-full rounded-full bg-[linear-gradient(90deg,#ff6a1a,#ff8a3d)]"
                                     style={{ width: `${earnings.width}%` }}
                                 />
                             </div>
                             <div className="flex justify-between text-[10px] text-[#898c95]">
                                 <span>Creator score</span>
-                                <span className="font-extrabold text-[#e9408a]">{creatorScore} / 100</span>
+                                <span className="font-extrabold text-[#ff6a1a]">{creatorScore} / 100</span>
                             </div>
                         </div>
                         <div className="mt-[17px] flex gap-2">
                             <button
                                 type="button"
                                 onClick={() => navigate('/creator/payments')}
-                                className="flex-1 rounded-[9px] border border-[#111318] bg-[#111318] py-2 text-[10px] font-bold text-white"
+                                className="flex-1 rounded-full border border-brand-orange bg-brand-orange py-2 text-[10px] font-bold text-white"
                             >
                                 View estimate
                             </button>
                             <button
                                 type="button"
                                 onClick={() => navigate('/creator/profile#rates')}
-                                className="flex-1 rounded-[9px] border border-[#e9e9ef] bg-white py-2 text-[10px] font-bold"
+                                className="flex-1 rounded-[9px] border border-[#dce8f0] bg-white py-2 text-[10px] font-bold"
                             >
                                 Add rates
                             </button>
@@ -378,7 +378,7 @@ export default function CreatorDashboard() {
                     <button
                         type="button"
                         onClick={() => navigate('/creator/campaigns')}
-                        className="text-[11px] font-bold text-[#bd2868]"
+                        className="text-[11px] font-bold text-[#f05a0c]"
                     >
                         View all →
                     </button>
@@ -387,7 +387,7 @@ export default function CreatorDashboard() {
                 {/* <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2 xl:grid-cols-3">
                     {campaignsLoading ? (
                         <div className="col-span-full flex justify-center py-10">
-                            <Loader2 className="h-6 w-6 animate-spin text-[#e9408a]" />
+                            <Loader2 className="h-6 w-6 animate-spin text-[#ff6a1a]" />
                         </div>
                     ) : featured.length === 0 ? (
                         <p className="col-span-full py-8 text-sm text-[#8b8d95]">No available campaigns right now. Check back soon.</p>
@@ -414,12 +414,12 @@ export default function CreatorDashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_.85fr]">
-                    <div className="rounded-[18px] border border-[#e9e9ef] bg-white p-5">
+                    <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                         <div className="flex items-center gap-4">
                             <div
                                 className="relative grid h-[72px] w-[72px] flex-none place-items-center rounded-full"
                                 style={{
-                                    background: `conic-gradient(#e9408a 0 ${strength}%, #eeeef2 ${strength}% 100%)`,
+                                    background: `conic-gradient(#ff6a1a 0 ${strength}%, #eeeef2 ${strength}% 100%)`,
                                 }}
                             >
                                 <span className="absolute inset-[7px] rounded-full bg-white" />
@@ -430,7 +430,7 @@ export default function CreatorDashboard() {
                                     {strength >= 100 ? 'Your profile is ready.' : 'Your profile is almost ready.'}
                                 </strong>
                                 <p className="my-1.5 text-[10px] leading-relaxed text-[#858891]">
-                                    Adding your rates and media kit can help Buzooka match you with higher-value campaigns.
+                                    Adding your rates and media kit can help TapnLike match you with higher-value campaigns.
                                 </p>
                                 <button
                                     type="button"
@@ -442,8 +442,8 @@ export default function CreatorDashboard() {
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between gap-3 rounded-[18px] border border-[#e9e9ef] bg-white p-5">
-                        <div className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-[#fff0f7] text-[#bd2868]">
+                    <div className="flex items-center justify-between gap-3 rounded-[18px] border border-[#dce8f0] bg-white p-5">
+                        <div className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-[#e8f8fe] text-[#f05a0c]">
                             <IndianRupee size={21} />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -453,7 +453,7 @@ export default function CreatorDashboard() {
                         <button
                             type="button"
                             onClick={() => navigate(nextMove.to)}
-                            className="whitespace-nowrap rounded-[9px] bg-[#111318] px-2.5 py-2 text-[9px] font-extrabold text-white"
+                            className="whitespace-nowrap rounded-[9px] bg-brand-orange px-2.5 py-2 text-[9px] font-extrabold text-white"
                         >
                             {nextMove.cta}
                         </button>

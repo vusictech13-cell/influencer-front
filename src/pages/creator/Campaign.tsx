@@ -43,7 +43,7 @@ export default function CreatorCampaign() {
     const followers = instagram?.followers_count ?? 0;
     const rank = getVusicRank(followers);
     const payout = getPayoutForRank(campaign, rank.rank);
-    const color = campaign ? getCampaignColor(campaign, rank.rank) : 'bg-[#87D8FF]';
+    const color = campaign ? getCampaignColor(campaign, rank.rank) : 'bg-[#00B4EB]';
 
     const handleApply = () => {
         if (!instagram) return;
@@ -74,7 +74,7 @@ export default function CreatorCampaign() {
     if (campaignLoading || submissionsLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-[#87D8FF]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#00B4EB]" />
             </div>
         );
     }
@@ -85,7 +85,7 @@ export default function CreatorCampaign() {
                 <p className="text-sm text-gray-500">Campaign not found.</p>
                 <button
                     onClick={() => navigate('/creator/dashboard')}
-                    className="mt-4 text-sm font-semibold text-[#87D8FF] hover:underline"
+                    className="mt-4 text-sm font-semibold text-[#00B4EB] hover:underline"
                 >
                     Back to Dashboard
                 </button>
@@ -169,7 +169,7 @@ export default function CreatorCampaign() {
                                     <>
                                         {' '}
                                         Use hashtags:{' '}
-                                        <strong className="text-[#87D8FF]">{campaign.hashtags}</strong>
+                                        <strong className="text-[#00B4EB]">{campaign.hashtags}</strong>
                                     </>
                                 )}
                             </p>
@@ -215,7 +215,7 @@ export default function CreatorCampaign() {
                                     placeholder="https://instagram.com/reel/..."
                                     value={submissionUrl}
                                     onChange={(e) => setSubmissionUrl(e.target.value)}
-                                    className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#87D8FF]/50 focus:border-[#87D8FF]"
+                                    className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00B4EB]/50 focus:border-[#00B4EB]"
                                 />
                             </div>
                             {submitError && (
@@ -226,7 +226,7 @@ export default function CreatorCampaign() {
                             <button
                                 onClick={handleSubmit}
                                 disabled={isSubmitting || !submissionUrl.trim()}
-                                className="w-full py-4 bg-[#87D8FF] hover:bg-[#7bc8ef] disabled:opacity-60 text-gray-900 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
+                                className="w-full py-4 bg-[#00B4EB] hover:bg-[#009fd4] disabled:opacity-60 text-gray-900 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
                             >
                                 {isSubmitting ? (
                                     <Loader2 size={18} className="animate-spin" />
@@ -247,7 +247,7 @@ export default function CreatorCampaign() {
                                 ) : submission?.status === 'rejected' ? (
                                     <XCircle className="h-12 w-12 text-red-500 mx-auto" />
                                 ) : (
-                                    <CheckCircle2 className="h-12 w-12 text-[#87D8FF] mx-auto" />
+                                    <CheckCircle2 className="h-12 w-12 text-[#00B4EB] mx-auto" />
                                 )}
                                 <p className="font-semibold text-gray-900">
                                     {submitSuccess && 'Submission Successful!'}
@@ -265,7 +265,7 @@ export default function CreatorCampaign() {
                                         href={submission.submission_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-sm text-[#87D8FF] hover:underline"
+                                        className="inline-flex items-center gap-1 text-sm text-[#00B4EB] hover:underline"
                                     >
                                         View submitted reel <ExternalLink size={14} />
                                     </a>

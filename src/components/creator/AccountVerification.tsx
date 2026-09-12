@@ -26,7 +26,7 @@ function OtpInput({
             onChange={(event) => onChange(event.target.value.replace(/\D/g, '').slice(0, 6))}
             placeholder="6-digit code"
             disabled={disabled}
-            className="h-10 w-36 rounded-xl border border-gray-200 px-3 text-sm tracking-[0.2em] outline-none focus:border-[#e9408a] focus:shadow-[0_0_0_3px_rgba(233,64,138,0.08)]"
+            className="h-10 w-36 rounded-xl border border-gray-200 px-3 text-sm tracking-[0.2em] outline-none focus:border-[#ff6a1a] focus:shadow-[0_0_0_3px_rgba(255,106,26,0.08)]"
         />
     );
 }
@@ -112,7 +112,7 @@ export function AccountVerification() {
                 <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff0f6] text-[#e9408a]">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff0f6] text-[#ff6a1a]">
                                 <Mail size={18} />
                             </div>
                             <div>
@@ -128,7 +128,7 @@ export function AccountVerification() {
                                 type="button"
                                 onClick={handleVerifyEmail}
                                 disabled={emailOtp.length !== 6 || verifyEmail.isPending}
-                                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-[#111318] px-3 text-xs font-bold text-white disabled:opacity-50"
+                                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-brand-orange px-3 text-xs font-bold text-white disabled:opacity-50"
                             >
                                 {verifyEmail.isPending ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
                                 Verify
@@ -150,7 +150,7 @@ export function AccountVerification() {
                 <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff0f6] text-[#e9408a]">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff0f6] text-[#ff6a1a]">
                                 <Smartphone size={18} />
                             </div>
                             <div>
@@ -172,7 +172,7 @@ export function AccountVerification() {
                                     value={phone}
                                     onChange={(event) => setPhone(event.target.value.replace(/\D/g, '').slice(0, 10))}
                                     placeholder="9876543210"
-                                    className="h-10 w-40 rounded-xl border border-gray-200 pl-10 pr-3 text-sm outline-none focus:border-[#e9408a]"
+                                    className="h-10 w-40 rounded-xl border border-gray-200 pl-10 pr-3 text-sm outline-none focus:border-[#ff6a1a]"
                                 />
                             </div> */}
                             <OtpInput value={phoneOtp} onChange={setPhoneOtp} disabled={verifyPhone.isPending} />
@@ -180,7 +180,7 @@ export function AccountVerification() {
                                 type="button"
                                 onClick={handleVerifyPhone}
                                 disabled={phoneOtp.length !== 6 || verifyPhone.isPending}
-                                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-[#111318] px-3 text-xs font-bold text-white disabled:opacity-50"
+                                className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-brand-orange px-3 text-xs font-bold text-white disabled:opacity-50"
                             >
                                 {verifyPhone.isPending ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
                                 Verify

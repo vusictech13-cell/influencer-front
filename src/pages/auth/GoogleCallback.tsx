@@ -40,21 +40,21 @@ export default function GoogleCallback() {
     }, [navigate, searchParams]);
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-[#f4f4f7] px-6 font-manrope">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-brand-lightbg px-6 font-jakarta">
             {error ? (
-                <div className="w-full max-w-sm rounded-[28px] border border-[#e8e8ee] bg-white p-8 text-center shadow-[0_28px_80px_rgba(18,19,24,0.08)]">
+                <div className="w-full max-w-sm rounded-[28px] border border-[#dce8f0] bg-white p-8 text-center shadow-[0_28px_80px_rgba(18,19,24,0.08)]">
                     <p className="text-sm text-red-500">{error}</p>
                     <button
                         type="button"
                         onClick={() => navigate('/login', { replace: true })}
-                        className="mt-5 h-11 w-full rounded-xl bg-[#111318] text-xs font-extrabold text-white"
+                        className="mt-5 h-11 w-full rounded-full bg-brand-orange text-xs font-extrabold text-white"
                     >
                         Back to log in
                     </button>
                 </div>
             ) : (
                 <div className="flex items-center gap-3 text-sm text-[#7c7f88]">
-                    <Loader2 className="h-5 w-5 animate-spin text-[#e9408a]" />
+                    <Loader2 className="h-5 w-5 animate-spin text-[#ff6a1a]" />
                     Completing Google sign-in...
                 </div>
             )}

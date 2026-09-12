@@ -30,7 +30,7 @@ const STATUS_TABS: { key: AdminCreatorStatusFilter; label: string; activeClass: 
 ];
 
 const CONNECTED_TABS: { key: AdminCreatorConnectedFilter; label: string; activeClass: string }[] = [
-    { key: 'all', label: 'All', activeClass: 'bg-[#87D8FF] text-white border-[#87D8FF]' },
+    { key: 'all', label: 'All', activeClass: 'bg-[#00B4EB] text-white border-[#00B4EB]' },
     { key: 'connected', label: 'Connected', activeClass: 'bg-emerald-500 text-white border-emerald-500' },
     { key: 'not_connected', label: 'Not connected', activeClass: 'bg-amber-500 text-white border-amber-500' },
 ];
@@ -116,7 +116,7 @@ export default function AdminCreators() {
             <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
                 <h1 className="text-2xl font-semibold tracking-tight text-gray-900 flex items-center gap-2">
-                    <Users size={24} className="text-[#87D8FF]" />
+                    <Users size={24} className="text-[#00B4EB]" />
                     Creators
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
@@ -126,7 +126,7 @@ export default function AdminCreators() {
             <button
                 type="button"
                 onClick={() => navigate('/admin/compare')}
-                className="px-4 py-2 bg-white border border-gray-200 text-sm font-semibold rounded-xl hover:border-[#87D8FF] hover:text-[#87D8FF] transition-colors"
+                className="px-4 py-2 bg-white border border-gray-200 text-sm font-semibold rounded-xl hover:border-[#00B4EB] hover:text-[#00B4EB] transition-colors"
             >
                 Compare profiles
             </button>
@@ -136,7 +136,7 @@ export default function AdminCreators() {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <SummaryCard label="Total creators" value={summary.total} accent="text-gray-500" />
                     <SummaryCard label="Instagram connected" value={summary.connected} accent="text-emerald-500" />
-                    <SummaryCard label="Active accounts" value={summary.active} accent="text-[#87D8FF]" />
+                    <SummaryCard label="Active accounts" value={summary.active} accent="text-[#00B4EB]" />
                     <SummaryCard label="Inactive accounts" value={summary.inactive} accent="text-amber-500" />
                 </div>
             )}
@@ -242,7 +242,7 @@ export default function AdminCreators() {
                                 <button
                                     type="button"
                                     onClick={clearFilters}
-                                    className="text-xs font-semibold text-[#87D8FF] hover:underline"
+                                    className="text-xs font-semibold text-[#00B4EB] hover:underline"
                                 >
                                     Clear filters
                                 </button>
@@ -253,7 +253,7 @@ export default function AdminCreators() {
 
                 {isLoading ? (
                     <div className="flex items-center justify-center py-20">
-                        <Loader2 className="h-8 w-8 animate-spin text-[#87D8FF]" />
+                        <Loader2 className="h-8 w-8 animate-spin text-[#00B4EB]" />
                     </div>
                 ) : creators.length === 0 ? (
                     <div className="py-16 text-center px-6">
@@ -322,12 +322,12 @@ export default function AdminCreators() {
                                                                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                                                             />
                                                         ) : (
-                                                            <div className="w-10 h-10 rounded-full bg-[#87D8FF]/20 flex items-center justify-center flex-shrink-0">
-                                                                <Users size={16} className="text-[#87D8FF]" />
+                                                            <div className="w-10 h-10 rounded-full bg-[#00B4EB]/20 flex items-center justify-center flex-shrink-0">
+                                                                <Users size={16} className="text-[#00B4EB]" />
                                                             </div>
                                                         )}
                                                         <div className="min-w-0">
-                                                            <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-[#87D8FF] transition-colors">
+                                                            <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-[#00B4EB] transition-colors">
                                                                 {creator.name}
                                                             </p>
                                                             <p className="text-xs text-gray-500 truncate">{creator.email}</p>
@@ -394,7 +394,7 @@ export default function AdminCreators() {
                                                 <td className="px-6 py-4 text-right">
                                                     <ChevronRight
                                                         size={18}
-                                                        className="text-gray-300 group-hover:text-[#87D8FF] transition-colors inline-block"
+                                                        className="text-gray-300 group-hover:text-[#00B4EB] transition-colors inline-block"
                                                     />
                                                 </td>
                                             </tr>

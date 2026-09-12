@@ -39,7 +39,7 @@ export interface CampaignSubmission {
     campaign?: Campaign;
 }
 
-const RANK_BG_COLORS = ['bg-[#FF5A5F]', 'bg-[#FFA542]', 'bg-[#FBBF24]', 'bg-[#87D8FF]'];
+const RANK_BG_COLORS = ['bg-[#FF5A5F]', 'bg-[#FFA542]', 'bg-[#FBBF24]', 'bg-[#00B4EB]'];
 
 export function getPayoutForRank(campaign: Campaign | undefined, userRank: number): number {
     const allocation = campaign?.rank_allocations?.find((r) => r.rank === userRank);

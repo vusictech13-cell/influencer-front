@@ -75,7 +75,7 @@ export default function ImageSquareCropperModal({
                             step={0.05}
                             value={zoom}
                             onChange={(e) => setZoom(Number(e.target.value))}
-                            className="w-full accent-[#87D8FF]"
+                            className="w-full accent-[#00B4EB]"
                         />
                     </div>
                     <div className="flex gap-3">
@@ -88,7 +88,7 @@ export default function ImageSquareCropperModal({
                         <button
                             onClick={handleConfirm}
                             disabled={processing}
-                            className="flex-1 py-2.5 text-sm font-semibold bg-[#87D8FF] text-gray-900 rounded-xl hover:bg-[#7bc8ef] disabled:opacity-60 flex items-center justify-center gap-2"
+                            className="flex-1 py-2.5 text-sm font-semibold bg-[#00B4EB] text-gray-900 rounded-xl hover:bg-[#009fd4] disabled:opacity-60 flex items-center justify-center gap-2"
                         >
                             {processing ? <Loader2 size={16} className="animate-spin" /> : null}
                             Apply Crop

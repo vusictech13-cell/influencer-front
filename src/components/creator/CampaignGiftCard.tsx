@@ -3,8 +3,8 @@ import { resolveAssetUrl } from '@/utils/image';
 import { getCampaignColor, type Campaign } from '@/hooks/useCampaigns';
 
 const COVER_STYLES = [
-    'bg-[linear-gradient(135deg,#efc4a9,#e95f7e_52%,#3d2033)]',
-    'bg-[linear-gradient(135deg,#b2d4e7,#6e8ed3_48%,#272a48)]',
+    'bg-[linear-gradient(135deg,#ffd4b8,#ff6a1a_52%,#0b2744)]',
+    'bg-[linear-gradient(135deg,#b2e8f7,#00B4EB_48%,#0b2744)]',
     'bg-[linear-gradient(135deg,#f0dd9f,#d89d50_45%,#3b2718)]',
 ];
 
@@ -24,7 +24,7 @@ export function CampaignGiftCard({
     onView: () => void;
 }) {
     return (
-        <div className="overflow-hidden rounded-[19px] border border-[#e9e9ef] bg-white transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(20,20,40,0.08)]">
+        <div className="overflow-hidden rounded-[19px] border border-[#dce8f0] bg-white transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(20,20,40,0.08)]">
             <div className={`relative h-[175px] overflow-hidden ${COVER_STYLES[index % COVER_STYLES.length]}`}>
                 {index % 3 === 0 ? (
                     <>
@@ -56,7 +56,7 @@ export function CampaignGiftCard({
                     <div className="absolute bottom-[19px] right-[31px] h-[120px] w-[95px] rotate-[5deg] rounded-2xl bg-white/95 shadow-[0_16px_25px_rgba(0,0,0,0.18)]">
                         <div className="absolute inset-x-[14px] top-[19px] h-[35px] rounded-lg bg-black/10" />
                         <div className="absolute bottom-[19px] left-[18px] text-[8px] font-extrabold tracking-wide text-[#777]">
-                            BUZOOKA
+                            TAPNLIKE
                         </div>
                     </div>
                 )}
@@ -83,7 +83,7 @@ export function CampaignGiftCard({
                     <button
                         type="button"
                         onClick={onView}
-                        className="rounded-[9px] bg-[#111318] px-2.5 py-2 text-[9px] font-extrabold text-white"
+                        className="rounded-full bg-brand-orange px-2.5 py-2 text-[9px] font-extrabold text-white"
                     >
                         View gift →
                     </button>
@@ -143,7 +143,7 @@ export function GigApplyModal({
                             <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-gray-400">
                                 Potential payout
                             </p>
-                            <p className="text-2xl font-semibold tracking-tight text-[#e9408a]">
+                            <p className="text-2xl font-semibold tracking-tight text-[#ff6a1a]">
                                 ₹{gig.payout.toLocaleString('en-IN')}
                             </p>
                         </div>
@@ -156,7 +156,7 @@ export function GigApplyModal({
                         type="button"
                         onClick={onApply}
                         disabled={isApplying}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#111318] py-4 text-sm font-semibold text-white disabled:opacity-60"
+                        className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-orange py-4 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(255,106,26,0.22)] disabled:opacity-60"
                     >
                         {isApplying ? <Loader2 size={18} className="animate-spin" /> : <>Apply now <PlayCircle size={18} /></>}
                     </button>

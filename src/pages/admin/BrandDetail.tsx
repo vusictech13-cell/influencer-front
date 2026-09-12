@@ -42,7 +42,7 @@ function StatusBadge({ status }: { status: 'active' | 'inactive' | AdminBrandCam
         active: 'bg-emerald-50 text-emerald-600 border-emerald-100',
         inactive: 'bg-gray-50 text-gray-500 border-gray-100',
         draft: 'bg-gray-50 text-gray-500 border-gray-100',
-        completed: 'bg-[#87D8FF]/10 text-[#5eb8e0] border-[#87D8FF]/20',
+        completed: 'bg-[#00B4EB]/10 text-[#0094d4] border-[#00B4EB]/20',
         paused: 'bg-amber-50 text-amber-600 border-amber-100',
     };
     return (
@@ -82,7 +82,7 @@ export default function AdminBrandDetail() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-[#87D8FF]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#00B4EB]" />
             </div>
         );
     }
@@ -94,7 +94,7 @@ export default function AdminBrandDetail() {
                 <button
                     type="button"
                     onClick={() => navigate('/admin/brands')}
-                    className="mt-4 text-sm font-semibold text-[#87D8FF] hover:underline"
+                    className="mt-4 text-sm font-semibold text-[#00B4EB] hover:underline"
                 >
                     Back to brands
                 </button>
@@ -129,8 +129,8 @@ export default function AdminBrandDetail() {
                     {avatarUrl ? (
                         <img src={avatarUrl} alt={user.name} className="w-20 h-20 rounded-2xl object-cover flex-shrink-0" />
                     ) : (
-                        <div className="w-20 h-20 rounded-2xl bg-[#87D8FF]/20 flex items-center justify-center flex-shrink-0">
-                            <Building2 size={32} className="text-[#87D8FF]" />
+                        <div className="w-20 h-20 rounded-2xl bg-[#00B4EB]/20 flex items-center justify-center flex-shrink-0">
+                            <Building2 size={32} className="text-[#00B4EB]" />
                         </div>
                     )}
                     <div className="flex-1 min-w-0">
@@ -165,7 +165,7 @@ export default function AdminBrandDetail() {
                     label="Total spent"
                     value={formatCurrency(total_spent)}
                     icon={Megaphone}
-                    accent="text-[#87D8FF]"
+                    accent="text-[#00B4EB]"
                 />
                 <StatCard
                     label="Pending reviews"
@@ -235,7 +235,7 @@ export default function AdminBrandDetail() {
                                                     href={sub.submission_url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#87D8FF] hover:underline"
+                                                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#00B4EB] hover:underline"
                                                 >
                                                     View <ExternalLink size={11} />
                                                 </a>
@@ -254,7 +254,7 @@ export default function AdminBrandDetail() {
             <div className="bg-white rounded-[1.5rem] border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                        <Megaphone size={18} className="text-[#87D8FF]" />
+                        <Megaphone size={18} className="text-[#00B4EB]" />
                         Recent campaigns
                         <span className="text-xs font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
                             {campaignCounts.all}
@@ -290,8 +290,8 @@ export default function AdminBrandDetail() {
                                                             className="w-10 h-10 rounded-xl object-cover flex-shrink-0"
                                                         />
                                                     ) : (
-                                                        <div className="w-10 h-10 rounded-xl bg-[#87D8FF]/20 flex items-center justify-center flex-shrink-0">
-                                                            <Music size={14} className="text-[#87D8FF]" />
+                                                        <div className="w-10 h-10 rounded-xl bg-[#00B4EB]/20 flex items-center justify-center flex-shrink-0">
+                                                            <Music size={14} className="text-[#00B4EB]" />
                                                         </div>
                                                     )}
                                                     <div className="min-w-0">

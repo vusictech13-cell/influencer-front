@@ -68,10 +68,10 @@ export default function Register() {
 
     return (
         <AuthSplitShell mode="signup">
-            <h2 className="mb-2 font-manrope text-[28px] font-extrabold tracking-[-1.5px] text-[#121318] sm:text-[34px]">
-                Join Buzooka.
+            <h2 className="mb-2 font-outfit text-[28px] font-extrabold tracking-[-1.5px] text-brand-ink sm:text-[34px]">
+                Join TapnLike.
             </h2>
-            <p className="mb-4 text-[13px] leading-relaxed text-[#7c7f88]">
+            <p className="mb-4 text-[13px] leading-relaxed text-brand-gray">
                 Create your account in under a minute. We'll ask a few creator questions after you sign up.
             </p>
 
@@ -147,12 +147,12 @@ export default function Register() {
                 </div>
 
                 <p className="mb-4 text-[9px] leading-relaxed text-[#999ca4]">
-                    By continuing, you agree to Buzooka's{' '}
-                    <Link to="/terms-of-service" className="font-bold text-[#bd2b6b] hover:underline">
+                    By continuing, you agree to TapnLike's{' '}
+                    <Link to="/terms-of-service" className="font-bold text-brand-orange hover:underline">
                         Terms of Use
                     </Link>{' '}
                     and{' '}
-                    <Link to="/privacy-policy" className="font-bold text-[#bd2b6b] hover:underline">
+                    <Link to="/privacy-policy" className="font-bold text-brand-orange hover:underline">
                         Privacy Policy
                     </Link>
                     .
@@ -193,7 +193,7 @@ export default function Register() {
 
             <p className="mt-[21px] text-center text-[10px] leading-relaxed text-[#8b8e96]">
                 Already have an account?{' '}
-                <Link to="/login" className="font-bold text-[#bd2b6b] no-underline hover:underline">
+                <Link to="/login" className="font-bold text-brand-orange no-underline hover:underline">
                     Log in
                 </Link>
             </p>

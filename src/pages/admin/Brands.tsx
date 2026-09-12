@@ -116,7 +116,7 @@ export default function AdminBrands() {
         <div className="max-w-6xl mx-auto space-y-6">
             <div>
                 <h1 className="text-2xl font-semibold tracking-tight text-gray-900 flex items-center gap-2">
-                    <Building2 size={24} className="text-[#87D8FF]" />
+                    <Building2 size={24} className="text-[#00B4EB]" />
                     Brands
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
@@ -142,7 +142,7 @@ export default function AdminBrands() {
                         label="Platform spend"
                         value={formatCurrency(summary.total_spent)}
                         icon={Wallet}
-                        accent="text-[#87D8FF]"
+                        accent="text-[#00B4EB]"
                     />
                     <SummaryCard
                         label="Active accounts"
@@ -235,7 +235,7 @@ export default function AdminBrands() {
                                 <button
                                     type="button"
                                     onClick={clearFilters}
-                                    className="text-xs font-semibold text-[#87D8FF] hover:underline"
+                                    className="text-xs font-semibold text-[#00B4EB] hover:underline"
                                 >
                                     Clear filters
                                 </button>
@@ -246,7 +246,7 @@ export default function AdminBrands() {
 
                 {isLoading ? (
                     <div className="flex items-center justify-center py-20">
-                        <Loader2 className="h-8 w-8 animate-spin text-[#87D8FF]" />
+                        <Loader2 className="h-8 w-8 animate-spin text-[#00B4EB]" />
                     </div>
                 ) : brands.length === 0 ? (
                     <div className="py-16 text-center px-6">
@@ -307,12 +307,12 @@ export default function AdminBrands() {
                                                                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                                                             />
                                                         ) : (
-                                                            <div className="w-10 h-10 rounded-full bg-[#87D8FF]/20 flex items-center justify-center flex-shrink-0">
-                                                                <Building2 size={16} className="text-[#87D8FF]" />
+                                                            <div className="w-10 h-10 rounded-full bg-[#00B4EB]/20 flex items-center justify-center flex-shrink-0">
+                                                                <Building2 size={16} className="text-[#00B4EB]" />
                                                             </div>
                                                         )}
                                                         <div className="min-w-0">
-                                                            <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-[#87D8FF] transition-colors">
+                                                            <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-[#00B4EB] transition-colors">
                                                                 {brand.name}
                                                             </p>
                                                             <p className="text-xs text-gray-500 truncate">{brand.email}</p>
@@ -357,7 +357,7 @@ export default function AdminBrands() {
                                                 <td className="px-6 py-4 text-right">
                                                     <ChevronRight
                                                         size={18}
-                                                        className="text-gray-300 group-hover:text-[#87D8FF] transition-colors inline-block"
+                                                        className="text-gray-300 group-hover:text-[#00B4EB] transition-colors inline-block"
                                                     />
                                                 </td>
                                             </tr>

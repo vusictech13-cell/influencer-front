@@ -64,10 +64,10 @@ export default function Login() {
 
     return (
         <AuthSplitShell mode="login">
-            <h2 className="mb-2 font-manrope text-[28px] font-extrabold tracking-[-1.5px] text-[#121318] sm:text-[34px]">
+            <h2 className="mb-2 font-outfit text-[28px] font-extrabold tracking-[-1.5px] text-brand-ink sm:text-[34px]">
                 Welcome back.
             </h2>
-            <p className="mb-[26px] text-[13px] leading-relaxed text-[#7c7f88]">
+            <p className="mb-[26px] text-[13px] leading-relaxed text-brand-gray">
                 Log in to see your opportunities, earnings and creator profile.
             </p>
 
@@ -108,10 +108,10 @@ export default function Login() {
 
                 <div className="mb-[18px] mt-0.5 flex items-center justify-between">
                     <label className="flex items-center gap-[7px] text-[10px] text-[#777a83]">
-                        <input type="checkbox" className="accent-[#e9408a]" />
+                        <input type="checkbox" className="accent-brand-orange" />
                         Remember me
                     </label>
-                    <Link to="/forgot-password" className="text-[10px] font-bold text-[#c12c6c] hover:underline">
+                    <Link to="/forgot-password" className="text-[10px] font-bold text-brand-orange hover:underline">
                         Forgot password?
                     </Link>
                 </div>
@@ -150,8 +150,8 @@ export default function Login() {
             </div>
 
             <p className="mt-[21px] text-center text-[10px] leading-relaxed text-[#8b8e96]">
-                New to Buzooka?{' '}
-                <Link to="/register" className="font-bold text-[#bd2b6b] no-underline hover:underline">
+                New to TapnLike?{' '}
+                <Link to="/register" className="font-bold text-brand-orange no-underline hover:underline">
                     Create your creator account
                 </Link>
             </p>

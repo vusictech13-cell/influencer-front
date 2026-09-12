@@ -68,7 +68,7 @@ function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
         <button
             type="button"
             onClick={onClick}
-            className={`h-[19px] w-[34px] rounded-full p-[2px] ${on ? 'bg-[#e9408a]' : 'bg-[#e9e9ee]'}`}
+            className={`h-[19px] w-[34px] rounded-full p-[2px] ${on ? 'bg-[#ff6a1a]' : 'bg-[#e9e9ee]'}`}
             aria-pressed={on}
         >
             <span className={`block h-[15px] w-[15px] rounded-full bg-white shadow ${on ? 'ml-[15px]' : ''}`} />
@@ -86,7 +86,7 @@ function thumbStyle(reel: BulkReel, index: number) {
         } as const;
     }
     return {
-        background: `linear-gradient(145deg,hsl(${index * 31 + 10} 35% 72%),#e9408a,#27232a)`,
+        background: `linear-gradient(145deg,hsl(${index * 31 + 10} 35% 72%),#ff6a1a,#27232a)`,
     } as const;
 }
 
@@ -593,13 +593,13 @@ export default function CreatorBulkReelUpload() {
                         type="button"
                         onClick={() => void save('draft')}
                         disabled={saving || !allUploaded || !mappingValid}
-                        className="rounded-[10px] bg-[#111318] px-3.5 py-2.5 text-[10px] font-extrabold text-white disabled:opacity-60"
+                        className="rounded-[10px] bg-brand-orange px-3.5 py-2.5 text-[10px] font-extrabold text-white disabled:opacity-60"
                     >
                         {saveBulk.isPending ? 'Saving…' : 'Save bulk campaign →'}
                     </button>
                 </div>
 
-                <section ref={accountSectionRef} className="mb-3.5 rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                <section ref={accountSectionRef} className="mb-3.5 rounded-[18px] border border-[#dce8f0] bg-white p-4">
                     <div className="mb-3 flex items-start justify-between gap-3">
                         <div>
                             <h2 className="mb-1 text-[13px] font-bold">1. Select Instagram accounts for posting</h2>
@@ -608,13 +608,13 @@ export default function CreatorBulkReelUpload() {
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
-                            <button type="button" onClick={selectAllAccounts} className="rounded-[8px] border border-[#e9e9ef] bg-white px-2.5 py-1.5 text-[8px] font-bold">
+                            <button type="button" onClick={selectAllAccounts} className="rounded-[8px] border border-[#dce8f0] bg-white px-2.5 py-1.5 text-[8px] font-bold">
                                 Select all
                             </button>
-                            <button type="button" onClick={clearAccounts} className="rounded-[8px] border border-[#e9e9ef] bg-white px-2.5 py-1.5 text-[8px] font-bold">
+                            <button type="button" onClick={clearAccounts} className="rounded-[8px] border border-[#dce8f0] bg-white px-2.5 py-1.5 text-[8px] font-bold">
                                 Clear
                             </button>
-                            <button type="button" onClick={randomizeMapping} className="rounded-[8px] border border-[#111318] bg-[#111318] px-2.5 py-1.5 text-[8px] font-bold text-white">
+                            <button type="button" onClick={randomizeMapping} className="rounded-[8px] border border-brand-orange bg-brand-orange px-2.5 py-1.5 text-[8px] font-bold text-white">
                                 Randomize mapping ↻
                             </button>
                         </div>
@@ -632,7 +632,7 @@ export default function CreatorBulkReelUpload() {
                         </div>
                     ) : needsMeta ? (
                         <div className="rounded-[13px] border border-dashed border-[#d9dae1] p-4 text-center">
-                            <p className="text-[10px] font-bold text-[#111318]">Meta connection required</p>
+                            <p className="text-[10px] font-bold text-brand-ink">Meta connection required</p>
                             <p className="mt-1 text-[10px] text-[#8a8c94]">Connect Meta Account to use bulk publishing. Your Instagram connection stays intact.</p>
                             <button
                                 type="button"
@@ -654,8 +654,8 @@ export default function CreatorBulkReelUpload() {
                                         onClick={() => toggleAccount(id)}
                                         className={`flex items-center gap-2 rounded-xl border p-2.5 text-left ${
                                             selected
-                                                ? 'border-[#e9408a] bg-[#fff4f8] shadow-[0_0_0_2px_rgba(233,64,138,0.05)]'
-                                                : 'border-[#e9e9ef] bg-white'
+                                                ? 'border-[#ff6a1a] bg-[#eef7fc] shadow-[0_0_0_2px_rgba(255,106,26,0.05)]'
+                                                : 'border-[#dce8f0] bg-white'
                                         }`}
                                     >
                                         <div className="h-[30px] w-[30px] flex-none rounded-full" style={accountAvatarStyle(account, index)} />
@@ -666,7 +666,7 @@ export default function CreatorBulkReelUpload() {
                                             </span>
                                         </div>
                                         <div className={`grid h-4 w-4 flex-none place-items-center rounded-full text-[8px] ${
-                                            selected ? 'border border-[#e9408a] bg-[#e9408a] text-white' : 'border border-[#d6d7de] text-transparent'
+                                            selected ? 'border border-[#ff6a1a] bg-[#ff6a1a] text-white' : 'border border-[#d6d7de] text-transparent'
                                         }`}>
                                             ✓
                                         </div>
@@ -677,12 +677,12 @@ export default function CreatorBulkReelUpload() {
                     )}
                     <div className="mt-2.5 flex items-center justify-between border-t border-[#f0f0f3] pt-2.5 text-[9px] text-[#858891]">
                         <span>
-                            <strong className="text-[#111318]">{selectedIds.length} account{selectedIds.length === 1 ? '' : 's'} selected</strong>
+                            <strong className="text-brand-ink">{selectedIds.length} account{selectedIds.length === 1 ? '' : 's'} selected</strong>
                             {' '}· Choose accounts before uploading/mapping reels.
                         </span>
                         <span>
                             Required for 1:1 mapping:{' '}
-                            <strong className="text-[#111318]">{reels.length || 0} account{reels.length === 1 ? '' : 's'}</strong>
+                            <strong className="text-brand-ink">{reels.length || 0} account{reels.length === 1 ? '' : 's'}</strong>
                         </span>
                     </div>
                 </section>
@@ -694,7 +694,7 @@ export default function CreatorBulkReelUpload() {
                         { label: '1 : 1 mapping', value: `${Math.min(mappedCount, reels.length)} / ${reels.length || 0}`, note: mappingValid ? 'Every reel has one destination' : 'Counts must match 1 : 1', ok: mappingValid },
                         { label: 'Campaign status', value: campaignReady ? 'Ready' : 'Needs attention', note: campaignReady ? 'All mappings valid' : 'Fix mapping or schedule', ok: campaignReady },
                     ].map((stat) => (
-                        <div key={stat.label} className="rounded-[15px] border border-[#e9e9ef] bg-white px-4 py-3">
+                        <div key={stat.label} className="rounded-[15px] border border-[#dce8f0] bg-white px-4 py-3">
                             <span className="text-[9px] uppercase tracking-[0.4px] text-[#8b8d95]">{stat.label}</span>
                             <strong className="mt-1 block text-[18px]">{stat.value}</strong>
                             <small className={`text-[8px] ${stat.ok ? 'text-[#25a66c]' : 'text-[#d84b5b]'}`}>{stat.note}</small>
@@ -703,7 +703,7 @@ export default function CreatorBulkReelUpload() {
                 </div>
 
                 <div className="mb-3.5 grid gap-3.5 lg:grid-cols-[minmax(0,1fr)_285px]">
-                    <section className="rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                    <section className="rounded-[18px] border border-[#dce8f0] bg-white p-4">
                         <div className="mb-3 flex items-start justify-between">
                             <div>
                                 <h2 className="mb-1 text-[13px] font-bold">2. Upload reels</h2>
@@ -733,11 +733,11 @@ export default function CreatorBulkReelUpload() {
                             onDragLeave={() => setDragging(false)}
                             onDrop={onDrop}
                             className={`flex min-h-[190px] cursor-pointer items-center justify-center rounded-2xl border-[1.5px] border-dashed text-center ${
-                                dragging ? 'border-[#e9408a] bg-[#fff7fb]' : 'border-[#d8d9e0] bg-gradient-to-b from-[#fcfcfd] to-[#f8f8fb]'
+                                dragging ? 'border-[#ff6a1a] bg-[#fff7fb]' : 'border-[#d8d9e0] bg-gradient-to-b from-[#fcfcfd] to-[#f8f8fb]'
                             }`}
                         >
                             <div>
-                                <div className="mx-auto mb-3 grid h-[52px] w-[52px] place-items-center rounded-2xl border border-[#e9e9ef] bg-white text-[#555861] shadow-[0_8px_18px_rgba(20,20,40,0.05)]">
+                                <div className="mx-auto mb-3 grid h-[52px] w-[52px] place-items-center rounded-2xl border border-[#dce8f0] bg-white text-[#555861] shadow-[0_8px_18px_rgba(20,20,40,0.05)]">
                                     <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-[1.7]">
                                         <path d="M12 16V5" />
                                         <path d="M8 9l4-4 4 4" />
@@ -754,14 +754,14 @@ export default function CreatorBulkReelUpload() {
                                         event.stopPropagation();
                                         fileRef.current?.click();
                                     }}
-                                    className="rounded-[9px] bg-[#111318] px-3.5 py-2 text-[10px] font-extrabold text-white"
+                                    className="rounded-[9px] bg-brand-orange px-3.5 py-2 text-[10px] font-extrabold text-white"
                                 >
                                     Choose videos
                                 </button>
                             </div>
                         </div>
                     </section>
-                    <aside className="rounded-[14px] border border-[#ededf1] bg-[#fafafd] p-3.5">
+                    <aside className="rounded-[14px] border border-[#ededf1] bg-[#f4fbff] p-3.5">
                         <h3 className="mb-2.5 text-[11px] font-bold">Bulk upload rules</h3>
                         {[
                             ['1 video → 1 account.', 'A reel cannot be assigned to multiple accounts in this bulk batch.'],
@@ -771,16 +771,16 @@ export default function CreatorBulkReelUpload() {
                             ['Equal counts required.', `For ${reels.length || 10} reels, select exactly ${reels.length || 10} accounts.`],
                         ].map(([title, copy]) => (
                             <div key={title} className="mb-2 flex gap-2 text-[9px] leading-relaxed text-[#747780]">
-                                <i className="mt-1 h-[7px] w-[7px] flex-none rounded-full bg-[#e9408a]" />
+                                <i className="mt-1 h-[7px] w-[7px] flex-none rounded-full bg-[#ff6a1a]" />
                                 <div>
-                                    <b className="text-[#111318]">{title}</b> {copy}
+                                    <b className="text-brand-ink">{title}</b> {copy}
                                 </div>
                             </div>
                         ))}
                     </aside>
                 </div>
 
-                <section ref={mappingSectionRef} className="mb-3.5 rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                <section ref={mappingSectionRef} className="mb-3.5 rounded-[18px] border border-[#dce8f0] bg-white p-4">
                     <div className="mb-3 flex items-start justify-between">
                         <div>
                             <h2 className="mb-1 text-[13px] font-bold">3. Map reels to Instagram accounts</h2>
@@ -791,16 +791,16 @@ export default function CreatorBulkReelUpload() {
                         </button>
                     </div>
                     <div className="mb-3 flex flex-wrap items-center gap-2">
-                        <button type="button" onClick={randomizeMapping} className="rounded-[9px] border border-[#111318] bg-[#111318] px-2.5 py-2 text-[9px] font-bold text-white">
+                        <button type="button" onClick={randomizeMapping} className="rounded-[9px] border border-brand-orange bg-brand-orange px-2.5 py-2 text-[9px] font-bold text-white">
                             ↻ Randomize mapping
                         </button>
-                        <button type="button" onClick={autoMap} className="rounded-[9px] border border-[#e9e9ef] bg-white px-2.5 py-2 text-[9px] font-bold">
+                        <button type="button" onClick={autoMap} className="rounded-[9px] border border-[#dce8f0] bg-white px-2.5 py-2 text-[9px] font-bold">
                             Auto map in order
                         </button>
                         <button
                             type="button"
                             onClick={() => accountSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                            className="rounded-[9px] border border-[#ffd4e7] bg-[#fff0f7] px-2.5 py-2 text-[9px] font-bold text-[#bd2868]"
+                            className="rounded-[9px] border border-[#ffd4e7] bg-[#e8f8fe] px-2.5 py-2 text-[9px] font-bold text-[#f05a0c]"
                         >
                             Manage accounts
                         </button>
@@ -811,7 +811,7 @@ export default function CreatorBulkReelUpload() {
                                 setScheduleMode(mode);
                                 applySchedule(mode);
                             }}
-                            className="h-8 rounded-[9px] border border-[#e9e9ef] bg-white px-2 text-[9px]"
+                            className="h-8 rounded-[9px] border border-[#dce8f0] bg-white px-2 text-[9px]"
                         >
                             <option value="same">Same schedule for all</option>
                             <option value="stagger">Stagger publishing times</option>
@@ -831,7 +831,7 @@ export default function CreatorBulkReelUpload() {
                                 maxLength={2200}
                                 onChange={(event) => setCaption(event.target.value)}
                                 placeholder="Write one caption for every reel in this batch"
-                                className="min-h-[72px] w-full resize-y rounded-xl border border-[#e9e9ef] px-3 py-2.5 text-[11px] outline-none"
+                                className="min-h-[72px] w-full resize-y rounded-xl border border-[#dce8f0] px-3 py-2.5 text-[11px] outline-none"
                             />
                         </div>
                     )}
@@ -852,7 +852,7 @@ export default function CreatorBulkReelUpload() {
                                             onClick={() => setHashtags((current) => (
                                                 current.includes(tag) ? current.filter((item) => item !== tag) : [...current, tag]
                                             ))}
-                                            className={`rounded-full px-2 py-1.5 text-[9px] ${active ? 'bg-[#fff0f7] text-[#bd2868]' : 'bg-[#f3f3f6] text-[#656872]'}`}
+                                            className={`rounded-full px-2 py-1.5 text-[9px] ${active ? 'bg-[#e8f8fe] text-[#f05a0c]' : 'bg-[#f3f3f6] text-[#656872]'}`}
                                         >
                                             {tag}
                                         </button>
@@ -870,9 +870,9 @@ export default function CreatorBulkReelUpload() {
                                         }
                                     }}
                                     placeholder="Add custom hashtag"
-                                    className="h-9 flex-1 rounded-[9px] border border-[#e9e9ef] px-2 text-[11px] outline-none"
+                                    className="h-9 flex-1 rounded-[9px] border border-[#dce8f0] px-2 text-[11px] outline-none"
                                 />
-                                <button type="button" onClick={addHashtag} className="rounded-[9px] border border-[#e9e9ef] bg-white px-2.5 text-[9px] font-bold">
+                                <button type="button" onClick={addHashtag} className="rounded-[9px] border border-[#dce8f0] bg-white px-2.5 text-[9px] font-bold">
                                     Add
                                 </button>
                             </div>
@@ -882,15 +882,15 @@ export default function CreatorBulkReelUpload() {
                     <div className="overflow-auto rounded-[14px] border border-[#eeeef2]">
                         <table className="min-w-[820px] w-full border-collapse">
                             <thead>
-                                <tr className="bg-[#fafafd] text-left text-[8px] uppercase tracking-[0.4px] text-[#8b8d95]">
-                                    <th className="border-b border-[#e9e9ef] px-2.5 py-2.5">#</th>
-                                    <th className="border-b border-[#e9e9ef] px-2.5 py-2.5">Reel</th>
-                                    <th className="border-b border-[#e9e9ef] px-2.5 py-2.5">Instagram account</th>
-                                    <th className="border-b border-[#e9e9ef] px-2.5 py-2.5">Publish date</th>
-                                    <th className="border-b border-[#e9e9ef] px-2.5 py-2.5">Publish time</th>
-                                    {!sameCaption && <th className="border-b border-[#e9e9ef] px-2.5 py-2.5">Caption</th>}
-                                    <th className="border-b border-[#e9e9ef] px-2.5 py-2.5">Status</th>
-                                    <th className="border-b border-[#e9e9ef] px-2.5 py-2.5" />
+                                <tr className="bg-[#f4fbff] text-left text-[8px] uppercase tracking-[0.4px] text-[#8b8d95]">
+                                    <th className="border-b border-[#dce8f0] px-2.5 py-2.5">#</th>
+                                    <th className="border-b border-[#dce8f0] px-2.5 py-2.5">Reel</th>
+                                    <th className="border-b border-[#dce8f0] px-2.5 py-2.5">Instagram account</th>
+                                    <th className="border-b border-[#dce8f0] px-2.5 py-2.5">Publish date</th>
+                                    <th className="border-b border-[#dce8f0] px-2.5 py-2.5">Publish time</th>
+                                    {!sameCaption && <th className="border-b border-[#dce8f0] px-2.5 py-2.5">Caption</th>}
+                                    <th className="border-b border-[#dce8f0] px-2.5 py-2.5">Status</th>
+                                    <th className="border-b border-[#dce8f0] px-2.5 py-2.5" />
                                 </tr>
                             </thead>
                             <tbody>
@@ -939,7 +939,7 @@ export default function CreatorBulkReelUpload() {
                                                     <select
                                                         value={reel.accountId || ''}
                                                         onChange={(event) => assignAccount(reel.id, event.target.value)}
-                                                        className="h-[34px] w-full rounded-lg border border-[#e9e9ef] bg-white px-2 text-[9px]"
+                                                        className="h-[34px] w-full rounded-lg border border-[#dce8f0] bg-white px-2 text-[9px]"
                                                     >
                                                         <option value="">Select account</option>
                                                         {selectedAccounts.map((item) => (
@@ -956,7 +956,7 @@ export default function CreatorBulkReelUpload() {
                                                     min={nowIst.date}
                                                     value={reel.date}
                                                     onChange={(event) => updateReelSchedule(reel.id, event.target.value, reel.time)}
-                                                    className={`h-[34px] w-full rounded-lg border px-2 text-[9px] ${past ? 'border-[#e7b4b4]' : 'border-[#e9e9ef]'}`}
+                                                    className={`h-[34px] w-full rounded-lg border px-2 text-[9px] ${past ? 'border-[#e7b4b4]' : 'border-[#dce8f0]'}`}
                                                 />
                                             </td>
                                             <td className="px-2.5 py-2.5">
@@ -965,7 +965,7 @@ export default function CreatorBulkReelUpload() {
                                                     min={reel.date === nowIst.date ? nowIst.time : undefined}
                                                     value={reel.time}
                                                     onChange={(event) => updateReelSchedule(reel.id, reel.date, event.target.value)}
-                                                    className={`h-[34px] w-full rounded-lg border px-2 text-[9px] ${past ? 'border-[#e7b4b4]' : 'border-[#e9e9ef]'}`}
+                                                    className={`h-[34px] w-full rounded-lg border px-2 text-[9px] ${past ? 'border-[#e7b4b4]' : 'border-[#dce8f0]'}`}
                                                 />
                                             </td>
                                             {!sameCaption && (
@@ -976,7 +976,7 @@ export default function CreatorBulkReelUpload() {
                                                             item.id === reel.id ? { ...item, caption: event.target.value } : item
                                                         )))}
                                                         placeholder="Caption for this reel"
-                                                        className="h-[34px] w-full min-w-[160px] rounded-lg border border-[#e9e9ef] px-2 text-[9px]"
+                                                        className="h-[34px] w-full min-w-[160px] rounded-lg border border-[#dce8f0] px-2 text-[9px]"
                                                     />
                                                 </td>
                                             )}
@@ -989,7 +989,7 @@ export default function CreatorBulkReelUpload() {
                                                 <button
                                                     type="button"
                                                     onClick={() => removeReel(reel.id)}
-                                                    className="rounded-lg border border-[#e9e9ef] bg-white px-2 py-1.5 text-[8px]"
+                                                    className="rounded-lg border border-[#dce8f0] bg-white px-2 py-1.5 text-[8px]"
                                                 >
                                                     Remove
                                                 </button>
@@ -1003,7 +1003,7 @@ export default function CreatorBulkReelUpload() {
                 </section>
 
                 <div className="mb-3.5 grid gap-3.5 lg:grid-cols-[minmax(0,1fr)_330px]">
-                    <section className="rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                    <section className="rounded-[18px] border border-[#dce8f0] bg-white p-4">
                         <div className="mb-3">
                             <h2 className="mb-1 text-[13px] font-bold">4. Bulk publishing settings</h2>
                             <p className="m-0 text-[9px] text-[#8a8d95]">Apply common rules to every mapped job.</p>
@@ -1051,33 +1051,33 @@ export default function CreatorBulkReelUpload() {
                         ))}
                     </section>
 
-                    <aside className="rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                    <aside className="rounded-[18px] border border-[#dce8f0] bg-white p-4">
                         <h2 className="mb-3 text-[13px] font-bold">Bulk publish summary</h2>
                         <div className="my-2 flex justify-between text-[9px] text-[#777a83]">
                             <span>Videos</span>
-                            <strong className="text-[#111318]">{reels.length}</strong>
+                            <strong className="text-brand-ink">{reels.length}</strong>
                         </div>
                         <div className="my-2 flex justify-between text-[9px] text-[#777a83]">
                             <span>Accounts</span>
-                            <strong className="text-[#111318]">{selectedIds.length}</strong>
+                            <strong className="text-brand-ink">{selectedIds.length}</strong>
                         </div>
                         <div className="my-2 flex justify-between text-[9px] text-[#777a83]">
                             <span>Publishing jobs</span>
-                            <strong className="text-[#111318]">{Math.min(reels.length, selectedIds.length)}</strong>
+                            <strong className="text-brand-ink">{Math.min(reels.length, selectedIds.length)}</strong>
                         </div>
                         <div className="my-2 flex justify-between text-[9px] text-[#777a83]">
                             <span>Assignment</span>
-                            <strong className="text-[#111318]">1 : 1</strong>
+                            <strong className="text-brand-ink">1 : 1</strong>
                         </div>
                         <div className="mt-3 flex justify-between border-t border-[#eeeef2] pt-3 text-[9px] text-[#777a83]">
                             <span>Next publish</span>
-                            <strong className="text-[#111318]">{nextPublish}</strong>
+                            <strong className="text-brand-ink">{nextPublish}</strong>
                         </div>
                         <button
                             type="button"
                             onClick={() => void save('scheduled')}
                             disabled={saving || !campaignReady}
-                            className="mt-3.5 h-11 w-full rounded-[11px] bg-[#111318] text-[10px] font-extrabold text-white disabled:opacity-60"
+                            className="mt-3.5 h-11 w-full rounded-[11px] bg-brand-orange text-[10px] font-extrabold text-white disabled:opacity-60"
                         >
                             {saveBulk.isPending ? 'Scheduling…' : `Schedule ${reels.length} reels →`}
                         </button>
@@ -1087,7 +1087,7 @@ export default function CreatorBulkReelUpload() {
                     </aside>
                 </div>
 
-                <section className="rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                <section className="rounded-[18px] border border-[#dce8f0] bg-white p-4">
                     <div className="mb-2.5 flex items-center justify-between">
                         <h2 className="m-0 text-[13px] font-bold">Bulk campaign queue</h2>
                         <span className="text-[9px] text-[#888b93]">
@@ -1148,7 +1148,7 @@ export default function CreatorBulkReelUpload() {
                                             <button
                                                 type="button"
                                                 onClick={() => mappingSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                                                className="rounded-lg border border-[#e9e9ef] bg-white px-2 py-1.5 text-[8px]"
+                                                className="rounded-lg border border-[#dce8f0] bg-white px-2 py-1.5 text-[8px]"
                                             >
                                                 Edit
                                             </button>
@@ -1244,7 +1244,7 @@ export default function CreatorBulkReelUpload() {
                                             <button
                                                 type="button"
                                                 onClick={() => navigate(`/creator/reel-studio?edit=${post.id}`)}
-                                                className="rounded-lg border border-[#e9e9ef] bg-white px-2 py-1.5 text-[8px]"
+                                                className="rounded-lg border border-[#dce8f0] bg-white px-2 py-1.5 text-[8px]"
                                             >
                                                 Edit
                                             </button>
@@ -1253,7 +1253,7 @@ export default function CreatorBulkReelUpload() {
                                             <button
                                                 type="button"
                                                 onClick={() => cancelReel.mutate(post.id)}
-                                                className="ml-1 rounded-lg border border-[#e9e9ef] bg-white px-2 py-1.5 text-[8px]"
+                                                className="ml-1 rounded-lg border border-[#dce8f0] bg-white px-2 py-1.5 text-[8px]"
                                             >
                                                 Cancel
                                             </button>
@@ -1262,7 +1262,7 @@ export default function CreatorBulkReelUpload() {
                                             <button
                                                 type="button"
                                                 onClick={() => retryTarget.mutate(failedTarget.id)}
-                                                className="ml-1 rounded-lg border border-[#e9e9ef] bg-white px-2 py-1.5 text-[8px]"
+                                                className="ml-1 rounded-lg border border-[#dce8f0] bg-white px-2 py-1.5 text-[8px]"
                                             >
                                                 Retry
                                             </button>

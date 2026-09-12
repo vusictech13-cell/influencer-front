@@ -140,7 +140,7 @@ function AudioPlayButton({
                 onClick();
             }}
             disabled={loading}
-            className="grid h-7 w-7 flex-none place-items-center rounded-full bg-[#111318] text-white disabled:opacity-50"
+            className="grid h-7 w-7 flex-none place-items-center rounded-full bg-brand-orange text-white disabled:opacity-50"
             aria-label={playing ? 'Pause' : 'Play'}
         >
             {loading ? (
@@ -178,7 +178,7 @@ function AudioStartSlider({
                 value={clampAudioStart(startMs, durationMs)}
                 disabled={disabled}
                 onChange={(event) => onChange(Number(event.target.value))}
-                className="h-1.5 w-full accent-[#bd2868]"
+                className="h-1.5 w-full accent-[#f05a0c]"
             />
         </div>
     );
@@ -822,7 +822,7 @@ export default function CreatorReelStudio() {
                         <button
                             type="button"
                             onClick={() => navigate('/creator/bulk-reels')}
-                            className="rounded-[10px] border border-[#e9e9ef] bg-white px-3.5 py-2.5 text-[10px] font-extrabold"
+                            className="rounded-[10px] border border-[#dce8f0] bg-white px-3.5 py-2.5 text-[10px] font-extrabold"
                         >
                             Bulk upload
                         </button>
@@ -830,7 +830,7 @@ export default function CreatorReelStudio() {
                             type="button"
                             onClick={() => void save('scheduled')}
                             disabled={saving || hasPastSchedule}
-                            className="rounded-[10px] bg-[#111318] px-3.5 py-2.5 text-[10px] font-extrabold text-white disabled:opacity-60"
+                            className="rounded-[10px] bg-brand-orange px-3.5 py-2.5 text-[10px] font-extrabold text-white disabled:opacity-60"
                         >
                             {saving ? 'Working…' : 'Add to schedule →'}
                         </button>
@@ -838,7 +838,7 @@ export default function CreatorReelStudio() {
                 </div>
 
                 <div className="grid items-start gap-3.5 lg:grid-cols-[235px_minmax(0,1fr)_320px]">
-                    <aside className="rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                    <aside className="rounded-[18px] border border-[#dce8f0] bg-white p-4">
                         <div className="mb-3 flex items-start justify-between">
                             <div>
                                 <h2 className="mb-1 text-[13px] font-bold">Connected accounts</h2>
@@ -866,7 +866,7 @@ export default function CreatorReelStudio() {
                             </div>
                         ) : needsMeta ? (
                             <div className="rounded-[13px] border border-dashed border-[#d9dae1] p-3 text-center">
-                                <p className="text-[10px] font-bold text-[#111318]">Meta connection required</p>
+                                <p className="text-[10px] font-bold text-brand-ink">Meta connection required</p>
                                 <p className="mt-1 text-[10px] text-[#8a8c94]">Connect Meta Account to use Reels Studio. Your Instagram connection stays intact.</p>
                                 <button
                                     type="button"
@@ -888,8 +888,8 @@ export default function CreatorReelStudio() {
                                             onClick={() => toggleAccount(id, index)}
                                             className={`flex items-center gap-2.5 rounded-[13px] border p-2.5 text-left ${
                                                 selected
-                                                    ? 'border-[#e9408a] bg-[#fff4f8] shadow-[0_0_0_2px_rgba(233,64,138,0.05)]'
-                                                    : 'border-[#e9e9ef]'
+                                                    ? 'border-[#ff6a1a] bg-[#eef7fc] shadow-[0_0_0_2px_rgba(255,106,26,0.05)]'
+                                                    : 'border-[#dce8f0]'
                                             }`}
                                         >
                                             <div
@@ -905,7 +905,7 @@ export default function CreatorReelStudio() {
                                             <div
                                                 className={`grid h-[17px] w-[17px] place-items-center rounded-full text-[9px] ${
                                                     selected
-                                                        ? 'border border-[#e9408a] bg-[#e9408a] text-white'
+                                                        ? 'border border-[#ff6a1a] bg-[#ff6a1a] text-white'
                                                         : 'border border-[#d6d7de] text-transparent'
                                                 }`}
                                             >
@@ -921,7 +921,7 @@ export default function CreatorReelStudio() {
                         </p>
                     </aside>
 
-                    <section className="min-h-[580px] rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                    <section className="min-h-[580px] rounded-[18px] border border-[#dce8f0] bg-white p-4">
                         <div className="mb-3 flex items-start justify-between">
                             <div>
                                 <h2 className="mb-1 text-[13px] font-bold">Reel content</h2>
@@ -951,8 +951,8 @@ export default function CreatorReelStudio() {
                             onDrop={onDrop}
                             className={`relative flex h-[350px] items-center justify-center overflow-hidden rounded-[18px] border-[1.5px] ${
                                 videoPreview
-                                    ? 'border-solid border-[#e9e9ef] bg-[#101116]'
-                                    : `border-dashed ${dragging ? 'border-[#e9408a] bg-[#fff7fb]' : 'border-[#d8d9e0] bg-gradient-to-b from-[#fcfcfd] to-[#f8f8fb]'}`
+                                    ? 'border-solid border-[#dce8f0] bg-[#101116]'
+                                    : `border-dashed ${dragging ? 'border-[#ff6a1a] bg-[#fff7fb]' : 'border-[#d8d9e0] bg-gradient-to-b from-[#fcfcfd] to-[#f8f8fb]'}`
                             }`}
                         >
                             {videoPreview ? (
@@ -970,7 +970,7 @@ export default function CreatorReelStudio() {
                                 </div>
                             ) : (
                                 <div className="text-center">
-                                    <div className="mx-auto mb-3 grid h-[58px] w-[58px] place-items-center rounded-[17px] border border-[#e9e9ef] bg-white text-[#555861] shadow-[0_8px_18px_rgba(20,20,40,0.05)]">
+                                    <div className="mx-auto mb-3 grid h-[58px] w-[58px] place-items-center rounded-[17px] border border-[#dce8f0] bg-white text-[#555861] shadow-[0_8px_18px_rgba(20,20,40,0.05)]">
                                         <svg viewBox="0 0 24 24" className="h-[25px] w-[25px] fill-none stroke-current stroke-[1.7]">
                                             <path d="M12 16V5" />
                                             <path d="M8 9l4-4 4 4" />
@@ -984,7 +984,7 @@ export default function CreatorReelStudio() {
                                     <button
                                         type="button"
                                         onClick={() => fileRef.current?.click()}
-                                        className="rounded-[9px] bg-[#111318] px-3.5 py-2 text-[10px] font-extrabold text-white"
+                                        className="rounded-[9px] bg-brand-orange px-3.5 py-2 text-[10px] font-extrabold text-white"
                                     >
                                         Choose video
                                     </button>
@@ -1006,7 +1006,7 @@ export default function CreatorReelStudio() {
                                 <button
                                     type="button"
                                     onClick={() => fileRef.current?.click()}
-                                    className="rounded-[9px] border border-[#e9e9ef] bg-white px-2.5 py-2 text-[9px] font-bold"
+                                    className="rounded-[9px] border border-[#dce8f0] bg-white px-2.5 py-2 text-[9px] font-bold"
                                 >
                                     Replace
                                 </button>
@@ -1023,7 +1023,7 @@ export default function CreatorReelStudio() {
                                 maxLength={2200}
                                 onChange={(event) => setCaption(event.target.value)}
                                 placeholder="Write your reel caption... e.g. Introducing our new summer drop ✨"
-                                className="min-h-[85px] w-full resize-y rounded-xl border border-[#e9e9ef] px-3 py-2.5 text-[11px] leading-relaxed outline-none"
+                                className="min-h-[85px] w-full resize-y rounded-xl border border-[#dce8f0] px-3 py-2.5 text-[11px] leading-relaxed outline-none"
                             />
                             <div className="mt-3">
                                 <div className="mb-2 flex justify-between text-[10px] font-extrabold">
@@ -1043,7 +1043,7 @@ export default function CreatorReelStudio() {
                                                         : [...current, tag]
                                                 ))}
                                                 className={`rounded-full px-2 py-1.5 text-[9px] ${
-                                                    active ? 'bg-[#fff0f7] text-[#bd2868]' : 'bg-[#f3f3f6] text-[#656872]'
+                                                    active ? 'bg-[#e8f8fe] text-[#f05a0c]' : 'bg-[#f3f3f6] text-[#656872]'
                                                 }`}
                                             >
                                                 {tag}
@@ -1055,7 +1055,7 @@ export default function CreatorReelStudio() {
                                             key={tag}
                                             type="button"
                                             onClick={() => setHashtags((current) => current.filter((item) => item !== tag))}
-                                            className="rounded-full bg-[#fff0f7] px-2 py-1.5 text-[9px] text-[#bd2868]"
+                                            className="rounded-full bg-[#e8f8fe] px-2 py-1.5 text-[9px] text-[#f05a0c]"
                                         >
                                             {tag}
                                         </button>
@@ -1072,12 +1072,12 @@ export default function CreatorReelStudio() {
                                             }
                                         }}
                                         placeholder="Add custom hashtag"
-                                        className="h-9 flex-1 rounded-[9px] border border-[#e9e9ef] px-2 text-[11px] outline-none"
+                                        className="h-9 flex-1 rounded-[9px] border border-[#dce8f0] px-2 text-[11px] outline-none"
                                     />
                                     <button
                                         type="button"
                                         onClick={addHashtag}
-                                        className="rounded-[9px] border border-[#e9e9ef] bg-white px-2.5 text-[9px] font-bold"
+                                        className="rounded-[9px] border border-[#dce8f0] bg-white px-2.5 text-[9px] font-bold"
                                     >
                                         Add
                                     </button>
@@ -1089,7 +1089,7 @@ export default function CreatorReelStudio() {
                                     <span className="font-medium text-[#a0a2aa]">Optional · Meta catalog</span>
                                 </div>
                                 {selectedAudio && (
-                                    <div className="mb-2 rounded-[11px] border border-[#e9e9ef] bg-[#fafafd] p-2">
+                                    <div className="mb-2 rounded-[11px] border border-[#dce8f0] bg-[#f4fbff] p-2">
                                         <div className="flex items-center gap-2">
                                             <AudioPlayButton
                                                 loading={previewLoadingId === selectedAudio.audio_id}
@@ -1103,7 +1103,7 @@ export default function CreatorReelStudio() {
                                                     className="h-9 w-9 flex-none rounded-md object-cover"
                                                 />
                                             ) : (
-                                                <div className="grid h-9 w-9 flex-none place-items-center rounded-md bg-[#111318] text-[9px] font-bold text-white">♪</div>
+                                                <div className="grid h-9 w-9 flex-none place-items-center rounded-md bg-brand-orange text-[9px] font-bold text-white">♪</div>
                                             )}
                                             <div className="min-w-0 flex-1">
                                                 <strong className="block truncate text-[10px]">{selectedAudio.title}</strong>
@@ -1134,7 +1134,7 @@ export default function CreatorReelStudio() {
                                         type="button"
                                         onClick={() => setAudioType('music')}
                                         className={`rounded-full px-2 py-1 text-[8px] font-bold ${
-                                            audioType === 'music' ? 'bg-[#fff0f7] text-[#bd2868]' : 'bg-[#f3f3f6] text-[#656872]'
+                                            audioType === 'music' ? 'bg-[#e8f8fe] text-[#f05a0c]' : 'bg-[#f3f3f6] text-[#656872]'
                                         }`}
                                     >
                                         Music
@@ -1143,7 +1143,7 @@ export default function CreatorReelStudio() {
                                         type="button"
                                         onClick={() => setAudioType('original_sound')}
                                         className={`rounded-full px-2 py-1 text-[8px] font-bold ${
-                                            audioType === 'original_sound' ? 'bg-[#fff0f7] text-[#bd2868]' : 'bg-[#f3f3f6] text-[#656872]'
+                                            audioType === 'original_sound' ? 'bg-[#e8f8fe] text-[#f05a0c]' : 'bg-[#f3f3f6] text-[#656872]'
                                         }`}
                                     >
                                         Original sounds
@@ -1154,7 +1154,7 @@ export default function CreatorReelStudio() {
                                     onChange={(event) => setAudioQuery(event.target.value)}
                                     placeholder={audioAccountId ? 'Search Instagram music' : 'Connect Meta to search music'}
                                     disabled={!audioAccountId}
-                                    className="h-9 w-full rounded-[9px] border border-[#e9e9ef] px-2 text-[11px] outline-none disabled:bg-[#f7f7f9]"
+                                    className="h-9 w-full rounded-[9px] border border-[#dce8f0] px-2 text-[11px] outline-none disabled:bg-[#f7f7f9]"
                                 />
                                 <div className="mt-1.5 max-h-[220px] overflow-auto">
                                     {searchAudio.isPending && (
@@ -1169,7 +1169,7 @@ export default function CreatorReelStudio() {
                                                     onClick={() => connectMeta()}
                                                     className="mt-1 text-[9px] font-bold text-[#be2d6b]"
                                                 >
-                                                    {isConnectingMeta ? 'Opening Meta…' : 'Reconnect Meta Account'}
+                                                    {isConnectingMeta ? 'Opening Facebook…' : 'Reconnect Facebook Account'}
                                                 </button>
                                             )}
                                         </div>
@@ -1187,7 +1187,7 @@ export default function CreatorReelStudio() {
                                         return (
                                             <div
                                                 key={track.audio_id}
-                                                className={`rounded-[9px] px-1 py-1.5 ${selected ? 'bg-[#fff0f7]' : 'hover:bg-[#fafafd]'}`}
+                                                className={`rounded-[9px] px-1 py-1.5 ${selected ? 'bg-[#e8f8fe]' : 'hover:bg-[#f4fbff]'}`}
                                             >
                                                 <div className="flex w-full items-center gap-2">
                                                     <AudioPlayButton
@@ -1214,7 +1214,7 @@ export default function CreatorReelStudio() {
                                                     <button
                                                         type="button"
                                                         onClick={() => setSelectedAudio(track)}
-                                                        className={`text-[8px] font-bold ${selected ? 'text-[#bd2868]' : 'text-[#656872]'}`}
+                                                        className={`text-[8px] font-bold ${selected ? 'text-[#f05a0c]' : 'text-[#656872]'}`}
                                                     >
                                                         {selected ? 'Using' : 'Use'}
                                                     </button>
@@ -1241,7 +1241,7 @@ export default function CreatorReelStudio() {
                     </section>
 
                     <aside className="grid gap-3.5 lg:col-span-2 lg:grid-cols-2 xl:col-span-1 xl:grid-cols-1">
-                        <div className="rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                        <div className="rounded-[18px] border border-[#dce8f0] bg-white p-4">
                             <div className="mb-3">
                                 <h2 className="mb-1 text-[13px] font-bold">Schedule by account</h2>
                                 <p className="m-0 text-[9px] text-[#8a8d95]">Set individual publishing times</p>
@@ -1256,7 +1256,7 @@ export default function CreatorReelStudio() {
                                         <div
                                             key={id}
                                             className={`rounded-[13px] border p-2.5 ${
-                                                selected ? (pastSchedule ? 'border-[#e7b4b4]' : 'border-[#e9e9ef]') : 'border-[#e9e9ef] opacity-55'
+                                                selected ? (pastSchedule ? 'border-[#e7b4b4]' : 'border-[#dce8f0]') : 'border-[#dce8f0] opacity-55'
                                             }`}
                                         >
                                             <div className="flex items-center gap-2">
@@ -1273,7 +1273,7 @@ export default function CreatorReelStudio() {
                                                 <button
                                                     type="button"
                                                     onClick={() => toggleAccount(id, index)}
-                                                    className={`h-[18px] w-8 rounded-full p-0.5 ${selected ? 'bg-[#e9408a]' : 'bg-[#ececf1]'}`}
+                                                    className={`h-[18px] w-8 rounded-full p-0.5 ${selected ? 'bg-[#ff6a1a]' : 'bg-[#ececf1]'}`}
                                                     aria-label={`Toggle @${account.username}`}
                                                 >
                                                     <span className={`block h-3.5 w-3.5 rounded-full bg-white shadow ${selected ? 'ml-3.5' : ''}`} />
@@ -1290,7 +1290,7 @@ export default function CreatorReelStudio() {
                                                                 value={schedule.date}
                                                                 onChange={(event) => updateSchedule(id, { date: event.target.value }, schedule)}
                                                                 className={`h-9 w-full rounded-[9px] border px-2 text-[9px] ${
-                                                                    pastSchedule ? 'border-[#e7b4b4]' : 'border-[#e9e9ef]'
+                                                                    pastSchedule ? 'border-[#e7b4b4]' : 'border-[#dce8f0]'
                                                                 }`}
                                                             />
                                                         </label>
@@ -1302,7 +1302,7 @@ export default function CreatorReelStudio() {
                                                                 value={schedule.time}
                                                                 onChange={(event) => updateSchedule(id, { time: event.target.value }, schedule)}
                                                                 className={`h-9 w-full rounded-[9px] border px-2 text-[9px] ${
-                                                                    pastSchedule ? 'border-[#e7b4b4]' : 'border-[#e9e9ef]'
+                                                                    pastSchedule ? 'border-[#e7b4b4]' : 'border-[#dce8f0]'
                                                                 }`}
                                                             />
                                                         </label>
@@ -1320,7 +1320,7 @@ export default function CreatorReelStudio() {
                                                                 [id]: { ...schedule, caption: event.target.value },
                                                             }))}
                                                             placeholder={`Caption for @${account.username}`}
-                                                            className="mt-2 min-h-[70px] w-full rounded-[10px] border border-[#e9e9ef] px-2 py-2 text-[10px] outline-none"
+                                                            className="mt-2 min-h-[70px] w-full rounded-[10px] border border-[#dce8f0] px-2 py-2 text-[10px] outline-none"
                                                         />
                                                     )}
                                                 </>
@@ -1339,19 +1339,19 @@ export default function CreatorReelStudio() {
                                     }
                                     connectMeta();
                                 }}
-                                className="mt-2 w-full rounded-[9px] border border-dashed border-[#d9dae1] bg-[#fafafd] py-2 text-[9px] font-bold text-[#777b84]"
+                                className="mt-2 w-full rounded-[9px] border border-dashed border-[#d9dae1] bg-[#f4fbff] py-2 text-[9px] font-bold text-[#777b84]"
                             >
                                 + Add another account schedule
                             </button>
                             <div className="mt-2 text-[8px] text-[#9a9ca4]">Timezone: IST (UTC+05:30)</div>
-                            <div className="mt-2.5 rounded-[13px] border border-[#ededf1] bg-[#fafafd] p-2.5">
+                            <div className="mt-2.5 rounded-[13px] border border-[#ededf1] bg-[#f4fbff] p-2.5">
                                 <div className="my-1 flex justify-between text-[9px] text-[#777a83]">
                                     <span>Accounts selected</span>
-                                    <strong className="text-[#111318]">{selectedIds.length}</strong>
+                                    <strong className="text-brand-ink">{selectedIds.length}</strong>
                                 </div>
                                 <div className="my-1 flex justify-between text-[9px] text-[#777a83]">
                                     <span>Posts to publish</span>
-                                    <strong className="text-[#111318]">{selectedIds.length}</strong>
+                                    <strong className="text-brand-ink">{selectedIds.length}</strong>
                                 </div>
                                 <div className="mt-1.5 flex justify-between border-t border-[#e9e9ee] pt-1.5 text-[9px] font-bold">
                                     <span>Next publish</span>
@@ -1362,7 +1362,7 @@ export default function CreatorReelStudio() {
                                 type="button"
                                 onClick={() => void save('scheduled')}
                                 disabled={saving || hasPastSchedule}
-                                className="mt-3 h-11 w-full rounded-[11px] bg-[#111318] text-[10px] font-extrabold text-white disabled:opacity-60"
+                                className="mt-3 h-11 w-full rounded-[11px] bg-brand-orange text-[10px] font-extrabold text-white disabled:opacity-60"
                             >
                                 {saving ? 'Scheduling…' : `Schedule ${selectedIds.length || 0} reel${selectedIds.length === 1 ? '' : 's'} →`}
                             </button>
@@ -1373,7 +1373,7 @@ export default function CreatorReelStudio() {
                                 type="button"
                                 onClick={() => void save('draft')}
                                 disabled={saving}
-                                className="mt-2 w-full rounded-[9px] border border-[#e9e9ef] bg-white py-2 text-[9px] font-bold"
+                                className="mt-2 w-full rounded-[9px] border border-[#dce8f0] bg-white py-2 text-[9px] font-bold"
                             >
                                 Save draft
                             </button>
@@ -1388,7 +1388,7 @@ export default function CreatorReelStudio() {
                             )}
                         </div>
 
-                        <div className="rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                        <div className="rounded-[18px] border border-[#dce8f0] bg-white p-4">
                             <div className="mb-3">
                                 <h2 className="mb-1 text-[13px] font-bold">Account-specific publishing</h2>
                                 <p className="m-0 text-[9px] text-[#8a8d95]">Customize before scheduling</p>
@@ -1434,14 +1434,14 @@ export default function CreatorReelStudio() {
                                     value={firstComment}
                                     onChange={(event) => setFirstComment(event.target.value)}
                                     placeholder="First comment to post after the reel goes live"
-                                    className="mt-1 min-h-[70px] w-full rounded-[10px] border border-[#e9e9ef] px-2 py-2 text-[10px] outline-none"
+                                    className="mt-1 min-h-[70px] w-full rounded-[10px] border border-[#dce8f0] px-2 py-2 text-[10px] outline-none"
                                 />
                             )}
                         </div>
                     </aside>
                 </div>
 
-                <div className="mt-4 rounded-[18px] border border-[#e9e9ef] bg-white p-4">
+                <div className="mt-4 rounded-[18px] border border-[#dce8f0] bg-white p-4">
                     <div className="mb-3 flex items-center justify-between">
                         <h2 className="m-0 text-[13px] font-bold">Upcoming schedule</h2>
                         <span className="text-[9px] text-[#888b93]">
@@ -1474,7 +1474,7 @@ export default function CreatorReelStudio() {
                                     className="grid grid-cols-[52px_minmax(0,1fr)_minmax(120px,0.9fr)] items-center gap-2.5 border-t border-[#f0f0f3] py-2.5 md:grid-cols-[52px_minmax(0,1.2fr)_minmax(170px,1fr)_130px_90px_110px]"
                                 >
                                     <div
-                                        className="relative h-12 overflow-hidden rounded-lg bg-gradient-to-br from-[#dba5a9] via-[#e9408a] to-[#27232a]"
+                                        className="relative h-12 overflow-hidden rounded-lg bg-gradient-to-br from-[#dba5a9] via-[#ff6a1a] to-[#27232a]"
                                         style={post.thumbnail_url ? {
                                             backgroundImage: `url(${resolveAssetUrl(post.thumbnail_url)})`,
                                             backgroundSize: 'cover',
@@ -1535,7 +1535,7 @@ export default function CreatorReelStudio() {
                                             <button
                                                 type="button"
                                                 onClick={() => loadPost(post)}
-                                                className="rounded-lg border border-[#e9e9ef] bg-white px-2 py-1.5 text-[8px]"
+                                                className="rounded-lg border border-[#dce8f0] bg-white px-2 py-1.5 text-[8px]"
                                             >
                                                 Edit
                                             </button>
@@ -1544,7 +1544,7 @@ export default function CreatorReelStudio() {
                                             <button
                                                 type="button"
                                                 onClick={() => cancelReel.mutate(post.id)}
-                                                className="ml-1 rounded-lg border border-[#e9e9ef] bg-white px-2 py-1.5 text-[8px]"
+                                                className="ml-1 rounded-lg border border-[#dce8f0] bg-white px-2 py-1.5 text-[8px]"
                                             >
                                                 Cancel
                                             </button>
@@ -1553,7 +1553,7 @@ export default function CreatorReelStudio() {
                                             <button
                                                 type="button"
                                                 onClick={() => retryTarget.mutate(failedTarget.id)}
-                                                className="ml-1 rounded-lg border border-[#e9e9ef] bg-white px-2 py-1.5 text-[8px]"
+                                                className="ml-1 rounded-lg border border-[#dce8f0] bg-white px-2 py-1.5 text-[8px]"
                                             >
                                                 Retry
                                             </button>

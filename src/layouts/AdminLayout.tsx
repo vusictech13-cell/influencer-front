@@ -22,8 +22,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <PortalShell
             headerTitle="Admin Console"
             logoIcon={Activity}
-            logoIconClassName="text-[#87D8FF]"
-            title="MeloTap"
+            logoIconClassName="text-brand-blue"
+            title="tapnlike"
             navItems={NAV_ITEMS}
         >
             {children}

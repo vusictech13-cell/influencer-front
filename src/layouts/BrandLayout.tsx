@@ -22,8 +22,8 @@ export default function BrandLayout({ children }: { children: ReactNode }) {
         <PortalShell
             headerTitle="Campaign Manager"
             logoIcon={Building2}
-            logoIconClassName="text-gray-900"
-            title="MeloTap"
+            logoIconClassName="text-brand-orange"
+            title="tapnlike"
             navItems={NAV_ITEMS}
             logoutLabel="Exit Portal"
         >

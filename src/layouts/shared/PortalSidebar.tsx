@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { LogOut } from 'lucide-react';
+import Logo from '@/components/marketing/Logo';
 
 export type PortalNavItem = {
     key: string;
@@ -21,7 +22,6 @@ type PortalSidebarProps = {
     logoutLabel?: string;
     footer?: ReactNode;
     afterNav?: ReactNode;
-    accent?: 'cyan' | 'pink';
     alwaysShow?: boolean;
 };
 
@@ -30,33 +30,23 @@ function NavItem({
     label,
     active,
     onClick,
-    accent = 'cyan',
 }: {
     icon: LucideIcon;
     label: string;
     active: boolean;
     onClick: () => void;
-    accent?: 'cyan' | 'pink';
 }) {
-    const activeClass =
-        accent === 'pink'
-            ? 'bg-[#fff0f7] text-[#bd2868] font-bold'
-            : 'bg-[#87D8FF]/10 text-[#87D8FF] shadow-sm';
-    const iconClass = active
-        ? accent === 'pink'
-            ? 'text-[#bd2868]'
-            : 'text-[#87D8FF]'
-        : 'text-gray-400';
-
     return (
         <button
             type="button"
             onClick={onClick}
-            className={`w-full flex items-center gap-3 px-3 py-[11px] rounded-xl text-[13px] font-medium transition-all duration-200 ${
-                active ? activeClass : 'text-[#757881] hover:bg-gray-50 hover:text-gray-900'
+            className={`flex w-full items-center gap-3 rounded-xl px-3 py-[11px] text-[13px] font-medium transition-all duration-200 ${
+                active
+                    ? 'bg-[#e8f8fe] font-bold text-brand-blue'
+                    : 'text-brand-gray hover:bg-[#f4fbff] hover:text-brand-ink'
             }`}
         >
-            <span className={iconClass}>
+            <span className={active ? 'text-brand-blue' : 'text-brand-gray/70'}>
                 <Icon size={18} />
             </span>
             {label}
@@ -88,9 +78,6 @@ function groupNavItems(navItems: PortalNavItem[]) {
 }
 
 export default function PortalSidebar({
-    logoIcon: LogoIcon,
-    logoIconClassName = 'text-[#87D8FF]',
-    title,
     navItems,
     activePath,
     onNavigate,
@@ -98,36 +85,25 @@ export default function PortalSidebar({
     logoutLabel = 'Log out',
     footer,
     afterNav,
-    accent = 'cyan',
     alwaysShow = false,
 }: PortalSidebarProps) {
     const groups = groupNavItems(navItems);
 
     return (
         <nav
-            className={`w-[238px] flex-shrink-0 border-r bg-white flex-col h-full max-h-full min-h-0 overflow-hidden ${
+            className={`h-full max-h-full min-h-0 w-[238px] flex-shrink-0 flex-col overflow-hidden border-r border-[#dce8f0] bg-white ${
                 alwaysShow ? 'flex' : 'hidden md:flex'
-            } ${accent === 'pink' ? 'border-[#e9e9ef]' : 'border-gray-100'}`}
+            }`}
         >
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-                <div className="px-4 pt-6 pb-7">
-                    {accent === 'pink' ? (
-                        <div className="px-3 text-[23px] font-extrabold tracking-[-1px]">
-                            {title}
-                            <span className="text-[#e9408a]">.</span>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-2 px-2">
-                            <LogoIcon size={20} className={logoIconClassName} />
-                            <span className="font-semibold tracking-tight text-sm text-gray-900">{title}</span>
-                        </div>
-                    )}
+                <div className="px-4 pb-7 pt-6">
+                    <Logo className="px-1 text-[1.2rem] text-brand-ink" />
                 </div>
                 <div className="px-3 pb-4">
                     {groups.map((group, index) => (
                         <div key={group.title || `nav-${index}`} className={index === 0 ? '' : 'mt-3'}>
                             {group.title && (
-                                <p className="px-3 mb-2 text-[10px] uppercase tracking-[1.2px] text-[#a0a2aa]">
+                                <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[1.2px] text-brand-gray/70">
                                     {group.title}
                                 </p>
                             )}
@@ -138,7 +114,6 @@ export default function PortalSidebar({
                                         icon={item.icon}
                                         label={item.label}
                                         active={isNavActive(item, activePath)}
-                                        accent={accent}
                                         onClick={() => onNavigate(item.key)}
                                     />
                                 ))}
@@ -153,7 +128,7 @@ export default function PortalSidebar({
                 <button
                     type="button"
                     onClick={onLogout}
-                    className="mt-3 w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-500 hover:text-[#FF5A5F] hover:bg-[#FF5A5F]/10 rounded-lg transition-colors"
+                    className="mt-3 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-brand-gray transition-colors hover:bg-[#fff1ea] hover:text-brand-orange"
                 >
                     <LogOut size={14} /> {logoutLabel}
                 </button>

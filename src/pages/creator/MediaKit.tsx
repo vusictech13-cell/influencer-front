@@ -33,15 +33,15 @@ export default function CreatorMediaKit() {
                 <button
                     type="button"
                     onClick={() => navigate('/creator/profile')}
-                    className="rounded-[9px] bg-[#111318] px-3.5 py-2 text-[11px] font-extrabold text-white"
+                    className="rounded-[9px] bg-brand-orange px-3.5 py-2 text-[11px] font-extrabold text-white"
                 >
                     Edit profile
                 </button>
             </div>
 
-            <div className="overflow-hidden rounded-[21px] border border-[#e9e9ef] bg-white">
-                <div className="relative bg-[linear-gradient(130deg,#13151c_0%,#292332_55%,#572443_100%)] px-6 py-8 text-white">
-                    <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(233,64,138,0.72),transparent_65%)]" />
+            <div className="overflow-hidden rounded-[21px] border border-[#dce8f0] bg-white">
+                <div className="relative bg-[linear-gradient(145deg,#00B4EB_0%,#0094d4_48%,#0b2744_100%)] px-6 py-8 text-white">
+                    <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(255,106,26,0.72),transparent_65%)]" />
                     <div className="relative z-[1] flex flex-col gap-5 sm:flex-row sm:items-center">
                         <img src={avatar} alt="" className="h-20 w-20 rounded-full border-2 border-white object-cover" />
                         <div>
@@ -96,7 +96,7 @@ export default function CreatorMediaKit() {
                             <button
                                 type="button"
                                 onClick={() => navigate('/creator/profile#rates')}
-                                className="text-[11px] font-bold text-[#bd2868]"
+                                className="text-[11px] font-bold text-[#f05a0c]"
                             >
                                 Add rates →
                             </button>

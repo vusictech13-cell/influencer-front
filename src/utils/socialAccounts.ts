@@ -33,7 +33,7 @@ export function getInstagramOAuthErrorMessage(
     }
 
     if (error === 'account_already_connected') {
-        return 'This Instagram account is already connected to another Buzooka account.';
+        return 'This Instagram account is already connected to another TapnLike account.';
     }
 
     return error.replace(/_/g, ' ');

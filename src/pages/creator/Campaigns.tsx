@@ -29,7 +29,7 @@ const { RangePicker } = DatePicker;
 const STATUS_TABS: { key: CreatorSubmissionStatusFilter; label: string; activeClass: string }[] = [
     { key: 'all', label: 'All', activeClass: 'bg-gray-900 text-white border-gray-900' },
     { key: 'applied', label: 'In Progress', activeClass: 'bg-amber-500 text-white border-amber-500' },
-    { key: 'pending', label: 'Under Review', activeClass: 'bg-[#87D8FF] text-white border-[#87D8FF]' },
+    { key: 'pending', label: 'Under Review', activeClass: 'bg-[#00B4EB] text-white border-[#00B4EB]' },
     { key: 'approved', label: 'Approved', activeClass: 'bg-emerald-500 text-white border-emerald-500' },
     { key: 'rejected', label: 'Rejected', activeClass: 'bg-red-500 text-white border-red-500' },
 ];
@@ -48,7 +48,7 @@ function formatDate(dateStr?: string) {
 function StatusBadge({ status }: { status: CampaignSubmission['status'] }) {
     const config: Record<CampaignSubmission['status'], { text: string; className: string }> = {
         applied: { text: 'In Progress', className: 'bg-amber-50 text-amber-600 border-amber-100' },
-        pending: { text: 'Under Review', className: 'bg-[#87D8FF]/10 text-[#5eb8e0] border-[#87D8FF]/20' },
+        pending: { text: 'Under Review', className: 'bg-[#00B4EB]/10 text-[#0094d4] border-[#00B4EB]/20' },
         approved: { text: 'Approved', className: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
         rejected: { text: 'Rejected', className: 'bg-red-50 text-red-500 border-red-100' },
     };
@@ -126,7 +126,7 @@ export default function CreatorCampaigns() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight text-gray-900 flex items-center gap-2">
-                        <Megaphone size={24} className="text-[#87D8FF]" />
+                        <Megaphone size={24} className="text-[#00B4EB]" />
                         My Campaigns
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">
@@ -135,7 +135,7 @@ export default function CreatorCampaigns() {
                 </div>
                 <button
                     onClick={() => navigate('/creator/dashboard')}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#87D8FF] hover:bg-[#7bc8ef] text-gray-900 text-sm font-semibold rounded-xl shadow-sm transition-all hover:scale-[1.02]"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#00B4EB] hover:bg-[#009fd4] text-gray-900 text-sm font-semibold rounded-xl shadow-sm transition-all hover:scale-[1.02]"
                 >
                     Browse Gigs <Zap size={16} />
                 </button>
@@ -148,7 +148,7 @@ export default function CreatorCampaigns() {
                             <div className="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-700 font-semibold text-sm border border-amber-100">
                                 {meta.counts.applied} in progress
                             </div>
-                            <div className="px-3 py-1.5 rounded-xl bg-[#87D8FF]/10 text-[#5eb8e0] font-semibold text-sm border border-[#87D8FF]/20">
+                            <div className="px-3 py-1.5 rounded-xl bg-[#00B4EB]/10 text-[#0094d4] font-semibold text-sm border border-[#00B4EB]/20">
                                 {meta.counts.pending} under review
                             </div>
                             <div className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 font-semibold text-sm border border-emerald-100">
@@ -229,7 +229,7 @@ export default function CreatorCampaigns() {
                             {hasFilters && (
                                 <button
                                     onClick={clearFilters}
-                                    className="text-xs font-semibold text-[#87D8FF] hover:underline"
+                                    className="text-xs font-semibold text-[#00B4EB] hover:underline"
                                 >
                                     Clear filters
                                 </button>
@@ -240,7 +240,7 @@ export default function CreatorCampaigns() {
 
                 {isLoading ? (
                     <div className="flex items-center justify-center py-20">
-                        <Loader2 className="h-8 w-8 animate-spin text-[#87D8FF]" />
+                        <Loader2 className="h-8 w-8 animate-spin text-[#00B4EB]" />
                     </div>
                 ) : submissions.length === 0 ? (
                     <div className="py-16 text-center px-6">
@@ -254,7 +254,7 @@ export default function CreatorCampaigns() {
                         {!hasFilters && (
                             <button
                                 onClick={() => navigate('/creator/dashboard')}
-                                className="text-sm font-semibold text-[#87D8FF] hover:underline"
+                                className="text-sm font-semibold text-[#00B4EB] hover:underline"
                             >
                                 Browse available gigs
                             </button>
@@ -312,7 +312,7 @@ export default function CreatorCampaigns() {
                                                             </div>
                                                         )}
                                                         <div className="min-w-0">
-                                                            <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-[#87D8FF] transition-colors">
+                                                            <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-[#00B4EB] transition-colors">
                                                                 {campaign.title}
                                                             </p>
                                                             <p className="text-xs text-gray-500 capitalize truncate">
@@ -349,7 +349,7 @@ export default function CreatorCampaigns() {
                                                 <td className="px-6 py-4 text-right">
                                                     <ChevronRight
                                                         size={18}
-                                                        className="text-gray-300 group-hover:text-[#87D8FF] transition-colors inline-block"
+                                                        className="text-gray-300 group-hover:text-[#00B4EB] transition-colors inline-block"
                                                     />
                                                 </td>
                                             </tr>

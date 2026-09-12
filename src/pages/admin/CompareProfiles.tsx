@@ -383,7 +383,7 @@ function CreatorSearchPanel({
             <div className="max-h-72 overflow-y-auto">
                 {isLoading ? (
                     <div className="flex items-center justify-center py-8">
-                        <Loader2 className="h-5 w-5 animate-spin text-[#87D8FF]" />
+                        <Loader2 className="h-5 w-5 animate-spin text-[#00B4EB]" />
                     </div>
                 ) : creators.length === 0 ? (
                     <p className="px-4 py-8 text-center text-sm text-gray-500">
@@ -410,8 +410,8 @@ function CreatorSearchPanel({
                                         referrerPolicy="no-referrer"
                                     />
                                 ) : (
-                                    <div className="w-9 h-9 rounded-full bg-[#87D8FF]/20 flex items-center justify-center flex-shrink-0">
-                                        <Users size={14} className="text-[#87D8FF]" />
+                                    <div className="w-9 h-9 rounded-full bg-[#00B4EB]/20 flex items-center justify-center flex-shrink-0">
+                                        <Users size={14} className="text-[#00B4EB]" />
                                     </div>
                                 )}
                                 <div className="min-w-0 flex-1">
@@ -480,7 +480,7 @@ function ProfileSlot({
                 <button
                     type="button"
                     onClick={open ? onClose : onOpen}
-                    className="w-full min-h-[196px] rounded-2xl border-2 border-dashed border-gray-200 bg-white hover:border-[#87D8FF] hover:bg-[#87D8FF]/5 transition-colors flex flex-col items-center justify-center gap-2 text-gray-500"
+                    className="w-full min-h-[196px] rounded-2xl border-2 border-dashed border-gray-200 bg-white hover:border-[#00B4EB] hover:bg-[#00B4EB]/5 transition-colors flex flex-col items-center justify-center gap-2 text-gray-500"
                 >
                     <span className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center">
                         <Plus size={18} />
@@ -521,7 +521,7 @@ function ProfileSlot({
                         referrerPolicy="no-referrer"
                     />
                 ) : (
-                    <div className="w-16 h-16 rounded-full bg-[#87D8FF]/20 flex items-center justify-center mx-auto mb-3 text-sm font-bold text-[#87D8FF]">
+                    <div className="w-16 h-16 rounded-full bg-[#00B4EB]/20 flex items-center justify-center mx-auto mb-3 text-sm font-bold text-[#00B4EB]">
                         {initials(displayName) || 'C'}
                     </div>
                 )}
@@ -543,7 +543,7 @@ function ProfileSlot({
                 <button
                     type="button"
                     onClick={open ? onClose : onOpen}
-                    className="mt-3 text-xs font-semibold text-[#87D8FF] hover:underline"
+                    className="mt-3 text-xs font-semibold text-[#00B4EB] hover:underline"
                 >
                     Change
                 </button>
@@ -605,7 +605,7 @@ export default function AdminCompareProfiles() {
         <div className="max-w-[1400px] mx-auto space-y-6">
             <div>
                 <h1 className="text-2xl font-semibold tracking-tight text-gray-900 flex items-center gap-2">
-                    <GitCompare size={24} className="text-[#87D8FF]" />
+                    <GitCompare size={24} className="text-[#00B4EB]" />
                     Compare Profiles
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
@@ -674,7 +674,7 @@ export default function AdminCompareProfiles() {
                                                             referrerPolicy="no-referrer"
                                                         />
                                                     ) : (
-                                                        <div className="w-9 h-9 rounded-full bg-[#87D8FF]/20 flex items-center justify-center text-[10px] font-bold text-[#87D8FF]">
+                                                        <div className="w-9 h-9 rounded-full bg-[#00B4EB]/20 flex items-center justify-center text-[10px] font-bold text-[#00B4EB]">
                                                             {initials(displayName)}
                                                         </div>
                                                     )}
@@ -718,7 +718,7 @@ export default function AdminCompareProfiles() {
                                                 <button
                                                     type="button"
                                                     onClick={() => navigate(`/admin/creators/${profile.id}`)}
-                                                    className="text-xs font-semibold text-[#87D8FF] hover:underline"
+                                                    className="text-xs font-semibold text-[#00B4EB] hover:underline"
                                                 >
                                                     View profile
                                                 </button>

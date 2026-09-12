@@ -21,7 +21,7 @@ export default function CreatorPayments() {
                         <span className="text-[10px] font-bold uppercase tracking-widest">Available Balance</span>
                     </div>
                     {isLoading ? (
-                        <Loader2 className="animate-spin text-[#87D8FF]" size={24} />
+                        <Loader2 className="animate-spin text-[#00B4EB]" size={24} />
                     ) : (
                         <p className="text-3xl font-semibold text-gray-900">{formatCurrency(wallet?.balance ?? 0)}</p>
                     )}
@@ -33,19 +33,19 @@ export default function CreatorPayments() {
                         <span className="text-[10px] font-bold uppercase tracking-widest">Pending (48hr hold)</span>
                     </div>
                     {isLoading ? (
-                        <Loader2 className="animate-spin text-[#87D8FF]" size={24} />
+                        <Loader2 className="animate-spin text-[#00B4EB]" size={24} />
                     ) : (
                         <p className="text-3xl font-semibold text-amber-600">{formatCurrency(wallet?.pending_balance ?? 0)}</p>
                     )}
                 </div>
 
                 <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-                    <div className="flex items-center gap-2 text-[#87D8FF] mb-2">
+                    <div className="flex items-center gap-2 text-[#00B4EB] mb-2">
                         <CheckCircle2 size={16} />
                         <span className="text-[10px] font-bold uppercase tracking-widest">Total Earned</span>
                     </div>
                     {isLoading ? (
-                        <Loader2 className="animate-spin text-[#87D8FF]" size={24} />
+                        <Loader2 className="animate-spin text-[#00B4EB]" size={24} />
                     ) : (
                         <p className="text-3xl font-semibold text-gray-900">{formatCurrency(wallet?.total_earned ?? 0)}</p>
                     )}
@@ -56,7 +56,7 @@ export default function CreatorPayments() {
                 <h2 className="text-sm font-semibold text-gray-900 px-4 pt-4 pb-2">Transaction History</h2>
                 {txLoading ? (
                     <div className="flex justify-center py-8">
-                        <Loader2 className="animate-spin text-[#87D8FF]" />
+                        <Loader2 className="animate-spin text-[#00B4EB]" />
                     </div>
                 ) : !transactions?.length ? (
                     <p className="text-sm text-gray-500 text-center py-8">No payments yet. Complete campaigns to start earning.</p>

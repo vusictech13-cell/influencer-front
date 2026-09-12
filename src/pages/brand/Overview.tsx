@@ -57,7 +57,7 @@ function StatCard({
             onClick={onClick}
             disabled={!onClick}
             className={`bg-white rounded-2xl border border-gray-100 p-5 shadow-sm text-left w-full transition-all ${
-                onClick ? 'hover:border-[#87D8FF]/40 hover:shadow-md cursor-pointer' : 'cursor-default'
+                onClick ? 'hover:border-[#00B4EB]/40 hover:shadow-md cursor-pointer' : 'cursor-default'
             }`}
         >
             <div className={`flex items-center gap-2 mb-2 ${accent}`}>
@@ -65,7 +65,7 @@ function StatCard({
                 <span className="text-[10px] font-bold uppercase tracking-widest">{label}</span>
             </div>
             {loading ? (
-                <Loader2 className="animate-spin text-[#87D8FF]" size={24} />
+                <Loader2 className="animate-spin text-[#00B4EB]" size={24} />
             ) : (
                 <p className="text-2xl md:text-3xl font-semibold text-gray-900 tracking-tight">{value}</p>
             )}
@@ -111,7 +111,7 @@ export default function BrandOverview() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-[#87D8FF]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#00B4EB]" />
             </div>
         );
     }
@@ -121,7 +121,7 @@ export default function BrandOverview() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight text-gray-900 flex items-center gap-2">
-                        <LayoutDashboard size={24} className="text-[#87D8FF]" />
+                        <LayoutDashboard size={24} className="text-[#00B4EB]" />
                         Overview
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">
@@ -137,7 +137,7 @@ export default function BrandOverview() {
                     </button>
                     <button
                         onClick={() => navigate('/brand/campaigns/create')}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#87D8FF] hover:bg-[#7bc8ef] text-gray-900 text-sm font-semibold rounded-xl shadow-sm transition-all hover:scale-[1.02]"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00B4EB] hover:bg-[#009fd4] text-gray-900 text-sm font-semibold rounded-xl shadow-sm transition-all hover:scale-[1.02]"
                     >
                         Create Campaign <Plus size={16} />
                     </button>
@@ -163,7 +163,7 @@ export default function BrandOverview() {
                     label="Active Campaigns"
                     value={overview?.campaignCounts.active ?? 0}
                     icon={Megaphone}
-                    accent="text-[#87D8FF]"
+                    accent="text-[#00B4EB]"
                     onClick={() => navigate('/brand/campaigns')}
                 />
                 <StatCard
@@ -214,7 +214,7 @@ export default function BrandOverview() {
                                         <td className="px-4 py-4">
                                             <button
                                                 onClick={() => navigate(`/brand/campaigns/${sub.campaign_id}`)}
-                                                className="text-sm font-medium text-gray-900 hover:text-[#87D8FF] transition-colors text-left"
+                                                className="text-sm font-medium text-gray-900 hover:text-[#00B4EB] transition-colors text-left"
                                             >
                                                 {sub.campaign?.title ?? 'Campaign'}
                                             </button>
@@ -222,7 +222,7 @@ export default function BrandOverview() {
                                                 href={sub.submission_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-xs text-[#87D8FF] hover:underline flex items-center gap-1 mt-1"
+                                                className="text-xs text-[#00B4EB] hover:underline flex items-center gap-1 mt-1"
                                             >
                                                 <ExternalLink size={11} /> View reel
                                             </a>
@@ -258,7 +258,7 @@ export default function BrandOverview() {
                         <div className="px-6 py-4 border-t border-gray-100 text-center">
                             <button
                                 onClick={() => navigate('/brand/campaigns')}
-                                className="text-sm font-semibold text-[#87D8FF] hover:underline inline-flex items-center gap-1"
+                                className="text-sm font-semibold text-[#00B4EB] hover:underline inline-flex items-center gap-1"
                             >
                                 View all {pendingCount} pending submissions <ArrowRight size={14} />
                             </button>
@@ -276,7 +276,7 @@ export default function BrandOverview() {
                         </div>
                         <button
                             onClick={() => navigate('/brand/campaigns')}
-                            className="text-xs font-semibold text-[#87D8FF] hover:underline flex items-center gap-1"
+                            className="text-xs font-semibold text-[#00B4EB] hover:underline flex items-center gap-1"
                         >
                             View all <ChevronRight size={14} />
                         </button>
@@ -287,7 +287,7 @@ export default function BrandOverview() {
                             <p className="text-sm text-gray-500 mb-4">No active campaigns right now.</p>
                             <button
                                 onClick={() => navigate('/brand/campaigns/create')}
-                                className="text-sm font-semibold text-[#87D8FF] hover:underline"
+                                className="text-sm font-semibold text-[#00B4EB] hover:underline"
                             >
                                 Create your first campaign
                             </button>
@@ -307,12 +307,12 @@ export default function BrandOverview() {
                                             className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
                                         />
                                     ) : (
-                                        <div className="w-12 h-12 rounded-xl bg-[#87D8FF]/20 flex items-center justify-center flex-shrink-0">
-                                            <Music size={18} className="text-[#87D8FF]" />
+                                        <div className="w-12 h-12 rounded-xl bg-[#00B4EB]/20 flex items-center justify-center flex-shrink-0">
+                                            <Music size={18} className="text-[#00B4EB]" />
                                         </div>
                                     )}
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-[#87D8FF] transition-colors">
+                                        <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-[#00B4EB] transition-colors">
                                             {campaign.title}
                                         </p>
                                         <p className="text-xs text-gray-500 mt-0.5">
@@ -347,7 +347,7 @@ export default function BrandOverview() {
                         </div>
                         <button
                             onClick={() => navigate('/brand/wallet')}
-                            className="text-xs font-semibold text-[#87D8FF] hover:underline flex items-center gap-1"
+                            className="text-xs font-semibold text-[#00B4EB] hover:underline flex items-center gap-1"
                         >
                             View wallet <ChevronRight size={14} />
                         </button>
@@ -355,7 +355,7 @@ export default function BrandOverview() {
 
                     {txLoading ? (
                         <div className="flex items-center justify-center py-12">
-                            <Loader2 className="h-6 w-6 animate-spin text-[#87D8FF]" />
+                            <Loader2 className="h-6 w-6 animate-spin text-[#00B4EB]" />
                         </div>
                     ) : !recentTx.length ? (
                         <div className="py-12 px-6 text-center text-sm text-gray-500">
@@ -393,7 +393,7 @@ export default function BrandOverview() {
                     [
                         { key: 'active', label: 'Active', count: overview?.campaignCounts.active, color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
                         { key: 'paused', label: 'Paused', count: overview?.campaignCounts.paused, color: 'text-amber-600 bg-amber-50 border-amber-100' },
-                        { key: 'completed', label: 'Completed', count: overview?.campaignCounts.completed, color: 'text-[#5eb8e0] bg-[#87D8FF]/10 border-[#87D8FF]/20' },
+                        { key: 'completed', label: 'Completed', count: overview?.campaignCounts.completed, color: 'text-[#0094d4] bg-[#00B4EB]/10 border-[#00B4EB]/20' },
                         { key: 'draft', label: 'Draft', count: overview?.campaignCounts.draft, color: 'text-gray-600 bg-gray-50 border-gray-100' },
                     ] as const
                 ).map((item) => (

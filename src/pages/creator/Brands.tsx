@@ -77,10 +77,10 @@ export default function CreatorBrands() {
 
             {isLoading ? (
                 <div className="flex justify-center py-16">
-                    <Loader2 className="h-8 w-8 animate-spin text-[#e9408a]" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#ff6a1a]" />
                 </div>
             ) : brands.length === 0 ? (
-                <p className="rounded-[18px] border border-[#e9e9ef] bg-white px-5 py-10 text-sm text-[#8b8d95]">
+                <p className="rounded-[18px] border border-[#dce8f0] bg-white px-5 py-10 text-sm text-[#8b8d95]">
                     No brand campaigns are live right now.
                 </p>
             ) : (

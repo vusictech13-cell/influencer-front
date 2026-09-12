@@ -56,7 +56,7 @@ export default function CampaignDetail() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-full min-h-[400px]">
-                <Loader2 className="animate-spin text-[#87D8FF] h-8 w-8" />
+                <Loader2 className="animate-spin text-[#00B4EB] h-8 w-8" />
             </div>
         );
     }
@@ -80,8 +80,8 @@ export default function CampaignDetail() {
                                 className="w-24 h-24 md:w-28 md:h-28 rounded-2xl object-cover shadow-inner flex-shrink-0"
                             />
                         ) : (
-                            <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-[#87D8FF]/20 flex items-center justify-center flex-shrink-0">
-                                <Music size={36} className="text-[#87D8FF]" />
+                            <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-[#00B4EB]/20 flex items-center justify-center flex-shrink-0">
+                                <Music size={36} className="text-[#00B4EB]" />
                             </div>
                         )}
 

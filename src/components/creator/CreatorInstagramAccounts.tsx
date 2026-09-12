@@ -4,9 +4,9 @@ import { formatCount } from '@/utils/creator';
 import type { SocialAccountRecord } from '@/utils/creator';
 
 const AVATAR_GRADIENTS = [
-    'linear-gradient(145deg,#16181e,#787b86)',
-    'linear-gradient(145deg,#eec5b2,#e9408a)',
-    'linear-gradient(145deg,#9dc4d7,#415c9c)',
+    'linear-gradient(145deg,#0b2744,#123050)',
+    'linear-gradient(145deg,#ffd4b8,#ff6a1a)',
+    'linear-gradient(145deg,#b2e8f7,#00B4EB)',
 ];
 
 export function accountAvatarStyle(account: SocialAccountRecord, index: number) {
@@ -48,7 +48,7 @@ export default function CreatorInstagramAccounts() {
                     {accounts.map((account, index) => (
                         <div
                             key={account.id}
-                            className="rounded-[15px] border border-[#e9e9ef] bg-[#fafafd] p-3"
+                            className="rounded-[15px] border border-[#dce8f0] bg-[#f4fbff] p-3"
                         >
                             <div className="flex items-center gap-2.5">
                                 <div

@@ -79,8 +79,8 @@ export default function TrackArtworkUploader({ value, onChange }: TrackArtworkUp
                 onDrop={handleDrop}
                 className={`relative w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-xs font-medium cursor-pointer transition-colors overflow-hidden ${
                     dragOver
-                        ? 'border-[#87D8FF] bg-[#87D8FF]/5'
-                        : 'border-gray-200 bg-gray-50/50 hover:border-[#87D8FF]/50'
+                        ? 'border-[#00B4EB] bg-[#00B4EB]/5'
+                        : 'border-gray-200 bg-gray-50/50 hover:border-[#00B4EB]/50'
                 } ${isPending ? 'opacity-60 pointer-events-none' : ''}`}
             >
                 {previewUrl ? (
@@ -99,7 +99,7 @@ export default function TrackArtworkUploader({ value, onChange }: TrackArtworkUp
                     </>
                 ) : isPending ? (
                     <>
-                        <Loader2 size={20} className="animate-spin text-[#87D8FF] mb-2" />
+                        <Loader2 size={20} className="animate-spin text-[#00B4EB] mb-2" />
                         <span className="text-gray-500">Uploading & compressing...</span>
                     </>
                 ) : (

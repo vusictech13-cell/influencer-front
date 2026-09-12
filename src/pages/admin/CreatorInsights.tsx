@@ -34,7 +34,7 @@ export default function AdminCreatorInsights() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-[#87D8FF]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#00B4EB]" />
             </div>
         );
     }
@@ -49,7 +49,7 @@ export default function AdminCreatorInsights() {
                 <button
                     type="button"
                     onClick={() => navigate(`/admin/creators/${id}`)}
-                    className="mt-4 text-sm font-semibold text-[#87D8FF] hover:underline"
+                    className="mt-4 text-sm font-semibold text-[#00B4EB] hover:underline"
                 >
                     Back to creator
                 </button>
@@ -86,7 +86,7 @@ export default function AdminCreatorInsights() {
             </div>
 
             <div className="flex items-center gap-2">
-                <BarChart3 size={24} className="text-[#87D8FF]" />
+                <BarChart3 size={24} className="text-[#00B4EB]" />
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Instagram Insights</h1>
                     <p className="text-sm text-gray-500">Full analytics for {creator.name}</p>
@@ -95,7 +95,7 @@ export default function AdminCreatorInsights() {
 
             <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] overflow-hidden">
                 <div className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative">
-                    <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-[#87D8FF]/5 to-transparent pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-[#00B4EB]/5 to-transparent pointer-events-none" />
                     <div className="flex items-center gap-6 z-10 w-full md:w-auto">
                         <div className="relative">
                             {avatarUrl ? (
@@ -106,8 +106,8 @@ export default function AdminCreatorInsights() {
                                     referrerPolicy="no-referrer"
                                 />
                             ) : (
-                                <div className="w-20 h-20 rounded-[1.2rem] bg-[#87D8FF]/20 flex items-center justify-center">
-                                    <Users size={28} className="text-[#87D8FF]" />
+                                <div className="w-20 h-20 rounded-[1.2rem] bg-[#00B4EB]/20 flex items-center justify-center">
+                                    <Users size={28} className="text-[#00B4EB]" />
                                 </div>
                             )}
                             <div className="absolute -bottom-2 -right-2 bg-white p-1 rounded-lg shadow-sm border border-gray-100">
@@ -150,7 +150,7 @@ export default function AdminCreatorInsights() {
                     </div>
                     <div className="flex items-center gap-6 min-w-max text-sm">
                         <StatItem label="Total" value={reelsStats.total} color="text-gray-900" />
-                        <StatItem label="> 1K" value={reelsStats['>1k']} color="text-[#87D8FF]" />
+                        <StatItem label="> 1K" value={reelsStats['>1k']} color="text-[#00B4EB]" />
                         <StatItem label="> 10K" value={reelsStats['>10k']} color="text-[#FFA542]" />
                         <StatItem label="> 100K" value={reelsStats['>100k']} color="text-[#FF5A5F]" />
                         <StatItem label="> 1M" value={reelsStats['>1m']} color="text-emerald-500" />

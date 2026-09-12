@@ -165,10 +165,10 @@ export default function CreateCampaign() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 text-gray-900">
       <div className="flex items-center gap-4 mb-6 px-2">
         <div
-          className={`flex items-center gap-2 ${step === 1 ? "text-[#87D8FF]" : "text-gray-400"}`}
+          className={`flex items-center gap-2 ${step === 1 ? "text-[#00B4EB]" : "text-gray-400"}`}
         >
           <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border transition-colors duration-500 ${step === 1 ? "border-[#87D8FF] bg-[#87D8FF]/10" : "border-gray-200 bg-white"}`}
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border transition-colors duration-500 ${step === 1 ? "border-[#00B4EB] bg-[#00B4EB]/10" : "border-gray-200 bg-white"}`}
           >
             1
           </div>
@@ -176,10 +176,10 @@ export default function CreateCampaign() {
         </div>
         <div className="w-16 h-px bg-gray-200"></div>
         <div
-          className={`flex items-center gap-2 ${step === 2 ? "text-[#87D8FF]" : "text-gray-400"}`}
+          className={`flex items-center gap-2 ${step === 2 ? "text-[#00B4EB]" : "text-gray-400"}`}
         >
           <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border transition-colors duration-500 ${step === 2 ? "border-[#87D8FF] bg-[#87D8FF]/10" : "border-gray-200 bg-white"}`}
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border transition-colors duration-500 ${step === 2 ? "border-[#00B4EB] bg-[#00B4EB]/10" : "border-gray-200 bg-white"}`}
           >
             2
           </div>
@@ -211,7 +211,7 @@ export default function CreateCampaign() {
                   value={formData.title}
                   onChange={handleInputChange}
                   placeholder="e.g. Summer Vibes Playlist Promo"
-                  className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#87D8FF]/30 focus:border-[#87D8FF] transition-all"
+                  className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00B4EB]/30 focus:border-[#00B4EB] transition-all"
                 />
               </div>
               <div className="grid grid-cols-3 gap-4">
@@ -229,7 +229,7 @@ export default function CreateCampaign() {
                       value={formData.spotify_link}
                       onChange={handleInputChange}
                       placeholder="https://open.spotify.com/..."
-                      className="w-full pl-9 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#87D8FF]"
+                      className="w-full pl-9 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                     />
                   </div>
                 </div>
@@ -241,7 +241,7 @@ export default function CreateCampaign() {
                     name="genre"
                     value={formData.genre}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#87D8FF]"
+                    className="w-full px-3 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                   >
                     <option value="">Select...</option>
                     <option value="Pop">Pop</option>
@@ -265,7 +265,7 @@ export default function CreateCampaign() {
                       value={formData.required_tags}
                       onChange={handleInputChange}
                       placeholder="@artistname"
-                      className="w-full pl-8 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#87D8FF]"
+                      className="w-full pl-8 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                     />
                   </div>
                 </div>
@@ -283,7 +283,7 @@ export default function CreateCampaign() {
                       value={formData.hashtags}
                       onChange={handleInputChange}
                       placeholder="#trending"
-                      className="w-full pl-8 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#87D8FF]"
+                      className="w-full pl-8 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                     />
                   </div>
                 </div>
@@ -297,7 +297,7 @@ export default function CreateCampaign() {
                   value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Describe what the creator needs to do in the reel..."
-                  className="w-full p-4 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#87D8FF] resize-none min-h-[100px]"
+                  className="w-full p-4 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB] resize-none min-h-[100px]"
                 ></textarea>
               </div>
             </div>
@@ -316,7 +316,7 @@ export default function CreateCampaign() {
                     value={formData.brand_name}
                     onChange={handleInputChange}
                     placeholder="e.g. Spotify India"
-                    className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#87D8FF]"
+                    className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                   />
                 </div>
                 <div>
@@ -401,7 +401,7 @@ export default function CreateCampaign() {
             <button
               onClick={() => setStep(2)}
               disabled={!formData.title}
-              className={`px-8 py-3.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all shadow-sm ${formData.title ? "bg-[#87D8FF] text-gray-900 hover:bg-[#7bc8ef] hover:scale-[1.02]" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
+              className={`px-8 py-3.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all shadow-sm ${formData.title ? "bg-[#00B4EB] text-gray-900 hover:bg-[#009fd4] hover:scale-[1.02]" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
             >
               Next: Targeting & Budget <ArrowRight size={18} />
             </button>
@@ -435,7 +435,7 @@ export default function CreateCampaign() {
                   {formatCurrency(walletBalance)}
                 </p>
                 {!hasEnoughWallet && (
-                  <Link to="/brand/wallet" className="text-[10px] font-semibold text-[#87D8FF] hover:underline">
+                  <Link to="/brand/wallet" className="text-[10px] font-semibold text-[#00B4EB] hover:underline">
                     Top up wallet →
                   </Link>
                 )}
@@ -453,7 +453,7 @@ export default function CreateCampaign() {
                     type="number"
                     value={formData.total_budget}
                     onChange={handleInputChange}
-                    className="pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-2xl font-semibold text-gray-900 focus:outline-none focus:border-[#87D8FF] w-full md:w-56 text-right shadow-sm"
+                    className="pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-2xl font-semibold text-gray-900 focus:outline-none focus:border-[#00B4EB] w-full md:w-56 text-right shadow-sm"
                   />
                 </div>
               </div>
@@ -464,7 +464,7 @@ export default function CreateCampaign() {
             <div className="col-span-12 xl:col-span-8 space-y-6">
               <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] p-6">
                 <h3 className="text-sm font-semibold text-gray-900 tracking-tight mb-4 flex items-center gap-2">
-                  <Globe size={16} className="text-[#87D8FF]" /> Audience &
+                  <Globe size={16} className="text-[#00B4EB]" /> Audience &
                   Creator Targeting
                 </h3>
                 <div className="flex flex-col md:flex-row gap-6">
@@ -477,7 +477,7 @@ export default function CreateCampaign() {
                         name="audience_gender"
                         value={formData.audience_gender}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:border-[#87D8FF]"
+                        className="w-full px-3 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:border-[#00B4EB]"
                       >
                         <option>Any</option>
                         <option>Female Primary</option>
@@ -492,7 +492,7 @@ export default function CreateCampaign() {
                         name="audience_age"
                         value={formData.audience_age}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:border-[#87D8FF]"
+                        className="w-full px-3 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:border-[#00B4EB]"
                       >
                         <option>Any</option>
                         <option>18-24 (Gen Z)</option>
@@ -514,7 +514,7 @@ export default function CreateCampaign() {
                         value={formData.specific_creators}
                         onChange={handleInputChange}
                         placeholder="Search & whitelist by handle..."
-                        className="w-full pl-8 pr-4 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#87D8FF]"
+                        className="w-full pl-8 pr-4 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                       />
                     </div>
                   </div>
@@ -563,7 +563,7 @@ export default function CreateCampaign() {
                               Number(e.target.value),
                             )
                           }
-                          className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#87D8FF] w-full shadow-sm"
+                          className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB] w-full shadow-sm"
                         />
                       </div>
                       <div className="flex flex-col w-full md:w-1/4 md:items-center">
@@ -599,7 +599,7 @@ export default function CreateCampaign() {
                             onClick={() =>
                               handleAllocationChange(index, "qty", r.qty + 1)
                             }
-                            className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-600 hover:text-[#87D8FF]"
+                            className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-600 hover:text-[#00B4EB]"
                           >
                             +
                           </button>
@@ -672,7 +672,7 @@ export default function CreateCampaign() {
                     </div>
                     <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${totalLiability > Number(formData.total_budget) ? "bg-[#FF5A5F]" : "bg-[#87D8FF]"}`}
+                        className={`h-full rounded-full transition-all duration-500 ${totalLiability > Number(formData.total_budget) ? "bg-[#FF5A5F]" : "bg-[#00B4EB]"}`}
                         style={{
                           width: `${Math.min((totalLiability / Number(formData.total_budget || 1)) * 100, 100)}%`,
                         }}

@@ -3,10 +3,10 @@ import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const authInputClassName =
-    'h-[49px] w-full rounded-xl border border-[#e8e8ee] bg-white px-3.5 text-[13px] text-[#121318] outline-none transition placeholder:text-[#a0a2aa] focus:border-[#e9408a] focus:shadow-[0_0_0_3px_rgba(233,64,138,0.08)] disabled:cursor-not-allowed disabled:opacity-50';
+    'h-[49px] w-full rounded-xl border border-[#dce8f0] bg-white px-3.5 text-[13px] text-brand-ink outline-none transition placeholder:text-brand-gray/70 focus:border-brand-orange focus:shadow-[0_0_0_3px_rgba(255,106,26,0.12)] disabled:cursor-not-allowed disabled:opacity-50';
 
 export const authCtaClassName =
-    'flex h-[49px] w-full items-center justify-center rounded-xl bg-[#111318] text-xs font-extrabold text-white transition hover:-translate-y-px hover:bg-[#24252b] disabled:pointer-events-none disabled:opacity-60';
+    'flex h-[49px] w-full items-center justify-center rounded-full bg-brand-orange text-xs font-extrabold text-white shadow-[0_10px_24px_rgba(255,106,26,0.28)] transition hover:-translate-y-px hover:bg-[#f05a0c] disabled:pointer-events-none disabled:opacity-60';
 
 export function AuthPasswordInput({
     id,

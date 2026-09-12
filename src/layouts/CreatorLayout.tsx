@@ -38,7 +38,7 @@ const NAV_ITEMS = [
 function SidebarUpgrade() {
     const navigate = useNavigate();
     return (
-        <div className="rounded-[15px] border border-[#e9e9ef] bg-[#fafafd] p-3.5">
+        <div className="rounded-[15px] border border-[#dce8f0] bg-[#f4fbff] p-3.5">
             <strong className="text-xs">Make your profile stronger</strong>
             <p className="mt-1.5 mb-2.5 text-[10px] leading-relaxed text-[#8a8c94]">
                 Add rates and a media kit to unlock higher-value campaign matches.
@@ -46,7 +46,7 @@ function SidebarUpgrade() {
             <button
                 type="button"
                 onClick={() => navigate('/creator/profile')}
-                className="w-full rounded-[9px] bg-[#111318] px-3 py-2 text-[11px] font-bold text-white"
+                className="w-full rounded-full bg-brand-orange px-3 py-2 text-[11px] font-bold text-white shadow-[0_8px_18px_rgba(255,106,26,0.22)] hover:bg-[#f05a0c]"
             >
                 Complete profile →
             </button>
@@ -114,11 +114,11 @@ function CreatorHeader() {
                         }}
                         onFocus={() => setSearchOpen(true)}
                         placeholder="Search brands or campaigns"
-                        className="w-full bg-transparent text-[12px] text-[#121318] outline-none placeholder:text-[#9a9ca4]"
+                        className="w-full bg-transparent text-[12px] text-brand-ink outline-none placeholder:text-[#9a9ca4]"
                     />
                 </div>
                 {searchOpen && query.trim() && (
-                    <div className="absolute left-0 top-[calc(100%+10px)] z-30 w-[min(420px,70vw)] overflow-hidden rounded-2xl border border-[#e9e9ef] bg-white shadow-[0_16px_40px_rgba(20,20,40,0.12)]">
+                    <div className="absolute left-0 top-[calc(100%+10px)] z-30 w-[min(420px,70vw)] overflow-hidden rounded-2xl border border-[#dce8f0] bg-white shadow-[0_16px_40px_rgba(20,20,40,0.12)]">
                         {results.length === 0 ? (
                             <p className="px-4 py-3 text-xs text-[#8a8c94]">No matching brands or campaigns.</p>
                         ) : (
@@ -131,15 +131,15 @@ function CreatorHeader() {
                                         setSearchOpen(false);
                                         navigate(`/creator/campaigns/${campaign.id}`);
                                     }}
-                                    className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left hover:bg-[#fafafd]"
+                                    className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left hover:bg-[#f4fbff]"
                                 >
                                     <span>
-                                        <strong className="block text-xs text-[#121318]">{campaign.title}</strong>
+                                        <strong className="block text-xs text-brand-ink">{campaign.title}</strong>
                                         <span className="text-[10px] uppercase tracking-[0.8px] text-[#a0a2aa]">
                                             {campaign.brand_name || 'Brand'}
                                         </span>
                                     </span>
-                                    <span className="text-[10px] font-bold text-[#bd2868]">View →</span>
+                                    <span className="text-[10px] font-bold text-brand-orange">View →</span>
                                 </button>
                             ))
                         )}
@@ -150,17 +150,17 @@ function CreatorHeader() {
                 <div ref={notesRef} className="relative">
                     <button
                         type="button"
-                        className="relative grid h-[37px] w-[37px] place-items-center rounded-[10px] border border-[#e9e9ef] bg-white text-[#6f727b]"
+                        className="relative grid h-[37px] w-[37px] place-items-center rounded-[10px] border border-[#dce8f0] bg-white text-[#6f727b]"
                         onClick={() => setNotesOpen((open) => !open)}
                         aria-label="Notifications"
                     >
                         <Bell size={16} />
                         {noteCount > 0 && (
-                            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-[#e9408a]" />
+                            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand-orange" />
                         )}
                     </button>
                     {notesOpen && (
-                        <div className="absolute right-0 top-[calc(100%+10px)] z-30 w-[280px] overflow-hidden rounded-2xl border border-[#e9e9ef] bg-white shadow-[0_16px_40px_rgba(20,20,40,0.12)]">
+                        <div className="absolute right-0 top-[calc(100%+10px)] z-30 w-[280px] overflow-hidden rounded-2xl border border-[#dce8f0] bg-white shadow-[0_16px_40px_rgba(20,20,40,0.12)]">
                             {noteCount === 0 ? (
                                 <p className="px-4 py-4 text-xs text-[#8a8c94]">You are all caught up.</p>
                             ) : (
@@ -172,7 +172,7 @@ function CreatorHeader() {
                                                 setNotesOpen(false);
                                                 navigate('/creator/dashboard');
                                             }}
-                                            className="block w-full px-4 py-3 text-left hover:bg-[#fafafd]"
+                                            className="block w-full px-4 py-3 text-left hover:bg-[#f4fbff]"
                                         >
                                             <strong className="block text-xs">Fresh opportunities</strong>
                                             <span className="text-[10px] text-[#8a8c94]">
@@ -187,7 +187,7 @@ function CreatorHeader() {
                                                 setNotesOpen(false);
                                                 navigate('/creator/campaigns');
                                             }}
-                                            className="block w-full px-4 py-3 text-left hover:bg-[#fafafd]"
+                                            className="block w-full px-4 py-3 text-left hover:bg-[#f4fbff]"
                                         >
                                             <strong className="block text-xs">Campaign updates</strong>
                                             <span className="text-[10px] text-[#8a8c94]">
@@ -202,7 +202,7 @@ function CreatorHeader() {
                 </div>
                 <button
                     type="button"
-                    className="grid h-[37px] w-[37px] place-items-center rounded-[10px] border border-[#e9e9ef] bg-white text-[#6f727b]"
+                    className="grid h-[37px] w-[37px] place-items-center rounded-[10px] border border-[#dce8f0] bg-white text-[#6f727b]"
                     onClick={() => navigate('/creator/profile')}
                     aria-label="Edit profile"
                 >
@@ -227,8 +227,7 @@ export default function CreatorLayout({ children }: { children: ReactNode }) {
                 headerTitle="Home"
                 headerLeft={<CreatorHeader />}
                 logoIcon={LayoutGrid}
-                title="Buzooka"
-                accent="pink"
+                title="tapnlike"
                 navItems={NAV_ITEMS}
                 afterNav={<CreatorInstagramAccounts />}
                 sidebarFooter={<SidebarUpgrade />}
