@@ -44,21 +44,23 @@ export default function Home() {
     return (
         <div className="text-brand-ink">
             <section className="relative overflow-visible bg-brand-blue text-white">
-                <div className="pointer-events-none relative h-auto w-full overflow-hidden min-[520px]:h-[460px] min-[1100px]:static min-[1100px]:h-full min-[1100px]:w-[min(72vw,980px)]">
-                    <p className="pointer-events-none absolute right-[13%] top-[24px] z-[2] hidden rotate-[337deg] text-right font-handwriting text-[1.95rem] font-bold leading-[0.95] min-[820px]:block">
+                <div className="pointer-events-none relative h-auto w-full overflow-hidden min-[520px]:h-[460px] min-[820px]:overflow-visible min-[1100px]:static min-[1100px]:h-full min-[1100px]:w-[min(72vw,980px)]">
+                    <p className="pointer-events-none absolute right-[13%] top-[24px] z-[2] hidden animate-float-slow rotate-[337deg] text-right font-handwriting text-[1.95rem] font-bold leading-[0.95] min-[820px]:block">
                         Good People
                         <br />
                         Brighter
                         <br />
                         Tomorrows
-                        <span className="mt-1 block text-[1.45rem]">☺</span>
+                        <span className="mt-1 flex items-center justify-end gap-1.5 text-[1.45rem]">
+                            <span aria-hidden="true">☺</span>
+                        </span>
                     </p>
                     <img
                         className="relative right-auto mx-auto h-[400px] w-auto max-w-none select-none object-contain object-right-bottom min-[560px]:absolute min-[560px]:bottom-0 min-[560px]:right-1/2 min-[560px]:mx-0 min-[560px]:h-full min-[560px]:translate-x-1/2 min-[1100px]:right-[13%] min-[1100px]:h-[108%] min-[1100px]:translate-x-0"
                         src="/images/hero-creator.png?v=1"
                         alt="Creator in an orange hoodie taking a selfie and making a peace sign"
                     />
-                    <aside className="pointer-events-auto absolute right-[10%] top-[33%] z-[3] hidden min-w-[142px] items-center gap-2.5 overflow-hidden rounded-2xl border border-white/55 bg-white/[0.22] px-[13px] py-[11px] text-brand-ink shadow-[0_14px_32px_rgba(11,39,68,0.14),inset_0_1px_1px_rgba(255,255,255,0.65),inset_0_-1px_1px_rgba(255,255,255,0.12)] backdrop-blur-[16px] backdrop-saturate-[1.6] rotate-[344deg] min-[820px]:flex">
+                    <aside className="pointer-events-auto absolute right-[10%] top-[33%] z-[3] hidden min-w-[142px] animate-float-medium items-center gap-2.5 overflow-hidden rounded-2xl border border-white bg-white px-[13px] py-[11px] text-brand-ink shadow-[0_14px_32px_rgba(11,39,68,0.14)] rotate-[344deg] min-[820px]:flex">
                         <div className="flex h-[34px] items-end gap-[3px]" aria-hidden="true">
                             <span className="h-[14px] w-[7px] rounded-t-[3px] bg-gradient-to-b from-[#ff8a3d] to-brand-orange" />
                             <span className="h-[22px] w-[7px] rounded-t-[3px] bg-gradient-to-b from-[#ff8a3d] to-brand-orange" />

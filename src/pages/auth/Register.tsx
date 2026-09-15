@@ -68,14 +68,15 @@ export default function Register() {
 
     return (
         <AuthSplitShell mode="signup">
-            <h2 className="mb-2 font-outfit text-[28px] font-extrabold tracking-[-1.5px] text-brand-ink sm:text-[34px]">
+            <h2 className="mb-2.5 font-outfit text-[32px] font-extrabold leading-[1.05] tracking-[-1.8px] text-brand-ink sm:text-[42px]">
                 Join TapnLike.
             </h2>
-            <p className="mb-4 text-[13px] leading-relaxed text-brand-gray">
-                Create your account in under a minute. We'll ask a few creator questions after you sign up.
+            <p className="mb-5 text-[15px] leading-relaxed text-brand-gray">
+                Create your account in under a minute.
+                <br className="hidden sm:block" /> We'll ask a few creator questions after you sign up.
             </p>
 
-            <TrustPills className="mb-4" items={['Your data is protected', 'Free to join']} />
+            <TrustPills className="mb-5" items={['Your data is protected', 'Free to join']} />
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 {error && (
@@ -86,7 +87,7 @@ export default function Register() {
 
                 <input type="hidden" {...register('role')} />
 
-                <div className="mb-3.5 grid grid-cols-2 gap-x-3 gap-y-3.5">
+                <div className="mb-4 grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                     <div>
                         <AuthFieldLabel htmlFor="name">Full name</AuthFieldLabel>
                         <input
@@ -117,14 +118,17 @@ export default function Register() {
                     <div>
                         <AuthFieldLabel htmlFor="phone">Mobile number</AuthFieldLabel>
                         <div className="relative">
-                            <div className="pointer-events-none absolute left-3.5 top-4 text-xs text-[#8a8d95]">+91</div>
+                            <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[14px] text-[#8a8d95]">
+                                +91
+                            </div>
+                            <span className="pointer-events-none absolute left-[52px] top-1/2 h-5 w-px -translate-y-1/2 bg-[#dce3ea]" />
                             <input
                                 id="phone"
                                 type="tel"
                                 inputMode="numeric"
                                 maxLength={10}
                                 placeholder="98765 43210"
-                                className={cn(authInputClassName, 'pl-[50px]')}
+                                className={cn(authInputClassName, 'pl-[64px]')}
                                 {...register('phone')}
                             />
                         </div>
@@ -146,7 +150,7 @@ export default function Register() {
                     </div>
                 </div>
 
-                <p className="mb-4 text-[9px] leading-relaxed text-[#999ca4]">
+                <p className="mb-5 text-[12px] leading-relaxed text-[#999ca4]">
                     By continuing, you agree to TapnLike's{' '}
                     <Link to="/terms-of-service" className="font-bold text-brand-orange hover:underline">
                         Terms of Use
@@ -191,7 +195,7 @@ export default function Register() {
                 </AuthSocialButton>
             </div>
 
-            <p className="mt-[21px] text-center text-[10px] leading-relaxed text-[#8b8e96]">
+            <p className="mt-6 text-center text-[13px] leading-relaxed text-[#8b8e96]">
                 Already have an account?{' '}
                 <Link to="/login" className="font-bold text-brand-orange no-underline hover:underline">
                     Log in
