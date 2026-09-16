@@ -44,7 +44,7 @@ export default function Home() {
     return (
         <div className="text-brand-ink">
             <section className="relative overflow-visible bg-brand-blue text-white">
-                <div className="pointer-events-none relative h-auto w-full overflow-hidden min-[520px]:h-[460px] min-[820px]:overflow-visible min-[1100px]:static min-[1100px]:h-full min-[1100px]:w-[min(72vw,980px)]">
+                <div className="pointer-events-none relative hidden h-auto w-full overflow-hidden min-[520px]:h-[460px] min-[820px]:overflow-visible min-[1100px]:static min-[1100px]:block min-[1100px]:h-full min-[1100px]:w-[min(72vw,980px)]">
                     <p className="pointer-events-none absolute right-[13%] top-[24px] z-[2] hidden animate-float-slow rotate-[337deg] text-right font-handwriting text-[1.95rem] font-bold leading-[0.95] min-[820px]:block">
                         Good People
                         <br />
@@ -74,25 +74,25 @@ export default function Home() {
                     </aside>
                 </div>
 
-                <div className={cn(wrap, 'relative z-[1] grid min-h-0 grid-cols-1 min-[1100px]:min-h-[560px] min-[1100px]:grid-cols-[minmax(0,520px)_1fr] pt-4')}>
-                    <div className="relative z-[2] flex min-h-0 flex-col justify-between py-2 pb-5 min-[1100px]:min-h-[500px] min-[1100px]:pb-[78px]">
-                        <div className="max-w-[34rem]">
-                            <p className={cn(eyebrow, 'mb-3')}>The Creator Platform</p>
-                            <h1 className={cn(heading, 'mb-4 text-[2.6rem] leading-[1.05] min-[820px]:text-[clamp(3rem,5.2vw,4.55rem)] min-[820px]:leading-[1.02]')}>
+                <div className={cn(wrap, 'relative z-[1] max-[1099px]:grid max-[1099px]:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] max-[1099px]:items-center max-[1099px]:gap-x-1 max-[1099px]:gap-y-4 min-[1100px]:min-h-[560px] pt-4 max-[1099px]:pt-2 max-[1099px]:overflow-visible')}>
+                    <div className="relative z-[2] max-[1099px]:contents min-[1100px]:flex min-[1100px]:min-h-[500px] min-[1100px]:flex-col min-[1100px]:justify-between min-[1100px]:py-2 min-[1100px]:pb-[78px]">
+                        <div className="max-w-[34rem] py-2 pb-0 max-[1099px]:col-start-1 max-[1099px]:row-start-1 max-[1099px]:self-center min-[1100px]:py-0">
+                            <p className={cn(eyebrow, 'mb-2 min-[1100px]:mb-3')}>The Creator Platform</p>
+                            <h1 className={cn(heading, 'mb-2.5 text-[1.55rem] leading-[1.06] max-[380px]:text-[1.35rem] min-[1100px]:mb-4 min-[1100px]:text-[clamp(3rem,5.2vw,4.55rem)] min-[1100px]:leading-[1.02]')}>
                                 Turn Your
                                 <br />
                                 Creativity Into
                                 <br />
                                 <em className={cn(emClass, 'inline-block leading-[1.1] pb-1')}>Opportunities.</em>
                             </h1>
-                            <p className="mb-[26px] max-w-[38ch] text-[1.02rem] leading-[1.55] text-white/[0.94]">
+                            <p className="mb-3.5 max-w-[28ch] text-[0.8rem] leading-[1.4] text-white/[0.94] max-[1099px]:pr-1 min-[1100px]:mb-[26px] min-[1100px]:max-w-[38ch] min-[1100px]:text-[1.02rem] min-[1100px]:leading-[1.55]">
                                 TapnLike connects creators, music artists and brands to turn ideas into real opportunities.
                             </p>
-                            <div className="mb-0 flex flex-wrap gap-3">
-                                <Link className={cn(btn, btnOrange)} to="/register">
+                            <div className="mb-0 flex flex-col gap-2 min-[1100px]:flex-row min-[1100px]:flex-wrap min-[1100px]:gap-3">
+                                <Link className={cn(btn, btnOrange, 'px-4 py-2.5 text-[0.82rem] min-[1100px]:px-[22px] min-[1100px]:py-[13px] min-[1100px]:text-[0.95rem]')} to="/register">
                                     Get Started <span aria-hidden="true">→</span>
                                 </Link>
-                                <a className={cn(btn, btnGhost)} href="#how-it-works">
+                                <a className={cn(btn, btnGhost, 'hidden px-4 py-2.5 text-[0.82rem] min-[560px]:inline-flex min-[1100px]:px-[22px] min-[1100px]:py-[13px] min-[1100px]:text-[0.95rem]')} href="#how-it-works">
                                     <span className="grid size-[22px] place-items-center rounded-full border-[1.5px] border-current" aria-hidden="true">
                                         <svg className="ml-px" viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M8 5v14l11-7z" /></svg>
                                     </span>
@@ -100,7 +100,7 @@ export default function Home() {
                                 </a>
                             </div>
                         </div>
-                        <dl className="flex items-stretch mt-6">
+                        <dl className="flex items-stretch max-[1099px]:col-span-2 max-[1099px]:row-start-2 max-[1099px]:mt-1 min-[1100px]:mt-6">
                             <div className="mr-[18px] border-r border-white/[0.32] pr-[18px] min-[820px]:mr-7 min-[820px]:pr-7">
                                 <dt className="font-outfit text-[1.7rem] font-extrabold leading-none tracking-[-0.03em]">10K+</dt>
                                 <dd className="mt-1.5 text-[0.82rem] opacity-85">Creators</dd>
@@ -114,6 +114,14 @@ export default function Home() {
                                 <dd className="mt-1.5 text-[0.82rem] opacity-85">Opportunities</dd>
                             </div>
                         </dl>
+                    </div>
+
+                    <div className="relative z-[2] flex shrink-0 items-end justify-end self-center max-[1099px]:col-start-2 max-[1099px]:row-start-1 max-[1099px]:-mr-3 min-[1100px]:hidden">
+                        <img
+                            className="h-[min(72vw,320px)] w-auto max-w-[min(58vw,280px)] select-none object-contain object-right-bottom drop-shadow-[0_18px_40px_rgba(11,39,68,0.22)]"
+                            src="/images/hero-creator.png?v=1"
+                            alt="Creator in an orange hoodie taking a selfie and making a peace sign"
+                        />
                     </div>
                 </div>
 
@@ -149,9 +157,6 @@ export default function Home() {
                                 NYKAA
                             </span>
                         </div>
-                        <p className="w-full min-w-0 text-center text-[0.68rem] font-bold uppercase tracking-[0.12em] text-brand-gray min-[560px]:w-auto min-[560px]:min-w-[90px] min-[560px]:text-right">
-                            and many more.
-                        </p>
                     </div>
                 </div>
             </section>
@@ -161,7 +166,7 @@ export default function Home() {
                 id="creators"
             >
                 <div className={cn(wrap, 'grid grid-cols-1 items-center gap-10 min-[1100px]:grid-cols-[0.85fr_1.15fr]')}>
-                    <div>
+                    <div className='mt-4 md:mt-0'>
                         <p className={cn(eyebrow, 'text-[#808080c7]')}>For Creators</p>
                         <h2 className={cn(heading, 'mb-4 text-[2.6rem] leading-[1.05] min-[820px]:text-[clamp(3rem,5.2vw,4.55rem)] min-[820px]:leading-[1.02]')}>
                             Turn your creativity into <em className={emClass}>opportunities.</em>
@@ -174,19 +179,33 @@ export default function Home() {
                         </Link>
                     </div>
 
-                    <div className="relative top-[50px] grid min-h-0 justify-items-center min-[1100px]:block min-[1100px]:min-h-[430px]">
-                        <figure className="mx-auto w-[min(100%,400px)] overflow-hidden rounded-[28px] bg-white shadow-[0_22px_50px_rgba(11,39,68,0.14)] min-[1100px]:ml-auto min-[1100px]:mr-[88px]">
+                    <div className="relative top-0 mx-auto w-[min(100%,400px)] min-[1100px]:top-[50px] min-[1100px]:block min-[1100px]:min-h-[430px] min-[1100px]:w-auto">
+                        <figure className="relative mx-auto w-full overflow-hidden rounded-[28px] bg-white shadow-[0_22px_50px_rgba(11,39,68,0.14)] min-[1100px]:ml-auto min-[1100px]:mr-[88px] min-[1100px]:w-[min(100%,400px)]">
                             <img
-                                className="block h-[370px] w-full object-cover"
+                                className="block h-[320px] w-full object-cover min-[1100px]:h-[370px]"
                                 src="/images/creator-portrait.png"
                                 alt="Smiling creator with curly hair and sunglasses"
                             />
                         </figure>
-                        <div className={cn('mt-4 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2.5 text-[0.85rem] font-bold min-[1100px]:absolute min-[1100px]:left-[12%] min-[1100px]:top-[22px] min-[1100px]:mt-0', cardShadow)}>
-                            <span className="grid size-7 place-items-center rounded-full bg-[#ffe3ea] text-[#ff3d6e]">♥</span>
+                        <div className={cn('pointer-events-none absolute left-[-2px] top-[10px] z-[3] inline-flex animate-float-slow items-center gap-2 rounded-full bg-white px-3 py-2 text-[0.78rem] font-bold min-[1100px]:left-[-24%] min-[1100px]:top-[22px] min-[1100px]:px-3.5 min-[1100px]:py-2.5 min-[1100px]:text-[0.85rem]', cardShadow)}>
+                            <span className="grid size-6 place-items-center rounded-full bg-[#ffe3ea] text-[#ff3d6e] min-[1100px]:size-7">♥</span>
                             Do What You Love
                         </div>
-                        <ul className={cn('mx-auto mt-4 w-[min(100%,320px)] list-none rounded-[22px] bg-white p-2.5 min-[1100px]:absolute min-[1100px]:right-[-118px] min-[1100px]:top-[26px] min-[1100px]:mx-0 min-[1100px]:mt-0 min-[1100px]:w-[236px]', cardShadow)}>
+                        <div className={cn('pointer-events-none absolute top-[300px] right-[-6px] z-[3] flex animate-float-medium items-center gap-2 rounded-[14px] bg-white p-2.5 text-[0.78rem] font-bold min-[1100px]:hidden', cardShadow)}>
+                            <ul className={cn('mx-auto mt-4 w-[min(100%,320px)] list-none rounded-[22px] bg-white p-2.5 min-[1100px]:absolute min-[1100px]:right-[-118px] min-[1100px]:top-[26px] min-[1100px]:mx-0 min-[1100px]:mt-0 min-[1100px]:block min-[1100px]:w-[236px]', cardShadow)}>
+                                {CREATOR_FEATURES.map((item) => (
+                                    <li key={item.label} className="flex items-center gap-2.5 rounded-[14px] p-2.5 text-[0.9rem] font-bold">
+                                        <span className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-[#eef7ff] text-[#0094d4]">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" style={{ color: item.color }}>
+                                                <path fill="currentColor" d={item.icon} />
+                                            </svg>
+                                        </span>
+                                        {item.label}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <ul className={cn('mx-auto mt-4 hidden w-[min(100%,320px)] list-none rounded-[22px] bg-white p-2.5 min-[1100px]:absolute min-[1100px]:right-[-118px] min-[1100px]:top-[26px] min-[1100px]:mx-0 min-[1100px]:mt-0 min-[1100px]:block min-[1100px]:w-[236px]', cardShadow)}>
                             {CREATOR_FEATURES.map((item) => (
                                 <li key={item.label} className="flex items-center gap-2.5 rounded-[14px] p-2.5 text-[0.9rem] font-bold">
                                     <span className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-[#eef7ff] text-[#0094d4]">
@@ -198,7 +217,7 @@ export default function Home() {
                                 </li>
                             ))}
                         </ul>
-                        <p className="mt-4 text-right font-handwriting text-[20px] font-bold uppercase leading-[1.05] min-[1100px]:absolute min-[1100px]:bottom-[60px] min-[1100px]:right-[-30px] min-[1100px]:mt-0 min-[1100px]:rotate-[337deg]">
+                        <p className="mt-4 hidden text-right font-handwriting text-[20px] font-bold uppercase leading-[1.05] min-[1100px]:absolute min-[1100px]:bottom-[60px] min-[1100px]:right-[-30px] min-[1100px]:mt-0 min-[1100px]:block min-[1100px]:rotate-[337deg]">
                             More
                             <br />
                             creative
@@ -214,7 +233,7 @@ export default function Home() {
             <section className="relative bg-brand-blue py-2.5" id="music">
                 <div className={cn(wrap, 'grid grid-cols-1 items-center gap-8 min-[1100px]:grid-cols-[1.1fr_0.9fr]')}>
                     <div className="relative grid min-h-0 justify-items-center min-[1100px]:block min-[1100px]:min-h-[540px]">
-                        <p className="mt-4 font-handwriting text-2xl font-bold uppercase leading-[1.55] tracking-[0.2em] text-white min-[1100px]:absolute min-[1100px]:bottom-[200px] min-[1100px]:left-[-100px] min-[1100px]:mt-0 min-[1100px]:rotate-[353deg]">
+                        <p className="mt-4 absolute left-0 font-handwriting text-sm md:text-2xl font-normal md:font-bold uppercase leading-[1.55] tracking-[0.2em] text-white min-[1100px]:absolute min-[1100px]:bottom-[200px] min-[1100px]:left-[-100px] min-[1100px]:mt-0 min-[1100px]:rotate-[353deg]">
                             Real
                             <br />
                             Creators
@@ -223,7 +242,7 @@ export default function Home() {
                             <br />
                             Real Reach
                         </p>
-                        <div className="mx-auto w-[min(290px,68%)] -rotate-[9deg] min-[1100px]:ml-[-180px] min-[1100px]:mr-0">
+                        <div className="mx-auto relative top-[70%] md:top-0 w-[min(290px,68%)] -rotate-[9deg] min-[1100px]:ml-[-180px] min-[1100px]:mr-0">
                             <div className="rounded-[32px] bg-[#1a1d24] p-2.5 shadow-[0_30px_60px_rgba(11,39,68,0.28)]">
                                 <div className="relative aspect-[3/4.15] overflow-hidden rounded-[22px] bg-black">
                                     <img
@@ -251,14 +270,14 @@ export default function Home() {
                                 </div>
                             </div>
                         </div>
-                        <figure className={cn('m-0 mt-4 rounded-[4px] bg-white px-2 pb-[22px] pt-2 min-[1100px]:absolute min-[1100px]:right-[10%] min-[1100px]:top-7 min-[1100px]:mt-0 min-[1100px]:rotate-[10deg] mr-[40px]', cardShadow)}>
+                        <figure className={cn('m-0 mt-4 hidden md:block rounded-[4px] bg-white px-2 pb-[22px] pt-2 min-[1100px]:absolute min-[1100px]:right-[10%] min-[1100px]:top-7 min-[1100px]:mt-0 min-[1100px]:rotate-[10deg] mr-[40px]', cardShadow)}>
                             <img
                                 className="block size-32 object-cover"
                                 src="/images/guitarist.png"
                                 alt="Musician playing an acoustic guitar"
                             />
                         </figure>
-                        <figure className={cn('m-0 mt-4 rounded-[4px] bg-white px-2 pb-[22px] pt-2 min-[1100px]:absolute min-[1100px]:bottom-12 min-[1100px]:right-[18%] min-[1100px]:mt-0 min-[1100px]:-rotate-[7deg]', cardShadow)}>
+                        <figure className={cn('m-0 mt-4 hidden md:block rounded-[4px] bg-white px-2 pb-[22px] pt-2 min-[1100px]:absolute min-[1100px]:bottom-12 min-[1100px]:right-[18%] min-[1100px]:mt-0 min-[1100px]:-rotate-[7deg]', cardShadow)}>
                             <img
                                 className="block size-32 object-cover"
                                 src="/images/concert-crowd.png"
@@ -266,24 +285,7 @@ export default function Home() {
                             />
                         </figure>
                     </div>
-
-                    {/* <div>
-                        <p className={cn(eyebrow, 'text-white')}>For Music Labels &amp; Artists</p>
-                        <h2 className={cn(heading, 'mb-4 text-[2.6rem] leading-[1.05] min-[820px]:text-[2.6rem] text-white')}>
-                            Get creators making 
-                            <br />
-                            reels on your song. 
-                            <br />
-                            <em className={emClass}>Day 1.</em>
-                        </h2>
-                        <p className="mt-4 mb-7 max-w-[42ch] text-[1.05rem] leading-[1.6] text-white/[0.94]">
-                            Launch your track with a wave of authentic creator content. TapnLike helps you find the right creators, briefing, tracking and real-time results — all in one place.
-                        </p>
-                        <Link className={cn(btn, btnOrange)} to="/register">
-                            Promote Your Music <span aria-hidden="true">→</span>
-                        </Link>
-                    </div> */}
-                    <div className="p-8 md:p-12 text-white">
+                    <div className="p-2 relative top-[44%] md:top-0 md:p-12 text-white">
                         <p className={cn(eyebrow, 'text-white/90 text-[0.85rem] tracking-[0.15em] uppercase font-bold mb-3')}>
                             FOR MUSIC LABELS &amp; ARTISTS
                         </p>
@@ -317,7 +319,7 @@ export default function Home() {
                     <div>
                         <p className={cn(eyebrow, 'opacity-90')}>Ready to build together?</p>
                         <h2 className={cn(heading, 'max-w-[24ch] text-[clamp(2.3rem,4vw,3.35rem)]')}>
-                            Good People Brighter 
+                            Good People Brighter
                             <span className='font-bold text-brand-orange'>Tomorrows.</span>
                         </h2>
                     </div>

@@ -3,10 +3,10 @@ import { Check, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const authInputClassName =
-    'h-[52px] w-full rounded-[16px] border border-[#e3eaf0] bg-white px-4 text-[14px] text-brand-ink outline-none transition placeholder:text-[#b0b7c0] focus:border-brand-orange focus:shadow-[0_0_0_3px_rgba(255,106,26,0.12)] disabled:cursor-not-allowed disabled:opacity-50';
+    'h-11 w-full rounded-[14px] border border-[#e3eaf0] bg-white px-3.5 text-[13px] text-brand-ink outline-none transition placeholder:text-[#b0b7c0] focus:border-brand-orange focus:shadow-[0_0_0_3px_rgba(255,106,26,0.12)] disabled:cursor-not-allowed disabled:opacity-50 sm:h-[52px] sm:rounded-[16px] sm:px-4 sm:text-[14px]';
 
 export const authCtaClassName =
-    'flex h-[52px] w-full items-center justify-center rounded-full bg-brand-orange text-[14px] font-extrabold text-white shadow-[0_12px_28px_rgba(255,106,26,0.32)] transition hover:-translate-y-px hover:bg-[#f05a0c] disabled:pointer-events-none disabled:opacity-60';
+    'flex h-11 w-full items-center justify-center rounded-full bg-brand-orange text-[13px] font-extrabold text-white shadow-[0_12px_28px_rgba(255,106,26,0.32)] transition hover:-translate-y-px hover:bg-[#f05a0c] disabled:pointer-events-none disabled:opacity-60 sm:h-[52px] sm:text-[14px]';
 
 export function AuthPasswordInput({
     id,
@@ -60,7 +60,7 @@ export function AuthSocialButton({
         <button
             type="button"
             className={cn(
-                'flex h-[52px] items-center justify-center gap-2.5 rounded-[16px] border border-[#e6e6ec] bg-white text-[14px] font-bold text-[#121318] shadow-[0_1px_2px_rgba(11,39,68,0.04)] transition hover:bg-[#fafafd]',
+                'flex h-11 items-center justify-center gap-2.5 rounded-[14px] border border-[#e6e6ec] bg-white text-[13px] font-bold text-[#121318] shadow-[0_1px_2px_rgba(11,39,68,0.04)] transition hover:bg-[#fafafd] sm:h-[52px] sm:rounded-[16px] sm:text-[14px]',
                 className,
             )}
             {...props}
@@ -103,7 +103,7 @@ export function AppleIcon() {
 
 export function AuthDivider({ children }: { children: ReactNode }) {
     return (
-        <div className="my-5 flex items-center gap-3 text-[12px] text-[#b0b4bc]">
+        <div className="my-3 flex items-center gap-3 text-[11px] text-[#b0b4bc] sm:my-5 sm:text-[12px]">
             <span className="h-px flex-1 bg-[#ececf1]" />
             {children}
             <span className="h-px flex-1 bg-[#ececf1]" />

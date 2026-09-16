@@ -75,7 +75,7 @@ function SignupVisual() {
 export function TrustPills({ items, className }: { items: string[]; className?: string }) {
     const icons = [Shield, Check];
     return (
-        <div className={cn('mb-5 flex flex-wrap gap-2', className)}>
+        <div className={cn('mb-3 flex flex-wrap gap-2 sm:mb-5', className)}>
             {items.map((item, index) => {
                 const Icon = icons[index] ?? Shield;
                 return (
@@ -102,7 +102,7 @@ export function AuthFieldLabel({
     className?: string;
 }) {
     return (
-        <label htmlFor={htmlFor} className={cn('mb-2 block text-[13px] font-bold text-brand-ink', className)}>
+        <label htmlFor={htmlFor} className={cn('mb-1 block text-[12px] font-bold text-brand-ink sm:mb-2 sm:text-[13px]', className)}>
             {children}
         </label>
     );
@@ -118,18 +118,18 @@ export function AuthSplitShell({
     const isSignup = mode === 'signup';
 
     return (
-        <div className="relative min-h-svh overflow-x-hidden bg-white font-jakarta text-brand-ink">
+        <div className="relative h-svh overflow-hidden bg-white font-jakarta text-brand-ink sm:h-auto sm:min-h-svh sm:overflow-x-hidden">
             {isSignup ? <SignupVisual /> : null}
 
-            <div className="relative z-10 mx-auto flex min-h-svh w-full min-w-0 max-w-[1120px] flex-col px-5 pb-8 sm:px-10 lg:px-14">
-                <div className="flex justify-end pb-2 pt-4 lg:pt-6">
+            <div className="relative z-10 mx-auto flex h-full min-h-0 w-full min-w-0 max-w-[1120px] flex-col px-4 pb-3 sm:min-h-svh sm:px-10 sm:pb-8 lg:px-14">
+                <div className="flex shrink-0 justify-end pb-1 pt-3 sm:pb-2 sm:pt-4 lg:pt-6">
                     <ModeSwitch mode={mode} />
                 </div>
 
-                <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center justify-start overflow-hidden pt-2 sm:justify-center sm:overflow-visible sm:pt-0">
                     <div className={cn('w-full min-w-0', isSignup ? 'max-w-[500px]' : 'max-w-[460px]')}>
                         {children}
-                        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[12px] text-[#9aa3ad]">
+                        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[#9aa3ad] sm:mt-6 sm:gap-x-4 sm:text-[12px]">
                             <Link to="/privacy-policy" className="transition-colors hover:text-brand-ink">
                                 Privacy Policy
                             </Link>
