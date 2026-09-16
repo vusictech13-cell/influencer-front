@@ -76,26 +76,28 @@ export default function Login() {
                 <TrustPills className="relative z-30 hidden sm:flex" items={['Secure account', 'Creator verified']} />
 
                 <div className="relative">
-                    {/* Body sits behind the email field, like the mockup ledge. */}
+                    {/*
+                      Same geometry at every size: fixed height + matching spacer.
+                      Desktop values unchanged; mobile is a proportional scale of that layout
+                      so arms always meet the email top border.
+                    */}
                     <img
                         src="/images/auth-login-creator.png?v=3"
                         alt=""
-                        className="pointer-events-none absolute left-[12%] top-0 z-[1] w-[78%] max-w-none select-none sm:left-[58px] sm:top-[20px] sm:w-[calc(80%+30px)]"
+                        className="pointer-events-none absolute left-[13%] top-[10px] z-[1] h-[128px] w-auto max-w-none select-none sm:left-[58px] sm:top-[20px] sm:h-[195px]"
                     />
-                    {/* Left elbow/forearm rests on top of the field. */}
                     <img
                         src="/images/auth-login-creator.png?v=3"
                         alt=""
-                        className="pointer-events-none absolute left-[12%] top-0 z-20 w-[78%] max-w-none select-none sm:left-[58px] sm:top-[20px] sm:w-[calc(80%+30px)]"
+                        className="pointer-events-none absolute left-[13%] top-[10px] z-20 h-[128px] w-auto max-w-none select-none sm:left-[58px] sm:top-[20px] sm:h-[195px]"
                         style={{ clipPath: 'polygon(0% 72%, 30% 72%, 30% 90%, 0% 90%)' }}
                     />
-                    {/* Pointing finger + spark marks stay in front of the field. */}
                     <img
                         src="/images/auth-login-creator.png?v=3"
                         alt=""
-                        className="pointer-events-none absolute left-[12%] top-0 z-20 w-[78%] max-w-none select-none sm:left-[58px] sm:top-[20px] sm:w-[calc(80%+30px)]"
+                        className="pointer-events-none absolute left-[13%] top-[10px] z-20 h-[128px] w-auto max-w-none select-none sm:left-[58px] sm:top-[20px] sm:h-[195px]"
                     />
-                    <div className="h-[98px] sm:h-[148px]" aria-hidden="true" />
+                    <div className="h-[90px] sm:h-[148px]" aria-hidden="true" />
 
                     <form onSubmit={handleSubmit(onSubmit)}>
                     {error && (
