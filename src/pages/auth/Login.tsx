@@ -73,14 +73,6 @@ export default function Login() {
             </p>
 
             <div className="relative">
-                {/* Mobile: girl image replaces the trust pills */}
-                <div className="relative mb-1 flex justify-center sm:hidden" aria-hidden="true">
-                    <img
-                        src="/images/auth-login-creator.png?v=3"
-                        alt=""
-                        className="pointer-events-none h-[min(34vw,140px)] w-auto select-none object-contain"
-                    />
-                </div>
                 <TrustPills className="relative z-30 hidden sm:flex" items={['Secure account', 'Creator verified']} />
 
                 <div className="relative">
@@ -88,23 +80,22 @@ export default function Login() {
                     <img
                         src="/images/auth-login-creator.png?v=3"
                         alt=""
-                        className="pointer-events-none absolute left-[58px] top-[20px] z-[1] hidden w-[calc(80%+30px)] max-w-none select-none sm:block"
+                        className="pointer-events-none absolute left-[12%] top-0 z-[1] w-[78%] max-w-none select-none sm:left-[58px] sm:top-[20px] sm:w-[calc(80%+30px)]"
                     />
                     {/* Left elbow/forearm rests on top of the field. */}
                     <img
                         src="/images/auth-login-creator.png?v=3"
                         alt=""
-                        className="pointer-events-none absolute left-[58px] top-[20px] z-20 hidden w-[calc(80%+30px)] max-w-none select-none sm:block"
+                        className="pointer-events-none absolute left-[12%] top-0 z-20 w-[78%] max-w-none select-none sm:left-[58px] sm:top-[20px] sm:w-[calc(80%+30px)]"
                         style={{ clipPath: 'polygon(0% 72%, 30% 72%, 30% 90%, 0% 90%)' }}
                     />
                     {/* Pointing finger + spark marks stay in front of the field. */}
                     <img
                         src="/images/auth-login-creator.png?v=3"
                         alt=""
-                        className="pointer-events-none absolute left-[58px] top-[20px] z-20 hidden w-[calc(80%+30px)] max-w-none select-none sm:block"
-                        // style={{ clipPath: 'polygon(50% 72%, 66% 72%, 66% 100%, 50% 100%)' }}
+                        className="pointer-events-none absolute left-[12%] top-0 z-20 w-[78%] max-w-none select-none sm:left-[58px] sm:top-[20px] sm:w-[calc(80%+30px)]"
                     />
-                    <div className="hidden h-[148px] sm:block" aria-hidden="true" />
+                    <div className="h-[98px] sm:h-[148px]" aria-hidden="true" />
 
                     <form onSubmit={handleSubmit(onSubmit)}>
                     {error && (
