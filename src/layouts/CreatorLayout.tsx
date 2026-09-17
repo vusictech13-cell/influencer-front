@@ -9,7 +9,6 @@ import {
     PenLine,
     Search,
     Settings,
-    Headset,
     TrendingUp,
     Upload,
     User,
@@ -33,7 +32,6 @@ const NAV_ITEMS = [
     { key: '/creator/profile', icon: User, label: 'Profile', section: 'My profile' },
     { key: '/creator/payments', icon: Wallet, label: 'Earnings', section: 'My profile' },
     { key: '/creator/media-kit', icon: FileText, label: 'Media kit', section: 'My profile' },
-    { key: '/creator/support', icon: Headset, label: 'Support', section: 'Account' },
     { key: '/creator/settings', icon: Settings, label: 'Settings', section: 'Account' },
 ];
 

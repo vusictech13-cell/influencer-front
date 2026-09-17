@@ -31,7 +31,6 @@ import CreatorMediaKit from './pages/creator/MediaKit';
 import CreatorSettings from './pages/creator/Settings';
 import CreatorReelStudio from './pages/creator/ReelStudio';
 import CreatorBulkReelUpload from './pages/creator/BulkReelUpload';
-import CreatorSupport from './pages/creator/Support';
 import HomeRedirect from './components/auth/HomeRedirect'; 
 import NotFound from './pages/NotFound';
 import AdminDashboard from './pages/admin/Dashboard';
@@ -41,7 +40,6 @@ import AdminCreatorDetail from './pages/admin/CreatorDetail';
 import AdminCreatorInsights from './pages/admin/CreatorInsights';
 import AdminBrandDetail from './pages/admin/BrandDetail';
 import AdminCompareProfiles from './pages/admin/CompareProfiles';
-import AdminSupport from './pages/admin/Support';
 
 
 const queryClient = new QueryClient();
@@ -89,8 +87,7 @@ function App() {
             <Route path="/creator/media-kit" element={<CreatorLayout children={<CreatorMediaKit />} />} />
             <Route path="/creator/payments" element={<CreatorLayout children={<CreatorPayments />} />} />
             <Route path="/creator/settings" element={<CreatorLayout children={<CreatorSettings />} />} />
-            <Route path="/creator/support" element={<CreatorLayout children={<CreatorSupport />} />} />
-            <Route path="/creator/messages" element={<CreatorLayout children={<Navigate to="/creator/support" replace />} />} />
+            <Route path="/creator/messages" element={<CreatorLayout children={<div>Creator Messages</div>} />} />
 
             {/* Admin Routes */}
             <Route path="/admin/dashboard" element={<AdminLayout children={<AdminDashboard />} />} />
@@ -100,7 +97,6 @@ function App() {
             <Route path="/admin/creators/:id" element={<AdminLayout children={<AdminCreatorDetail />} />} />
             <Route path="/admin/brands" element={<AdminLayout children={<AdminBrands />} />} />
             <Route path="/admin/brands/:id" element={<AdminLayout children={<AdminBrandDetail />} />} />
-            <Route path="/admin/support" element={<AdminLayout children={<AdminSupport />} />} />
             <Route path="/admin/settings" element={<AdminLayout children={<div>Admin Settings</div>} />} />
 
             <Route path="*" element={<MarketingLayout children={<NotFound />} />} />

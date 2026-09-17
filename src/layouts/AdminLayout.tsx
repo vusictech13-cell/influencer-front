@@ -6,7 +6,6 @@ import {
     Settings,
     Building2,
     GitCompare,
-    Headphones,
 } from 'lucide-react';
 import PortalShell from './shared/PortalShell';
 
@@ -15,7 +14,6 @@ const NAV_ITEMS = [
     { key: '/admin/creators', icon: Users, label: 'Creators' },
     { key: '/admin/brands', icon: Building2, label: 'Brands' },
     { key: '/admin/compare', icon: GitCompare, label: 'Compare Profiles' },
-    { key: '/admin/support', icon: Headphones, label: 'Support' },
     { key: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
 
