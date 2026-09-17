@@ -10,6 +10,9 @@ export interface BrandSubmission {
     submitted_at?: string;
     approved_at?: string;
     views?: number;
+    sound_verified?: boolean;
+    detected_audio_title?: string | null;
+    detected_audio_artist?: string | null;
     campaign?: { id: number; title: string; track_artwork_url?: string; brand_name?: string };
     user?: { id: number; name: string; email: string };
     social_account?: {

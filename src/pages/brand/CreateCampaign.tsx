@@ -5,6 +5,7 @@ import {
   AtSign,
   ArrowRight,
   ArrowLeft,
+  ChevronDown,
   Globe,
   Trophy,
   Music,
@@ -211,7 +212,7 @@ export default function CreateCampaign() {
                   value={formData.title}
                   onChange={handleInputChange}
                   placeholder="e.g. Summer Vibes Playlist Promo"
-                  className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00B4EB]/30 focus:border-[#00B4EB] transition-all"
+                  className="w-full h-11 px-4 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00B4EB]/30 focus:border-[#00B4EB] transition-all"
                 />
               </div>
               <div className="grid grid-cols-3 gap-4">
@@ -229,7 +230,7 @@ export default function CreateCampaign() {
                       value={formData.spotify_link}
                       onChange={handleInputChange}
                       placeholder="https://open.spotify.com/..."
-                      className="w-full pl-9 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
+                      className="w-full h-11 pl-9 pr-4 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                     />
                   </div>
                 </div>
@@ -237,17 +238,23 @@ export default function CreateCampaign() {
                   <label className="text-[11px] font-semibold text-gray-500 mb-2 block uppercase tracking-wider">
                     Genre
                   </label>
-                  <select
-                    name="genre"
-                    value={formData.genre}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
-                  >
-                    <option value="">Select...</option>
-                    <option value="Pop">Pop</option>
-                    <option value="Hip-Hop / Rap">Hip-Hop / Rap</option>
-                    <option value="Electronic">Electronic / Dance</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      name="genre"
+                      value={formData.genre}
+                      onChange={handleInputChange}
+                      className="w-full h-11 appearance-none px-3 pr-9 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
+                    >
+                      <option value="">Select...</option>
+                      <option value="Pop">Pop</option>
+                      <option value="Hip-Hop / Rap">Hip-Hop / Rap</option>
+                      <option value="Electronic">Electronic / Dance</option>
+                    </select>
+                    <ChevronDown
+                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      size={16}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -265,7 +272,7 @@ export default function CreateCampaign() {
                       value={formData.required_tags}
                       onChange={handleInputChange}
                       placeholder="@artistname"
-                      className="w-full pl-8 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
+                      className="w-full h-11 pl-8 pr-4 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                     />
                   </div>
                 </div>
@@ -283,7 +290,7 @@ export default function CreateCampaign() {
                       value={formData.hashtags}
                       onChange={handleInputChange}
                       placeholder="#trending"
-                      className="w-full pl-8 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
+                      className="w-full h-11 pl-8 pr-4 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                     />
                   </div>
                 </div>
@@ -316,7 +323,7 @@ export default function CreateCampaign() {
                     value={formData.brand_name}
                     onChange={handleInputChange}
                     placeholder="e.g. Spotify India"
-                    className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
+                    className="w-full h-11 px-4 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                   />
                 </div>
                 <div>
@@ -356,17 +363,23 @@ export default function CreateCampaign() {
                     <label className="text-[10px] font-semibold text-gray-500 block mb-1">
                       Target Views
                     </label>
-                    <select
-                      name="bonus_target_views"
-                      value={formData.bonus_target_views}
-                      onChange={handleInputChange}
-                      className="w-full px-2 py-2 bg-white border border-gray-200 rounded-lg text-xs font-medium focus:outline-none"
-                    >
-                      <option value="100K Views">100K Views</option>
-                      <option value="500K Views">500K Views</option>
-                      <option value="1M Views">1M Views</option>
-                      <option value="10M Views">10M Views</option>
-                    </select>
+                    <div className="relative">
+                      <select
+                        name="bonus_target_views"
+                        value={formData.bonus_target_views}
+                        onChange={handleInputChange}
+                        className="w-full h-11 appearance-none px-3 pr-9 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
+                      >
+                        <option value="100K Views">100K Views</option>
+                        <option value="500K Views">500K Views</option>
+                        <option value="1M Views">1M Views</option>
+                        <option value="10M Views">10M Views</option>
+                      </select>
+                      <ChevronDown
+                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        size={16}
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="text-[10px] font-semibold text-gray-500 block mb-1">
@@ -377,7 +390,7 @@ export default function CreateCampaign() {
                       type="number"
                       value={formData.bonus_reward}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-2 bg-white border border-gray-200 rounded-lg text-xs font-medium focus:outline-none"
+                      className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                     />
                   </div>
                   <div>
@@ -389,7 +402,7 @@ export default function CreateCampaign() {
                       type="number"
                       value={formData.bonus_max_creators}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-2 bg-white border border-gray-200 rounded-lg text-xs font-medium focus:outline-none"
+                      className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                     />
                   </div>
                 </div>
@@ -473,31 +486,43 @@ export default function CreateCampaign() {
                       <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-1.5 block">
                         Audience Gender
                       </label>
-                      <select
-                        name="audience_gender"
-                        value={formData.audience_gender}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:border-[#00B4EB]"
-                      >
-                        <option>Any</option>
-                        <option>Female Primary</option>
-                        <option>Male Primary</option>
-                      </select>
+                      <div className="relative">
+                        <select
+                          name="audience_gender"
+                          value={formData.audience_gender}
+                          onChange={handleInputChange}
+                          className="w-full h-11 appearance-none px-3 pr-9 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:border-[#00B4EB]"
+                        >
+                          <option>Any</option>
+                          <option>Female Primary</option>
+                          <option>Male Primary</option>
+                        </select>
+                        <ChevronDown
+                          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                          size={16}
+                        />
+                      </div>
                     </div>
                     <div className="flex-1">
                       <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-1.5 block">
                         Audience Age
                       </label>
-                      <select
-                        name="audience_age"
-                        value={formData.audience_age}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:border-[#00B4EB]"
-                      >
-                        <option>Any</option>
-                        <option>18-24 (Gen Z)</option>
-                        <option>25-34</option>
-                      </select>
+                      <div className="relative">
+                        <select
+                          name="audience_age"
+                          value={formData.audience_age}
+                          onChange={handleInputChange}
+                          className="w-full h-11 appearance-none px-3 pr-9 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:border-[#00B4EB]"
+                        >
+                          <option>Any</option>
+                          <option>18-24 (Gen Z)</option>
+                          <option>25-34</option>
+                        </select>
+                        <ChevronDown
+                          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                          size={16}
+                        />
+                      </div>
                     </div>
                   </div>
                   <div className="w-full md:w-1/2">
@@ -514,7 +539,7 @@ export default function CreateCampaign() {
                         value={formData.specific_creators}
                         onChange={handleInputChange}
                         placeholder="Search & whitelist by handle..."
-                        className="w-full pl-8 pr-4 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
+                        className="w-full h-11 pl-8 pr-4 bg-gray-50/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB]"
                       />
                     </div>
                   </div>
@@ -563,7 +588,7 @@ export default function CreateCampaign() {
                               Number(e.target.value),
                             )
                           }
-                          className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB] w-full shadow-sm"
+                          className="h-11 px-3 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-[#00B4EB] w-full shadow-sm"
                         />
                       </div>
                       <div className="flex flex-col w-full md:w-1/4 md:items-center">

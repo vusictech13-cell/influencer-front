@@ -35,6 +35,11 @@ export interface CampaignSubmission {
     applied_at?: string;
     submitted_at?: string;
     approved_at?: string;
+    sound_verified?: boolean;
+    detected_audio_title?: string | null;
+    detected_audio_artist?: string | null;
+    expected_track_title?: string | null;
+    expected_track_artist?: string | null;
     createdAt: string;
     campaign?: Campaign;
 }

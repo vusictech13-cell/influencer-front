@@ -308,6 +308,12 @@ export default function BrandCampaignSubmissions({ campaignId }: BrandCampaignSu
                                         </td>
                                         <td className="px-4 py-4">
                                             <StatusBadge status={sub.status} />
+                                            {sub.sound_verified && (
+                                                <p className="text-[10px] text-emerald-600 font-medium mt-1.5">
+                                                    Official sound verified
+                                                    {sub.detected_audio_title ? ` · ${sub.detected_audio_title}` : ''}
+                                                </p>
+                                            )}
                                             {sub.status === 'approved' && sub.payout_amount != null && (
                                                 <p className="text-[10px] text-emerald-600 font-medium mt-1.5">
                                                     ₹{Number(sub.payout_amount).toLocaleString()}
