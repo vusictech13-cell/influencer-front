@@ -111,6 +111,26 @@ module.exports = {
           "0%": { top: "0%" },
           "100%": { top: "100%" },
         },
+        "support-overlay-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "support-overlay-out": {
+          from: { opacity: "1" },
+          to: { opacity: "0" },
+        },
+        "support-panel-in": {
+          "0%": { opacity: "0", transform: "translate3d(0, 16px, 0) scale(0.98)" },
+          "100%": { opacity: "1", transform: "translate3d(0, 0, 0) scale(1)" },
+        },
+        "support-panel-out": {
+          "0%": { opacity: "1", transform: "translate3d(0, 0, 0) scale(1)" },
+          "100%": { opacity: "0", transform: "translate3d(0, 16px, 0) scale(0.98)" },
+        },
+        "fab-pulse": {
+          "0%, 100%": { boxShadow: "0 12px 28px rgba(255,106,26,0.35)" },
+          "50%": { boxShadow: "0 12px 28px rgba(255,106,26,0.55), 0 0 0 10px rgba(255,106,26,0.12)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -119,6 +139,11 @@ module.exports = {
         "float-medium": "float-medium 3s ease-in-out infinite",
         "float-fast": "float-fast 2.5s ease-in-out infinite",
         scan: "scan 3s linear infinite",
+        "support-overlay-in": "support-overlay-in 0.22s ease-out forwards",
+        "support-overlay-out": "support-overlay-out 0.2s ease-in forwards",
+        "support-panel-in": "support-panel-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards",
+        "support-panel-out": "support-panel-out 0.22s ease-in forwards",
+        "fab-pulse": "fab-pulse 2.4s ease-in-out infinite",
       },
     },
   },

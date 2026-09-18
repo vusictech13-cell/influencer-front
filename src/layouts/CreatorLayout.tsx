@@ -4,6 +4,7 @@ import {
     Building2,
     Clapperboard,
     FileText,
+    HelpCircle,
     LayoutGrid,
     List,
     PenLine,
@@ -32,6 +33,7 @@ const NAV_ITEMS = [
     { key: '/creator/profile', icon: User, label: 'Profile', section: 'My profile' },
     { key: '/creator/payments', icon: Wallet, label: 'Earnings', section: 'My profile' },
     { key: '/creator/media-kit', icon: FileText, label: 'Media kit', section: 'My profile' },
+    { key: '/creator/support', icon: HelpCircle, label: 'Support', section: 'Account' },
     { key: '/creator/settings', icon: Settings, label: 'Settings', section: 'Account' },
 ];
 
