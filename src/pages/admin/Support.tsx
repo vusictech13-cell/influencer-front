@@ -11,7 +11,7 @@ import {
     type SupportFaq,
     type SupportMessage,
 } from '@/hooks/useSupport';
-import { getSupportSocket } from '@/lib/supportSocket';
+import { getSupportSocket, joinSupportTicket } from '@/lib/supportSocket';
 import { getApiErrorMessage } from '@/api/axios';
 
 const STATUS_FILTERS = [
@@ -72,7 +72,7 @@ export default function AdminSupport() {
         const socket = getSupportSocket();
         if (!socket) return;
 
-        socket.emit('support:join', { ticketId: selectedId }, () => {
+        const leaveTicket = joinSupportTicket(selectedId, () => {
             refetch();
             refetchTicket();
         });
@@ -103,7 +103,7 @@ export default function AdminSupport() {
         socket.on('support:status', onStatus);
 
         return () => {
-            socket.emit('support:leave', { ticketId: selectedId });
+            leaveTicket();
             socket.off('support:message:new', onMessage);
             socket.off('support:typing', onTyping);
             socket.off('support:status', onStatus);

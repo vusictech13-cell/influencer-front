@@ -64,6 +64,20 @@ api.interceptors.response.use(
 
                 localStorage.setItem('accessToken', accessToken);
 
+                // Keep live support socket authenticated after silent token refresh.
+                try {
+                    const { getSupportSocket } = await import('@/lib/supportSocket');
+                    const supportSocket = getSupportSocket();
+                    if (supportSocket) {
+                        supportSocket.auth = { token: accessToken };
+                        if (supportSocket.connected) {
+                            supportSocket.disconnect().connect();
+                        }
+                    }
+                } catch {
+                    // Socket module may be unused on some routes; ignore.
+                }
+
                 originalRequest.headers = {
                     ...originalRequest.headers,
                     Authorization: `Bearer ${accessToken}`,

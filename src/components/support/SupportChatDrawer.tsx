@@ -9,7 +9,7 @@ import {
     type SupportMessage,
     type SupportTicket,
 } from '@/hooks/useSupport';
-import { getSupportSocket } from '@/lib/supportSocket';
+import { getSupportSocket, joinSupportTicket } from '@/lib/supportSocket';
 import { getApiErrorMessage } from '@/api/axios';
 
 type ChatMode = 'bot' | 'awaiting_admin' | 'human';
@@ -62,6 +62,8 @@ export default function SupportChatDrawer({
     const [escalationTopic, setEscalationTopic] = useState('General support');
     const [error, setError] = useState<string | null>(null);
     const [typingLabel, setTypingLabel] = useState<string | null>(null);
+    /** Mobile: pin panel to visualViewport so composer stays above the keyboard. */
+    const [mobileFrame, setMobileFrame] = useState<{ top: number; height: number } | null>(null);
     const messagesRef = useRef<HTMLDivElement>(null);
     const bootstrapped = useRef(false);
 
@@ -135,8 +137,50 @@ export default function SupportChatDrawer({
     }, [ticket, mode]);
 
     useEffect(() => {
-        messagesRef.current?.scrollTo({ top: messagesRef.current.scrollHeight, behavior: 'smooth' });
-    }, [messages, typingLabel, showInput, isTicketClosed]);
+        if (!open) {
+            setMobileFrame(null);
+            return;
+        }
+
+        const isDesktop = () => window.matchMedia('(min-width: 640px)').matches;
+
+        const syncViewport = () => {
+            if (isDesktop()) {
+                setMobileFrame(null);
+                return;
+            }
+            const vv = window.visualViewport;
+            setMobileFrame({
+                top: vv?.offsetTop ?? 0,
+                height: Math.round(vv?.height ?? window.innerHeight),
+            });
+        };
+
+        syncViewport();
+        const vv = window.visualViewport;
+        vv?.addEventListener('resize', syncViewport);
+        vv?.addEventListener('scroll', syncViewport);
+        window.addEventListener('resize', syncViewport);
+        return () => {
+            vv?.removeEventListener('resize', syncViewport);
+            vv?.removeEventListener('scroll', syncViewport);
+            window.removeEventListener('resize', syncViewport);
+        };
+    }, [open]);
+
+    useEffect(() => {
+        const el = messagesRef.current;
+        if (!el) return;
+        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    }, [messages, typingLabel, showInput, isTicketClosed, mobileFrame?.height]);
+
+    function scrollMessagesToEnd() {
+        const el = messagesRef.current;
+        if (!el) return;
+        requestAnimationFrame(() => {
+            el.scrollTo({ top: el.scrollHeight });
+        });
+    }
 
     useEffect(() => {
         if (!open || !ticketId) return;
@@ -144,7 +188,7 @@ export default function SupportChatDrawer({
         const socket = getSupportSocket();
         if (!socket) return;
 
-        socket.emit('support:join', { ticketId });
+        const leaveTicket = joinSupportTicket(ticketId);
 
         const onMessage = (payload: { ticket_id: number; message: SupportMessage }) => {
             if (payload.ticket_id !== ticketId) return;
@@ -195,7 +239,7 @@ export default function SupportChatDrawer({
         socket.on('support:status', onStatus);
 
         return () => {
-            socket.emit('support:leave', { ticketId });
+            leaveTicket();
             socket.off('support:message:new', onMessage);
             socket.off('support:typing', onTyping);
             socket.off('support:status', onStatus);
@@ -325,6 +369,19 @@ export default function SupportChatDrawer({
 
     if (!mounted) return null;
 
+    const keyboardOpen = Boolean(
+        mobileFrame && typeof window !== 'undefined' && mobileFrame.height < window.innerHeight - 80,
+    );
+
+    const mobilePanelStyle = mobileFrame
+        ? {
+              top: mobileFrame.top,
+              height: mobileFrame.height,
+              maxHeight: mobileFrame.height,
+              bottom: 'auto' as const,
+          }
+        : undefined;
+
     return (
         <div
             className={`pointer-events-none fixed inset-0 z-50 sm:flex sm:items-stretch sm:justify-end sm:p-4 ${
@@ -332,7 +389,8 @@ export default function SupportChatDrawer({
             }`}
         >
             <div
-                className={`pointer-events-auto fixed inset-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-white shadow-[0_25px_80px_rgba(11,39,68,0.28)] sm:static sm:inset-auto sm:h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-2rem)] sm:w-[min(430px,calc(100vw-2rem))] sm:rounded-[24px] ${
+                style={mobilePanelStyle}
+                className={`pointer-events-auto fixed inset-x-0 top-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-white shadow-[0_25px_80px_rgba(11,39,68,0.28)] sm:static sm:inset-auto sm:h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-2rem)] sm:w-[min(430px,calc(100vw-2rem))] sm:rounded-[24px] ${
                     visible ? 'animate-support-panel-in' : 'animate-support-panel-out'
                 }`}
             >
@@ -362,95 +420,111 @@ export default function SupportChatDrawer({
 
                 <div
                     ref={messagesRef}
-                    className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain bg-[#f4f8fc] px-4 py-4"
+                    className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-[#f4f8fc] [-webkit-overflow-scrolling:touch]"
                 >
-                    {messages.map((msg) => (
-                        <div
-                            key={msg.id}
-                            className={`max-w-[84%] rounded-[15px] px-3 py-2.5 text-[13px] leading-relaxed ${
-                                msg.role === 'user' || msg.role === 'creator'
-                                    ? 'ml-auto rounded-tr-[5px] bg-brand-orange text-white'
-                                    : msg.role === 'system'
-                                      ? 'mx-auto bg-[#e8f4fa] text-[#3d5a73]'
-                                      : 'rounded-tl-[5px] border border-[#dce8f0] bg-white text-brand-ink'
-                            }`}
-                        >
-                            {msg.body}
-                        </div>
-                    ))}
-                    {typingLabel && !isTicketClosed && (
-                        <p className="text-[11px] text-[#7a8796]">{typingLabel}</p>
-                    )}
+                    <div className="space-y-2.5 px-4 py-4">
+                        {messages.map((msg) => (
+                            <div
+                                key={msg.id}
+                                className={`max-w-[84%] rounded-[15px] px-3 py-2.5 text-[13px] leading-relaxed ${
+                                    msg.role === 'user' || msg.role === 'creator'
+                                        ? 'ml-auto rounded-tr-[5px] bg-brand-orange text-white'
+                                        : msg.role === 'system'
+                                          ? 'mx-auto bg-[#e8f4fa] text-[#3d5a73]'
+                                          : 'rounded-tl-[5px] border border-[#dce8f0] bg-white text-brand-ink'
+                                }`}
+                            >
+                                {msg.body}
+                            </div>
+                        ))}
+                        {typingLabel && !isTicketClosed && (
+                            <p className="text-[11px] text-[#7a8796]">{typingLabel}</p>
+                        )}
+                    </div>
                 </div>
 
-                {mode === 'bot' && choices.length > 0 && (
-                    <div className="grid max-h-[40vh] shrink-0 gap-2 overflow-y-auto border-t border-[#dce8f0] bg-white p-3 sm:max-h-56">
-                        {choices.map((choice) => (
+                <div className="shrink-0 border-t border-[#dce8f0] bg-white">
+                    {mode === 'bot' && choices.length > 0 && (
+                        <div className="grid max-h-[min(36vh,280px)] gap-2 overflow-y-auto p-3 sm:max-h-56">
+                            {choices.map((choice) => (
+                                <button
+                                    key={choice}
+                                    type="button"
+                                    onClick={() => {
+                                        if (choice === REQUEST_ADMIN) {
+                                            addLocal('user', choice);
+                                            beginAdminRequest(escalationTopic);
+                                            return;
+                                        }
+                                        choose(choice);
+                                    }}
+                                    className="rounded-[11px] border border-[#cfe4f0] bg-[#f4fbff] px-3 py-2.5 text-left text-[12px] font-semibold text-[#0b2744] hover:border-brand-orange/40"
+                                >
+                                    {choice}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {error && <p className="px-4 pb-1 text-xs text-red-500">{error}</p>}
+
+                    {isTicketClosed ? (
+                        <div
+                            className={`px-4 py-4 text-center ${
+                                keyboardOpen
+                                    ? 'pb-4'
+                                    : 'pb-[max(1rem,env(safe-area-inset-bottom))]'
+                            }`}
+                        >
+                            <p className="text-sm font-bold text-[#0b2744]">This ticket is closed</p>
+                            <p className="mt-1 text-[12px] text-[#7a8796]">
+                                Messaging is disabled. Start a new support request if you still need help.
+                            </p>
                             <button
-                                key={choice}
                                 type="button"
-                                onClick={() => {
-                                    if (choice === REQUEST_ADMIN) {
-                                        addLocal('user', choice);
-                                        beginAdminRequest(escalationTopic);
-                                        return;
-                                    }
-                                    choose(choice);
-                                }}
-                                className="rounded-[11px] border border-[#cfe4f0] bg-[#f4fbff] px-3 py-2.5 text-left text-[12px] font-semibold text-[#0b2744] hover:border-brand-orange/40"
+                                onClick={onClose}
+                                className="mt-3 rounded-full bg-[#0b2744] px-4 py-2 text-[12px] font-bold text-white hover:bg-[#123050]"
                             >
-                                {choice}
+                                Back to support
                             </button>
-                        ))}
-                    </div>
-                )}
-
-                {error && <p className="shrink-0 px-4 pb-1 text-xs text-red-500">{error}</p>}
-
-                {isTicketClosed ? (
-                    <div className="shrink-0 border-t border-[#dce8f0] bg-[#f8fafc] px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center">
-                        <p className="text-sm font-bold text-[#0b2744]">This ticket is closed</p>
-                        <p className="mt-1 text-[12px] text-[#7a8796]">
-                            Messaging is disabled. Start a new support request if you still need help.
-                        </p>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="mt-3 rounded-full bg-[#0b2744] px-4 py-2 text-[12px] font-bold text-white hover:bg-[#123050]"
+                        </div>
+                    ) : showInput ? (
+                        <form
+                            onSubmit={handleSubmit}
+                            className={`flex gap-2 p-3 ${
+                                keyboardOpen
+                                    ? 'pb-3'
+                                    : 'pb-[max(0.75rem,env(safe-area-inset-bottom))]'
+                            }`}
                         >
-                            Back to support
-                        </button>
-                    </div>
-                ) : showInput ? (
-                    <form
-                        onSubmit={handleSubmit}
-                        className="flex shrink-0 gap-2 border-t border-[#dce8f0] bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
-                    >
-                        <input
-                            value={input}
-                            onChange={(event) => onInputChange(event.target.value)}
-                            placeholder={
-                                mode === 'awaiting_admin'
-                                    ? 'Describe your issue for admin…'
-                                    : 'Type your message…'
-                            }
-                            className="min-w-0 flex-1 rounded-[11px] border border-[#dce8f0] px-3 py-2.5 text-sm outline-none focus:border-brand-orange"
-                            autoFocus
-                        />
-                        <button
-                            type="submit"
-                            disabled={createTicket.isPending || sendMessage.isPending || !input.trim()}
-                            className="grid h-11 w-11 flex-none place-items-center rounded-[11px] bg-brand-orange text-white disabled:opacity-60"
-                            aria-label="Send"
-                        >
-                            {createTicket.isPending || sendMessage.isPending ? (
-                                <Loader2 size={16} className="animate-spin" />
-                            ) : (
-                                <Send size={16} />
-                            )}
-                        </button>
-                    </form>
-                ) : null}
+                            <input
+                                value={input}
+                                onChange={(event) => onInputChange(event.target.value)}
+                                onFocus={scrollMessagesToEnd}
+                                placeholder={
+                                    mode === 'awaiting_admin'
+                                        ? 'Describe your issue for admin…'
+                                        : 'Type your message…'
+                                }
+                                enterKeyHint="send"
+                                className="min-w-0 flex-1 rounded-[11px] border border-[#dce8f0] px-3 py-2.5 text-sm outline-none focus:border-brand-orange"
+                                autoFocus
+                            />
+                            <button
+                                type="submit"
+                                disabled={createTicket.isPending || sendMessage.isPending || !input.trim()}
+                                className="grid h-11 w-11 flex-none place-items-center rounded-[11px] bg-brand-orange text-white disabled:opacity-60"
+                                aria-label="Send"
+                            >
+                                {createTicket.isPending || sendMessage.isPending ? (
+                                    <Loader2 size={16} className="animate-spin" />
+                                ) : (
+                                    <Send size={16} />
+                                )}
+                            </button>
+                        </form>
+                    ) : null}
+                </div>
             </div>
         </div>
     );
