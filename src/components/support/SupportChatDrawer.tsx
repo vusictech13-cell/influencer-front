@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Loader2, Send, X } from 'lucide-react';
 import {
-    BOT_ANSWERS,
-    BOT_RESPONSES,
     useCreateSupportTicket,
     useSendSupportMessage,
+    useSupportBotNext,
     useSupportRealtime,
     useSupportTicket,
+    type SupportBotButton,
+    type SupportBotNext,
     type SupportMessage,
     type SupportTicket,
 } from '@/hooks/useSupport';
@@ -21,18 +22,9 @@ type LocalMsg = {
     body: string;
 };
 
-const MAIN_CHOICES = [
-    'Campaigns & collaborations',
-    'Payments & earnings',
-    'Instagram / social account',
-    'Profile & creator account',
-    'Content & deliverables',
-    'Technical issue',
-    'Something else / contact admin',
-];
-
-const REQUEST_ADMIN = 'Request admin support';
 const CLOSE_MS = 240;
+const DEFAULT_ESCALATE_REPLY =
+    'Please describe your issue below. When you send it, we’ll create a support ticket and notify the admin team.';
 
 type Props = {
     open: boolean;
@@ -54,15 +46,14 @@ export default function SupportChatDrawer({
     const [mounted, setMounted] = useState(open);
     const [visible, setVisible] = useState(open);
     const [mode, setMode] = useState<ChatMode>('bot');
-    const [messages, setMessages] = useState<LocalMsg[]>([
-        { id: 'welcome', role: 'bot', body: "Hi! I'm TapnLike Support. What can I help you with today?" },
-    ]);
-    const [choices, setChoices] = useState<string[]>(MAIN_CHOICES);
+    const [messages, setMessages] = useState<LocalMsg[]>([]);
+    const [buttons, setButtons] = useState<SupportBotButton[]>([]);
     const [input, setInput] = useState('');
     const [ticketId, setTicketId] = useState<number | null>(activeTicketId);
     const [escalationTopic, setEscalationTopic] = useState('General support');
     const [error, setError] = useState<string | null>(null);
     const [typingLabel, setTypingLabel] = useState<string | null>(null);
+    const [botLoading, setBotLoading] = useState(false);
     /** Mobile: pin panel to visualViewport so composer stays above the keyboard. */
     const [mobileFrame, setMobileFrame] = useState<{ top: number; height: number } | null>(null);
     const messagesRef = useRef<HTMLDivElement>(null);
@@ -70,12 +61,15 @@ export default function SupportChatDrawer({
 
     const createTicket = useCreateSupportTicket();
     const sendMessage = useSendSupportMessage();
+    const botNext = useSupportBotNext();
     const { data: ticket } = useSupportTicket(ticketId);
     useSupportRealtime();
 
     const ticketStatus = ticket?.status;
     const isTicketClosed = ticketStatus === 'closed';
-    const showInput = (mode === 'awaiting_admin' || mode === 'human') && !isTicketClosed;
+    const showInput =
+        ((mode === 'bot' && !botLoading) || mode === 'awaiting_admin' || mode === 'human') && !isTicketClosed;
+    const botBusy = botLoading || botNext.isPending;
 
     useEffect(() => {
         if (open) {
@@ -103,7 +97,7 @@ export default function SupportChatDrawer({
         if (activeTicketId) {
             setTicketId(activeTicketId);
             setMode('human');
-            setChoices([]);
+            setButtons([]);
             return;
         }
 
@@ -115,16 +109,16 @@ export default function SupportChatDrawer({
         setError(null);
         setInput('');
         setEscalationTopic(initialTopic || 'General support');
-        setMessages([
-            { id: 'welcome', role: 'bot', body: "Hi! I'm TapnLike Support. What can I help you with today?" },
-        ]);
-        setChoices(MAIN_CHOICES);
+        setMessages([]);
+        setButtons([]);
 
         if (openAdminDirect) {
-            setTimeout(() => beginAdminRequest(initialTopic || 'Admin support'), 120);
-        } else if (initialTopic) {
-            setTimeout(() => choose(initialTopic), 120);
+            beginAdminRequest(initialTopic || 'Admin support');
+            return;
         }
+
+        void bootstrapBot(initialTopic);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- bootstrap once per open
     }, [open, activeTicketId, initialTopic, openAdminDirect]);
 
     useEffect(() => {
@@ -168,7 +162,7 @@ export default function SupportChatDrawer({
         const el = messagesRef.current;
         if (!el) return;
         el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-    }, [messages, typingLabel, showInput, isTicketClosed, mobileFrame?.height]);
+    }, [messages, typingLabel, showInput, isTicketClosed, mobileFrame?.height, buttons]);
 
     function scrollMessagesToEnd() {
         const el = messagesRef.current;
@@ -239,50 +233,77 @@ export default function SupportChatDrawer({
         setMessages((prev) => [...prev, { id: `${Date.now()}-${Math.random()}`, role, body }]);
     }
 
-    function beginAdminRequest(topic: string) {
+    function beginAdminRequest(topic: string, botReply?: string) {
         setEscalationTopic(topic || 'General support');
         setMode('awaiting_admin');
-        setChoices([]);
-        addLocal(
-            'bot',
-            'Please describe your issue below. When you send it, we’ll create a support ticket and notify the admin team.',
-        );
+        setButtons([]);
+        addLocal('bot', botReply || DEFAULT_ESCALATE_REPLY);
     }
 
-    function choose(topic: string) {
-        addLocal('user', topic);
+    function applyBotResponse(data: SupportBotNext) {
+        if (data.topic) setEscalationTopic(data.topic);
 
-        if (topic === 'Something else / contact admin' || topic === REQUEST_ADMIN) {
-            beginAdminRequest(topic === REQUEST_ADMIN ? escalationTopic : 'Something else');
+        if (data.action === 'escalate') {
+            beginAdminRequest(data.topic || escalationTopic, data.reply || DEFAULT_ESCALATE_REPLY);
             return;
         }
 
-        if (topic === 'Back to main topics') {
+        if (data.reply) addLocal('bot', data.reply);
+        setMode('bot');
+        setButtons(data.buttons || []);
+    }
+
+    async function fetchBotNext(payload: { node_id?: number | null; message?: string } = {}) {
+        setBotLoading(true);
+        setError(null);
+        try {
+            const data = await botNext.mutateAsync(payload);
+            return data;
+        } catch (err) {
+            setError(getApiErrorMessage(err, 'Could not load support options'));
+            return null;
+        } finally {
+            setBotLoading(false);
+        }
+    }
+
+    async function bootstrapBot(topic: string | null) {
+        if (topic) {
+            addLocal('user', topic);
+            const data = await fetchBotNext({ message: topic });
+            if (data) applyBotResponse(data);
+            return;
+        }
+
+        const data = await fetchBotNext({});
+        if (data) {
+            setMessages([{ id: 'welcome', role: 'bot', body: data.reply }]);
+            setButtons(data.buttons || []);
             setMode('bot');
-            addLocal('bot', 'What else can I help with?');
-            setChoices(MAIN_CHOICES);
+        }
+    }
+
+    async function chooseButton(button: SupportBotButton) {
+        if (botBusy) return;
+        addLocal('user', button.label);
+
+        // Synthetic nav buttons (no node id) are handled client-side.
+        if (button.id == null) {
+            if (button.action === 'root') {
+                const data = await fetchBotNext({});
+                if (data) {
+                    addLocal('bot', data.reply || 'What else can I help with?');
+                    setButtons(data.buttons || []);
+                    setMode('bot');
+                }
+                return;
+            }
+            beginAdminRequest(escalationTopic);
             return;
         }
 
-        const tree = BOT_RESPONSES[topic];
-        if (tree) {
-            setEscalationTopic(topic);
-            addLocal('bot', tree.text);
-            setChoices([...tree.choices.filter((c) => c !== 'Something else'), REQUEST_ADMIN, 'Back to main topics']);
-            return;
-        }
-
-        const answer = BOT_ANSWERS[topic];
-        if (answer) {
-            setEscalationTopic(topic);
-            addLocal('bot', answer);
-            setChoices([REQUEST_ADMIN, 'Back to main topics']);
-            return;
-        }
-
-        setEscalationTopic(topic);
-        addLocal('bot', 'Thanks. I’ve recorded that selection.');
-        setChoices([REQUEST_ADMIN, 'Back to main topics']);
+        const data = await fetchBotNext({ node_id: button.id });
+        if (data) applyBotResponse(data);
     }
 
     async function createAdminTicket(message: string) {
@@ -295,7 +316,7 @@ export default function SupportChatDrawer({
             });
             setTicketId(created.id);
             setMode('human');
-            setChoices([]);
+            setButtons([]);
             onTicketCreated?.(created);
 
             if (created.messages?.length) {
@@ -317,9 +338,16 @@ export default function SupportChatDrawer({
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
         const text = input.trim();
-        if (!text || !showInput || isTicketClosed) return;
+        if (!text || !showInput || isTicketClosed || botBusy) return;
         setInput('');
         setError(null);
+
+        if (mode === 'bot') {
+            addLocal('user', text);
+            const data = await fetchBotNext({ message: text });
+            if (data) applyBotResponse(data);
+            return;
+        }
 
         if (mode === 'awaiting_admin') {
             addLocal('user', text);
@@ -426,6 +454,9 @@ export default function SupportChatDrawer({
                                 {msg.body}
                             </div>
                         ))}
+                        {botBusy && mode === 'bot' && (
+                            <p className="text-[11px] text-[#7a8796]">Support is typing…</p>
+                        )}
                         {typingLabel && !isTicketClosed && (
                             <p className="text-[11px] text-[#7a8796]">{typingLabel}</p>
                         )}
@@ -433,23 +464,16 @@ export default function SupportChatDrawer({
                 </div>
 
                 <div className="shrink-0 border-t border-[#dce8f0] bg-white">
-                    {mode === 'bot' && choices.length > 0 && (
+                    {mode === 'bot' && buttons.length > 0 && !botBusy && (
                         <div className="grid max-h-[min(36vh,280px)] gap-2 overflow-y-auto p-3 sm:max-h-56">
-                            {choices.map((choice) => (
+                            {buttons.map((button, index) => (
                                 <button
-                                    key={choice}
+                                    key={`${button.id ?? button.action}-${button.label}-${index}`}
                                     type="button"
-                                    onClick={() => {
-                                        if (choice === REQUEST_ADMIN) {
-                                            addLocal('user', choice);
-                                            beginAdminRequest(escalationTopic);
-                                            return;
-                                        }
-                                        choose(choice);
-                                    }}
+                                    onClick={() => void chooseButton(button)}
                                     className="rounded-[11px] border border-[#cfe4f0] bg-[#f4fbff] px-3 py-2.5 text-left text-[12px] font-semibold text-[#0b2744] hover:border-brand-orange/40"
                                 >
-                                    {choice}
+                                    {button.label}
                                 </button>
                             ))}
                         </div>
@@ -493,19 +517,26 @@ export default function SupportChatDrawer({
                                 placeholder={
                                     mode === 'awaiting_admin'
                                         ? 'Describe your issue for admin…'
-                                        : 'Type your message…'
+                                        : mode === 'bot'
+                                          ? 'Or type your question…'
+                                          : 'Type your message…'
                                 }
                                 enterKeyHint="send"
                                 className="min-w-0 flex-1 rounded-[11px] border border-[#dce8f0] px-3 py-2.5 text-sm outline-none focus:border-brand-orange"
-                                autoFocus
+                                autoFocus={mode !== 'bot'}
                             />
                             <button
                                 type="submit"
-                                disabled={createTicket.isPending || sendMessage.isPending || !input.trim()}
+                                disabled={
+                                    createTicket.isPending ||
+                                    sendMessage.isPending ||
+                                    botBusy ||
+                                    !input.trim()
+                                }
                                 className="grid h-11 w-11 flex-none place-items-center rounded-[11px] bg-brand-orange text-white disabled:opacity-60"
                                 aria-label="Send"
                             >
-                                {createTicket.isPending || sendMessage.isPending ? (
+                                {createTicket.isPending || sendMessage.isPending || botBusy ? (
                                     <Loader2 size={16} className="animate-spin" />
                                 ) : (
                                     <Send size={16} />

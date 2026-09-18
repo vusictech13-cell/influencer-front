@@ -4,11 +4,16 @@ import {
     useAdminFaqs,
     useAdminDeleteFaq,
     useAdminSaveFaq,
+    useAdminBotNodes,
+    useAdminDeleteBotNode,
+    useAdminSaveBotNode,
     useAdminSupportTickets,
     useAdminUpdateTicketStatus,
     useSendSupportMessage,
     useSupportRealtime,
     useSupportTicket,
+    type SupportBotAction,
+    type SupportBotNode,
     type SupportFaq,
     type SupportMessage,
     type SupportTicket,
@@ -34,8 +39,104 @@ const FAQ_CATEGORIES = [
     { key: 'support', label: 'Support' },
 ] as const;
 
+const FIELD_CLASS =
+    'w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-[#00B4EB]';
+
+type FieldSelectOption = { value: string; label: string };
+
+function FieldSelect({
+    value,
+    onChange,
+    options,
+    placeholder = 'Select…',
+}: {
+    value: string | number | null | undefined;
+    onChange: (value: string) => void;
+    options: FieldSelectOption[];
+    placeholder?: string;
+}) {
+    const [open, setOpen] = useState(false);
+    const rootRef = useRef<HTMLDivElement>(null);
+    const selected = options.find((option) => String(option.value) === String(value ?? ''));
+
+    useEffect(() => {
+        function onDocumentClick(event: MouseEvent) {
+            if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+        }
+        function onKey(event: KeyboardEvent) {
+            if (event.key === 'Escape') setOpen(false);
+        }
+        document.addEventListener('mousedown', onDocumentClick);
+        document.addEventListener('keydown', onKey);
+        return () => {
+            document.removeEventListener('mousedown', onDocumentClick);
+            document.removeEventListener('keydown', onKey);
+        };
+    }, []);
+
+    return (
+        <div className="relative w-full" ref={rootRef}>
+            <button
+                type="button"
+                onClick={() => setOpen((prev) => !prev)}
+                className={`${FIELD_CLASS} flex items-center justify-between gap-2 pr-3 text-left`}
+                aria-haspopup="listbox"
+                aria-expanded={open}
+            >
+                <span className={`truncate ${selected ? 'text-gray-900' : 'text-gray-400'}`}>
+                    {selected?.label || placeholder}
+                </span>
+                <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    className={`shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
+                    aria-hidden
+                >
+                    <path
+                        d="M3 4.5L6 7.5L9 4.5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+                </svg>
+            </button>
+            {open && (
+                <ul
+                    role="listbox"
+                    className="absolute left-0 right-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+                >
+                    {options.map((option) => {
+                        const isActive = String(option.value) === String(value ?? '');
+                        return (
+                            <li key={option.value || '__empty'}>
+                                <button
+                                    type="button"
+                                    role="option"
+                                    aria-selected={isActive}
+                                    onClick={() => {
+                                        onChange(option.value);
+                                        setOpen(false);
+                                    }}
+                                    className={`flex w-full px-3 py-2 text-left text-sm hover:bg-[#f4fbff] ${
+                                        isActive ? 'bg-[#f4fbff] font-semibold text-[#0b2744]' : 'text-gray-800'
+                                    }`}
+                                >
+                                    {option.label}
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
+        </div>
+    );
+}
+
 export default function AdminSupport() {
-    const [tab, setTab] = useState<'inbox' | 'faqs'>('inbox');
+    const [tab, setTab] = useState<'inbox' | 'faqs' | 'bot'>('inbox');
     const [status, setStatus] = useState<(typeof STATUS_FILTERS)[number]['key']>('all');
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [mobileChatOpen, setMobileChatOpen] = useState(false);
@@ -56,13 +157,6 @@ export default function AdminSupport() {
         () => tickets.find((item) => item.id === selectedId) || ticket || null,
         [tickets, selectedId, ticket],
     );
-
-    useEffect(() => {
-        if (selectedId || !tickets[0]) return;
-        if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches) {
-            setSelectedId(tickets[0].id);
-        }
-    }, [tickets, selectedId]);
 
     useEffect(() => {
         const el = mobileChatOpen ? mobileMessagesRef.current : messagesRef.current;
@@ -191,7 +285,7 @@ export default function AdminSupport() {
             <div className={`flex flex-wrap items-center justify-between gap-3 ${mobileChatOpen ? 'lg:flex hidden' : ''}`}>
                 <div>
                     <h1 className="text-2xl font-semibold text-gray-900">Support</h1>
-                    <p className="text-sm text-gray-500">Creator tickets and FAQ content</p>
+                    <p className="text-sm text-gray-500">Creator tickets, FAQ content, and chat bot tree</p>
                 </div>
                 <div className="flex gap-2">
                     <button
@@ -212,11 +306,22 @@ export default function AdminSupport() {
                     >
                         FAQs
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => setTab('bot')}
+                        className={`rounded-full px-4 py-2 text-xs font-bold ${
+                            tab === 'bot' ? 'bg-[#0b2744] text-white' : 'border border-gray-200 bg-white text-gray-600'
+                        }`}
+                    >
+                        Bot
+                    </button>
                 </div>
             </div>
 
             {tab === 'faqs' ? (
                 <AdminFaqManager />
+            ) : tab === 'bot' ? (
+                <AdminBotManager />
             ) : (
                 <div className="grid gap-4 lg:h-[calc(100dvh-11rem)] lg:min-h-[480px] lg:grid-cols-[320px_1fr] lg:overflow-hidden">
                     <aside
@@ -364,6 +469,141 @@ export default function AdminSupport() {
     );
 }
 
+function TicketStatusActions({
+    status,
+    updatePending,
+    onUpdateStatus,
+    compact = false,
+}: {
+    status: SupportTicket['status'];
+    updatePending: boolean;
+    onUpdateStatus: (status: SupportTicket['status']) => void;
+    compact?: boolean;
+}) {
+    const [confirmClose, setConfirmClose] = useState(false);
+    const isClosed = status === 'closed';
+    const actions = [
+        { key: 'in_progress' as const, label: 'Mark in progress' },
+        { key: 'resolved' as const, label: 'Mark resolved' },
+        { key: 'closed' as const, label: 'Mark closed' },
+    ];
+
+    useEffect(() => {
+        setConfirmClose(false);
+    }, [status]);
+
+    useEffect(() => {
+        if (!confirmClose) return;
+        const onKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && !updatePending) setConfirmClose(false);
+        };
+        const previous = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', onKey);
+        return () => {
+            document.body.style.overflow = previous;
+            document.removeEventListener('keydown', onKey);
+        };
+    }, [confirmClose, updatePending]);
+
+    function handleClick(next: SupportTicket['status']) {
+        if (isClosed || updatePending || next === status) return;
+        if (next === 'closed') {
+            setConfirmClose(true);
+            return;
+        }
+        setConfirmClose(false);
+        onUpdateStatus(next);
+    }
+
+    return (
+        <div className={compact ? 'flex flex-col gap-2' : 'flex flex-col items-end gap-2'}>
+            <div className={`flex flex-wrap gap-2 ${compact ? '' : 'justify-end'}`}>
+                {actions.map((action) => {
+                    const selected = status === action.key;
+                    const disabled = updatePending || isClosed || selected;
+                    return (
+                        <button
+                            key={action.key}
+                            type="button"
+                            disabled={disabled}
+                            onClick={() => handleClick(action.key)}
+                            className={`rounded-full px-3 py-1.5 text-[11px] font-bold capitalize transition ${
+                                selected
+                                    ? action.key === 'closed'
+                                        ? 'bg-gray-800 text-white'
+                                        : action.key === 'resolved'
+                                          ? 'bg-emerald-600 text-white'
+                                          : 'bg-[#00B4EB] text-white'
+                                    : isClosed
+                                      ? 'cursor-not-allowed border border-gray-100 bg-gray-50 text-gray-300'
+                                      : 'border border-gray-200 text-gray-700 hover:bg-gray-50'
+                            } ${compact ? 'shrink-0' : ''} disabled:opacity-70`}
+                        >
+                            {selected ? action.label.replace(/^Mark /, '') : action.label}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {confirmClose && !isClosed && (
+                <div
+                    className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="close-ticket-title"
+                >
+                    <button
+                        type="button"
+                        className="absolute inset-0 bg-[#0b2744]/45 backdrop-blur-[2px]"
+                        aria-label="Dismiss"
+                        onClick={() => !updatePending && setConfirmClose(false)}
+                    />
+                    <div className="relative w-full max-w-sm rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_24px_60px_rgba(11,39,68,0.28)]">
+                        <div className="mx-auto mb-3 grid h-11 w-11 place-items-center rounded-full bg-red-50 text-lg text-red-600">
+                            !
+                        </div>
+                        <h3 id="close-ticket-title" className="text-center text-base font-semibold text-gray-900">
+                            Close this ticket?
+                        </h3>
+                        <p className="mt-2 text-center text-sm leading-relaxed text-gray-500">
+                            This permanently locks the conversation. Messaging and status changes will be disabled
+                            for both admin and creator.
+                        </p>
+                        <div className="mt-5 flex gap-2">
+                            <button
+                                type="button"
+                                disabled={updatePending}
+                                onClick={() => setConfirmClose(false)}
+                                className="flex-1 rounded-full border border-gray-200 bg-white py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                disabled={updatePending}
+                                onClick={() => {
+                                    setConfirmClose(false);
+                                    onUpdateStatus('closed');
+                                }}
+                                className="flex-1 rounded-full bg-red-600 py-2.5 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-60"
+                            >
+                                {updatePending ? 'Closing…' : 'Yes, close ticket'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isClosed && (
+                <p className="text-[10px] font-medium text-gray-400">
+                    Closed tickets are locked — status can’t be changed.
+                </p>
+            )}
+        </div>
+    );
+}
+
 function AdminTicketChat({
     selected,
     ticket,
@@ -396,11 +636,7 @@ function AdminTicketChat({
     mobile?: boolean;
 }) {
     if (!selected) {
-        return (
-            <div className="flex flex-1 items-center justify-center text-sm text-gray-400">
-                Select a ticket
-            </div>
-        );
+        return <AdminInboxEmptyState />;
     }
 
     return (
@@ -427,35 +663,22 @@ function AdminTicketChat({
                             </span>
                         </p>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                        {(['in_progress', 'resolved', 'closed'] as const).map((next) => (
-                            <button
-                                key={next}
-                                type="button"
-                                disabled={updatePending}
-                                onClick={() => onUpdateStatus(next)}
-                                className="rounded-full border border-gray-200 px-3 py-1.5 text-[11px] font-bold capitalize text-gray-700 hover:bg-gray-50"
-                            >
-                                Mark {next.replace('_', ' ')}
-                            </button>
-                        ))}
-                    </div>
+                    <TicketStatusActions
+                        status={selected.status}
+                        updatePending={updatePending}
+                        onUpdateStatus={onUpdateStatus}
+                    />
                 </div>
             )}
 
             {mobile && (
-                <div className="flex shrink-0 gap-1.5 overflow-x-auto border-b border-[#dce8f0] bg-white px-3 py-2">
-                    {(['in_progress', 'resolved', 'closed'] as const).map((next) => (
-                        <button
-                            key={next}
-                            type="button"
-                            disabled={updatePending}
-                            onClick={() => onUpdateStatus(next)}
-                            className="shrink-0 rounded-full border border-gray-200 px-3 py-1.5 text-[11px] font-bold capitalize text-gray-700"
-                        >
-                            Mark {next.replace('_', ' ')}
-                        </button>
-                    ))}
+                <div className="shrink-0 border-b border-[#dce8f0] bg-white px-3 py-2">
+                    <TicketStatusActions
+                        status={selected.status}
+                        updatePending={updatePending}
+                        onUpdateStatus={onUpdateStatus}
+                        compact
+                    />
                 </div>
             )}
 
@@ -486,7 +709,7 @@ function AdminTicketChat({
                     >
                         <p className="text-sm font-semibold text-gray-900">This ticket is closed</p>
                         <p className="mt-1 text-xs text-gray-500">
-                            Creator messaging is disabled for closed tickets.
+                            Messaging is disabled and status can no longer be changed.
                         </p>
                     </div>
                 ) : (
@@ -546,6 +769,78 @@ function MessageBubble({ message }: { message: SupportMessage }) {
                 </p>
             )}
             {message.body}
+        </div>
+    );
+}
+
+function AdminInboxEmptyState() {
+    return (
+        <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-10 text-center">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,180,235,0.08),transparent_65%)]" />
+            <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#00B4EB]/10 blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-20 -left-10 h-52 w-52 rounded-full bg-[#0b2744]/5 blur-2xl" />
+
+            <div className="relative mb-6">
+                <svg
+                    width="220"
+                    height="160"
+                    viewBox="0 0 220 160"
+                    fill="none"
+                    className="mx-auto drop-shadow-sm"
+                    aria-hidden
+                >
+                    <rect x="28" y="24" width="164" height="112" rx="18" fill="#f4f8fc" stroke="#dce8f0" />
+                    <rect x="40" y="38" width="88" height="22" rx="11" fill="#ffffff" stroke="#cfe4f0">
+                        <animate attributeName="opacity" values="0.55;1;0.55" dur="2.8s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="92" y="70" width="88" height="22" rx="11" fill="#0b2744">
+                        <animate attributeName="x" values="96;92;96" dur="3.2s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="40" y="102" width="64" height="18" rx="9" fill="#00B4EB" opacity="0.85">
+                        <animate attributeName="width" values="56;64;56" dur="2.4s" repeatCount="indefinite" />
+                    </rect>
+                    <circle cx="176" cy="48" r="7" fill="#ff6a1a">
+                        <animate attributeName="r" values="6;8;6" dur="1.8s" repeatCount="indefinite" />
+                    </circle>
+                    <path
+                        d="M176 48v18"
+                        stroke="#ff6a1a"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        opacity="0.35"
+                    >
+                        <animate attributeName="opacity" values="0.15;0.5;0.15" dur="1.8s" repeatCount="indefinite" />
+                    </path>
+                </svg>
+                <div className="absolute -right-2 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#0b2744] to-[#00B4EB] text-sm text-white shadow-md">
+                    ✦
+                </div>
+            </div>
+
+            <h2 className="relative text-lg font-semibold text-[#0b2744]">Your support desk is ready</h2>
+            <p className="relative mt-2 max-w-sm text-sm leading-relaxed text-gray-500">
+                Pick a creator ticket from the list to open the live chat, assign yourself, and update status.
+            </p>
+
+            <div className="relative mt-6 grid w-full max-w-md gap-2 sm:grid-cols-3">
+                {[
+                    { title: 'Reply live', detail: 'Message creators in real time' },
+                    { title: 'Track status', detail: 'Open → in progress → resolved' },
+                    { title: 'Stay assigned', detail: 'Own tickets as you join' },
+                ].map((item) => (
+                    <div
+                        key={item.title}
+                        className="rounded-xl border border-[#dce8f0] bg-white/80 px-3 py-3 text-left shadow-sm backdrop-blur"
+                    >
+                        <p className="text-[11px] font-bold uppercase tracking-wide text-[#00B4EB]">{item.title}</p>
+                        <p className="mt-1 text-xs text-gray-500">{item.detail}</p>
+                    </div>
+                ))}
+            </div>
+
+            <p className="relative mt-5 text-[11px] font-medium text-gray-400">
+                ← Select any ticket on the left to begin
+            </p>
         </div>
     );
 }
@@ -625,21 +920,19 @@ function AdminFaqManager() {
                 <h2 className="text-sm font-semibold text-gray-900">{form.id ? 'Edit FAQ' : 'Add FAQ'}</h2>
                 <label className="block space-y-1">
                     <span className="text-xs font-semibold text-gray-700">Category</span>
-                    <select
+                    <FieldSelect
                         value={form.category}
-                        onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))}
-                        className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
-                        required
-                    >
-                        {FAQ_CATEGORIES.map((category) => (
-                            <option key={category.key} value={category.key}>
-                                {category.label}
-                            </option>
-                        ))}
-                        {form.category && !FAQ_CATEGORIES.some((category) => category.key === form.category) && (
-                            <option value={form.category}>{form.category}</option>
-                        )}
-                    </select>
+                        onChange={(value) => setForm((prev) => ({ ...prev, category: value }))}
+                        options={[
+                            ...FAQ_CATEGORIES.map((category) => ({
+                                value: category.key,
+                                label: category.label,
+                            })),
+                            ...(form.category && !FAQ_CATEGORIES.some((category) => category.key === form.category)
+                                ? [{ value: form.category, label: form.category }]
+                                : []),
+                        ]}
+                    />
                 </label>
                 <label className="block space-y-1">
                     <span className="text-xs font-semibold text-gray-700">Question</span>
@@ -647,7 +940,7 @@ function AdminFaqManager() {
                         value={form.question}
                         onChange={(e) => setForm((prev) => ({ ...prev, question: e.target.value }))}
                         placeholder="Enter the question"
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                        className={FIELD_CLASS}
                         required
                     />
                 </label>
@@ -658,7 +951,7 @@ function AdminFaqManager() {
                         onChange={(e) => setForm((prev) => ({ ...prev, answer: e.target.value }))}
                         placeholder="Enter the answer"
                         rows={5}
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                        className={FIELD_CLASS}
                         required
                     />
                 </label>
@@ -668,7 +961,7 @@ function AdminFaqManager() {
                         type="number"
                         value={form.sort_order ?? 0}
                         onChange={(e) => setForm((prev) => ({ ...prev, sort_order: Number(e.target.value) }))}
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                        className={FIELD_CLASS}
                     />
                 </label>
                 <label className="flex items-center gap-2 text-xs text-gray-600">
@@ -687,6 +980,323 @@ function AdminFaqManager() {
                 >
                     {saveFaq.isPending ? 'Saving…' : form.id ? 'Update FAQ' : 'Create FAQ'}
                 </button>
+            </form>
+        </div>
+    );
+}
+
+const BOT_ACTIONS: { key: SupportBotAction; label: string }[] = [
+    { key: 'show_children', label: 'Show children (branch)' },
+    { key: 'answer', label: 'Answer (leaf)' },
+    { key: 'escalate', label: 'Escalate to admin' },
+];
+
+const EMPTY_BOT_FORM: Partial<SupportBotNode> & {
+    label: string;
+    action: SupportBotAction;
+    keywordsText: string;
+} = {
+    parent_id: null,
+    label: '',
+    reply: '',
+    action: 'answer',
+    keywordsText: '',
+    sort_order: 0,
+    is_active: true,
+};
+
+function AdminBotManager() {
+    const { data: nodes = [], isLoading } = useAdminBotNodes();
+    const saveNode = useAdminSaveBotNode();
+    const deleteNode = useAdminDeleteBotNode();
+    const [form, setForm] = useState(EMPTY_BOT_FORM);
+    const [error, setError] = useState<string | null>(null);
+    const [filterParent, setFilterParent] = useState<'all' | 'root' | number>('all');
+
+    const roots = useMemo(() => nodes.filter((node) => node.parent_id == null), [nodes]);
+
+    const visibleNodes = useMemo(() => {
+        if (filterParent === 'all') return nodes;
+        if (filterParent === 'root') return nodes.filter((node) => node.parent_id == null);
+
+        const ids = new Set<number>([filterParent]);
+        let grew = true;
+        while (grew) {
+            grew = false;
+            for (const node of nodes) {
+                if (node.parent_id != null && ids.has(node.parent_id) && !ids.has(node.id)) {
+                    ids.add(node.id);
+                    grew = true;
+                }
+            }
+        }
+        return nodes.filter((node) => ids.has(node.id));
+    }, [nodes, filterParent]);
+
+    const grouped = useMemo(() => {
+        const byParent = new Map<number | 'root', SupportBotNode[]>();
+        for (const node of visibleNodes) {
+            const key = node.parent_id == null ? 'root' : node.parent_id;
+            const list = byParent.get(key) || [];
+            list.push(node);
+            byParent.set(key, list);
+        }
+        return byParent;
+    }, [visibleNodes]);
+
+    function startEdit(node: SupportBotNode) {
+        setForm({
+            ...node,
+            keywordsText: (node.keywords || []).join(', '),
+            reply: node.reply || '',
+        });
+        setError(null);
+    }
+
+    function startChild(parentId: number) {
+        setForm({
+            ...EMPTY_BOT_FORM,
+            parent_id: parentId,
+            action: 'answer',
+        });
+        setError(null);
+    }
+
+    async function onSubmit(event: FormEvent) {
+        event.preventDefault();
+        setError(null);
+        try {
+            await saveNode.mutateAsync({
+                id: form.id,
+                parent_id: form.parent_id ?? null,
+                label: form.label,
+                reply: form.reply || null,
+                action: form.action,
+                keywords: form.keywordsText
+                    .split(',')
+                    .map((item) => item.trim())
+                    .filter(Boolean),
+                sort_order: form.sort_order ?? 0,
+                is_active: form.is_active !== false,
+            });
+            setForm(EMPTY_BOT_FORM);
+        } catch (err) {
+            setError(getApiErrorMessage(err, 'Failed to save bot node'));
+        }
+    }
+
+    function renderNodeCard(node: SupportBotNode, depth = 0) {
+        const children = grouped.get(node.id) || [];
+        return (
+            <div key={node.id} className={depth > 0 ? 'ml-4 border-l border-gray-100 pl-3' : ''}>
+                <div className="rounded-xl border border-gray-100 p-3">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">
+                                #{node.id}
+                                {node.parent ? ` · under ${node.parent.label}` : ' · root'}
+                                {' · '}
+                                {node.action}
+                                {' · #'}
+                                {node.sort_order}
+                                {' · '}
+                                {node.is_active ? 'active' : 'hidden'}
+                            </p>
+                            <p className="mt-1 text-sm font-semibold text-gray-900">{node.label}</p>
+                            {node.reply && (
+                                <p className="mt-1 text-xs text-gray-500 whitespace-pre-wrap">{node.reply}</p>
+                            )}
+                            {node.keywords?.length > 0 && (
+                                <p className="mt-1 text-[11px] text-gray-400">
+                                    Keywords: {node.keywords.join(', ')}
+                                </p>
+                            )}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                            <button
+                                type="button"
+                                className="text-[11px] font-bold text-[#00B4EB]"
+                                onClick={() => startEdit(node)}
+                            >
+                                Edit
+                            </button>
+                            {node.action === 'show_children' && (
+                                <button
+                                    type="button"
+                                    className="text-[11px] font-bold text-emerald-600"
+                                    onClick={() => startChild(node.id)}
+                                >
+                                    + Child
+                                </button>
+                            )}
+                            <button
+                                type="button"
+                                className="text-[11px] font-bold text-red-500"
+                                onClick={() => {
+                                    if (window.confirm(`Delete “${node.label}” and its children?`)) {
+                                        deleteNode.mutate(node.id);
+                                    }
+                                }}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {children.length > 0 && (
+                    <div className="mt-2 space-y-2">
+                        {children.map((child) => renderNodeCard(child, depth + 1))}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    const rootList =
+        filterParent === 'all' || filterParent === 'root'
+            ? roots.filter((node) => visibleNodes.some((item) => item.id === node.id))
+            : nodes.filter((node) => node.id === filterParent);
+
+    return (
+        <div className="grid gap-4 lg:grid-cols-[1fr_380px]">
+            <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h2 className="text-sm font-semibold text-gray-900">Chat bot tree</h2>
+                    <div className="w-auto min-w-[180px]">
+                        <FieldSelect
+                            value={filterParent === 'all' || filterParent === 'root' ? filterParent : String(filterParent)}
+                            onChange={(value) => {
+                                if (value === 'all' || value === 'root') setFilterParent(value);
+                                else setFilterParent(Number(value));
+                            }}
+                            options={[
+                                { value: 'all', label: 'All nodes' },
+                                { value: 'root', label: 'Root topics only' },
+                                ...roots.map((node) => ({
+                                    value: String(node.id),
+                                    label: `Branch: ${node.label}`,
+                                })),
+                            ]}
+                        />
+                    </div>
+                </div>
+                {isLoading ? (
+                    <Loader2 className="mx-auto my-8 animate-spin text-[#00B4EB]" />
+                ) : rootList.length === 0 ? (
+                    <p className="py-8 text-center text-sm text-gray-400">No bot nodes yet.</p>
+                ) : (
+                    <div className="space-y-3">
+                        {rootList.map((node) => renderNodeCard(node))}
+                    </div>
+                )}
+            </div>
+
+            <form onSubmit={onSubmit} className="h-fit space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+                <h2 className="text-sm font-semibold text-gray-900">
+                    {form.id ? `Edit node #${form.id}` : 'Add bot node'}
+                </h2>
+                <label className="block space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Parent</span>
+                    <FieldSelect
+                        value={form.parent_id ?? ''}
+                        onChange={(value) =>
+                            setForm((prev) => ({
+                                ...prev,
+                                parent_id: value ? Number(value) : null,
+                            }))
+                        }
+                        options={[
+                            { value: '', label: 'Root (main topics)' },
+                            ...nodes
+                                .filter((node) => node.id !== form.id)
+                                .map((node) => ({
+                                    value: String(node.id),
+                                    label:
+                                        node.parent_id == null
+                                            ? node.label
+                                            : `${node.parent?.label || '…'} → ${node.label}`,
+                                })),
+                        ]}
+                    />
+                </label>
+                <label className="block space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Button label</span>
+                    <input
+                        value={form.label}
+                        onChange={(e) => setForm((prev) => ({ ...prev, label: e.target.value }))}
+                        placeholder="Shown on the chat button"
+                        className={FIELD_CLASS}
+                        required
+                    />
+                </label>
+                <label className="block space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Bot reply</span>
+                    <textarea
+                        value={form.reply || ''}
+                        onChange={(e) => setForm((prev) => ({ ...prev, reply: e.target.value }))}
+                        placeholder="Message shown when this option is selected"
+                        rows={4}
+                        className={FIELD_CLASS}
+                    />
+                </label>
+                <label className="block space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Action</span>
+                    <FieldSelect
+                        value={form.action}
+                        onChange={(value) =>
+                            setForm((prev) => ({ ...prev, action: value as SupportBotAction }))
+                        }
+                        options={BOT_ACTIONS.map((action) => ({
+                            value: action.key,
+                            label: action.label,
+                        }))}
+                    />
+                </label>
+                <label className="block space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Keywords (comma-separated)</span>
+                    <input
+                        value={form.keywordsText}
+                        onChange={(e) => setForm((prev) => ({ ...prev, keywordsText: e.target.value }))}
+                        placeholder="payment, pending, 48h"
+                        className={FIELD_CLASS}
+                    />
+                </label>
+                <label className="block space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Sort order</span>
+                    <input
+                        type="number"
+                        value={form.sort_order ?? 0}
+                        onChange={(e) => setForm((prev) => ({ ...prev, sort_order: Number(e.target.value) }))}
+                        className={FIELD_CLASS}
+                    />
+                </label>
+                <label className="flex items-center gap-2 text-xs text-gray-600">
+                    <input
+                        type="checkbox"
+                        checked={form.is_active !== false}
+                        onChange={(e) => setForm((prev) => ({ ...prev, is_active: e.target.checked }))}
+                    />
+                    Active
+                </label>
+                {error && <p className="text-xs text-red-500">{error}</p>}
+                <div className="flex gap-2">
+                    {form.id ? (
+                        <button
+                            type="button"
+                            onClick={() => setForm(EMPTY_BOT_FORM)}
+                            className="flex-1 rounded-full border border-gray-200 py-2.5 text-sm font-bold text-gray-600"
+                        >
+                            Cancel
+                        </button>
+                    ) : null}
+                    <button
+                        type="submit"
+                        disabled={saveNode.isPending}
+                        className="flex-1 rounded-full bg-brand-orange py-2.5 text-sm font-bold text-white"
+                    >
+                        {saveNode.isPending ? 'Saving…' : form.id ? 'Update node' : 'Create node'}
+                    </button>
+                </div>
             </form>
         </div>
     );

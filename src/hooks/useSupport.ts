@@ -95,79 +95,36 @@ export const SUPPORT_TOPICS = [
     },
 ] as const;
 
-export const BOT_RESPONSES: Record<string, { text: string; choices: string[] }> = {
-    'Campaigns & collaborations': {
-        text: 'Sure. What do you need help with?',
-        choices: ['Campaign application', 'Campaign status', 'Gift / payout amount', 'Something else'],
-    },
-    'Payments & earnings': {
-        text: 'I can help with payments and earnings. What is the issue?',
-        choices: ['Payment pending (48h hold)', 'Payment not received', 'Payout amount question', 'Wallet issue'],
-    },
-    'Instagram / social account': {
-        text: "Let's troubleshoot your social account. What are you facing?",
-        choices: ["Account won't connect", 'Data is not syncing', 'Professional account required', 'Reconnect account'],
-    },
-    'Profile & creator account': {
-        text: 'What would you like to manage?',
-        choices: ['Edit profile', 'Rates / media kit', 'Account access', 'Onboarding'],
-    },
-    'Content & deliverables': {
-        text: 'I can help with content submission. Choose an issue:',
-        choices: ['Submit reel URL', 'Sound verification failed', 'Under review / approval', 'Something else'],
-    },
-    'Technical issue': {
-        text: "Let's diagnose the issue. Choose a common issue or describe it:",
-        choices: ['App error', 'Page not loading', 'Button not working', 'Other technical issue'],
-    },
+export type SupportBotAction = 'show_children' | 'answer' | 'escalate' | 'root';
+
+export type SupportBotButton = {
+    id: number | null;
+    label: string;
+    action?: SupportBotAction;
 };
 
-export const BOT_ANSWERS: Record<string, string> = {
-    'Campaign application':
-        'Open Home or Brands, pick a gift/campaign, connect Instagram if needed, then Apply. Status becomes In Progress. Need more help? Create an admin support request.',
-    'Campaign status':
-        'In Progress = applied. Under Review = sound verified, brand reviewing. Approved = payout scheduled (48h hold). Rejected = no payout for that submission. Check Campaigns for details.',
-    'Gift / payout amount':
-        'Gift amount depends on your Vusic follower rank and the campaign rank allocations shown on the campaign page.',
-    'Payment pending (48h hold)':
-        'After brand approval, earnings stay Pending for 48 hours, then move to Available in Earnings. If it is past 48 hours, create an admin support request.',
-    'Payment not received':
-        'Confirm the submission is Approved under Campaigns, then check Earnings → Pending vs Available. If approved and past 48 hours with no credit, escalate to admin.',
-    'Payout amount question':
-        'Payout is based on your follower rank band for that campaign. Open the campaign details to see rank allocations.',
-    'Wallet issue':
-        'Open Earnings to see Available, Pending (48h), and history. If a transaction looks wrong, create an admin support request with the campaign name.',
-    "Account won't connect":
-        'Use an Instagram Professional (Business/Creator) account in Settings. If connect fails, try reconnecting or contact admin with a screenshot.',
-    'Data is not syncing':
-        'Reconnect Instagram in Settings. Insights refresh after reconnect. If still empty, escalate to admin.',
-    'Professional account required':
-        'TapnLike needs Instagram Business or Creator. Switch account type in Instagram, then reconnect in Settings.',
-    'Reconnect account':
-        'Go to Settings → Instagram and reconnect. Meta/Facebook is only required for Reel Studio and bulk publish.',
-    'Edit profile':
-        'Open Profile to update bio, categories, and rates. Stronger profiles get better campaign matches.',
-    'Rates / media kit':
-        'Add rates on Profile and complete Media kit to unlock higher-value matches.',
-    'Account access':
-        'Use Login with your email/Google. For OTP or locked access issues, create an admin support request.',
-    Onboarding:
-        'Finish onboarding (Instagram, categories, rates) to unlock campaigns. You can update details later in Profile/Settings.',
-    'Submit reel URL':
-        'Post a reel with the official campaign sound, then paste the Instagram Reel URL on the campaign page. Sound must match before brand review.',
-    'Sound verification failed':
-        'Check: valid reel URL, reel is on your connected account, and audio matches the campaign Spotify track. Fix and resubmit, or escalate with the campaign ID.',
-    'Under review / approval':
-        'Under Review means sound passed and the brand is deciding. You’ll see Approved or Rejected on Campaigns. Payout starts only after Approved.',
-    'App error':
-        'Try refresh and hard reload. Note the page URL and what you clicked. Create an admin request if it keeps happening.',
-    'Page not loading':
-        'Check your network, then try again. If one page always fails, create an admin request with the URL.',
-    'Button not working':
-        'Refresh once. If a specific button still fails (Apply, Submit, Publish), escalate with the page name.',
-    'Other technical issue':
-        'Describe what you expected vs what happened. You can create an admin support request for manual help.',
+export type SupportBotNext = {
+    reply: string;
+    action: SupportBotAction;
+    source?: 'script' | 'ai';
+    topic?: string | null;
+    node_id?: number | null;
+    buttons: SupportBotButton[];
 };
+
+export function useSupportBotNext() {
+    return useMutation({
+        mutationFn: async (payload: { node_id?: number | null; message?: string } = {}) => {
+            const body: { node_id?: number; message?: string } = {};
+            if (payload.node_id != null) body.node_id = payload.node_id;
+            if (payload.message != null && payload.message.trim() !== '') {
+                body.message = payload.message.trim();
+            }
+            const res = await api.post('/support/bot/next', body);
+            return res.data.data as SupportBotNext;
+        },
+    });
+}
 
 export function useSupportFaqs() {
     return useQuery({
@@ -420,6 +377,82 @@ export function useAdminDeleteFaq() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['support', 'faqs'] });
             queryClient.invalidateQueries({ queryKey: ['support', 'admin', 'faqs'] });
+        },
+    });
+}
+
+export type SupportBotNode = {
+    id: number;
+    parent_id: number | null;
+    label: string;
+    reply: string | null;
+    action: SupportBotAction;
+    keywords: string[];
+    sort_order: number;
+    is_active: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+    parent?: { id: number; label: string } | null;
+};
+
+export function useAdminBotNodes() {
+    return useQuery({
+        queryKey: ['support', 'admin', 'bot-nodes'],
+        queryFn: async () => {
+            const res = await api.get('/support/admin/bot/nodes');
+            return (res.data.data || []) as SupportBotNode[];
+        },
+    });
+}
+
+export function useAdminSaveBotNode() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload: {
+            id?: number;
+            parent_id?: number | null;
+            label: string;
+            reply?: string | null;
+            action: SupportBotAction;
+            keywords?: string[] | string;
+            sort_order?: number;
+            is_active?: boolean;
+        }) => {
+            const body = {
+                parent_id: payload.parent_id ?? null,
+                label: payload.label,
+                reply: payload.reply ?? null,
+                action: payload.action,
+                keywords: Array.isArray(payload.keywords)
+                    ? payload.keywords
+                    : String(payload.keywords || '')
+                          .split(',')
+                          .map((item) => item.trim())
+                          .filter(Boolean),
+                sort_order: payload.sort_order ?? 0,
+                is_active: payload.is_active !== false,
+            };
+            if (payload.id) {
+                const res = await api.patch(`/support/admin/bot/nodes/${payload.id}`, body);
+                return res.data.data as SupportBotNode;
+            }
+            const res = await api.post('/support/admin/bot/nodes', body);
+            return res.data.data as SupportBotNode;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['support', 'admin', 'bot-nodes'] });
+        },
+    });
+}
+
+export function useAdminDeleteBotNode() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id: number) => {
+            await api.delete(`/support/admin/bot/nodes/${id}`);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['support', 'admin', 'bot-nodes'] });
         },
     });
 }
