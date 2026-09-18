@@ -21,6 +21,7 @@ import {
     SUPPORT_TOPICS,
     useMySupportTickets,
     useSupportFaqs,
+    useSupportRealtime,
     type SupportFaq,
     type SupportTicket,
 } from '@/hooks/useSupport';
@@ -132,6 +133,7 @@ function getCategoryMeta(category: string): FaqCategoryMeta {
 export default function CreatorSupport() {
     const { data: faqs = [], isLoading: faqsLoading } = useSupportFaqs();
     const { data: tickets = [], isLoading: ticketsLoading, refetch } = useMySupportTickets();
+    useSupportRealtime();
     const [openFaqId, setOpenFaqId] = useState<number | null>(null);
     const [activeCategory, setActiveCategory] = useState<string>('all');
     const [chatOpen, setChatOpen] = useState(false);

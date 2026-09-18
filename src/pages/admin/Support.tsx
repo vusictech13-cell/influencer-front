@@ -7,11 +7,12 @@ import {
     useAdminSupportTickets,
     useAdminUpdateTicketStatus,
     useSendSupportMessage,
+    useSupportRealtime,
     useSupportTicket,
     type SupportFaq,
     type SupportMessage,
 } from '@/hooks/useSupport';
-import { getSupportSocket, joinSupportTicket } from '@/lib/supportSocket';
+import { getSupportSocket, joinSupportTicket, sameTicketId } from '@/lib/supportSocket';
 import { getApiErrorMessage } from '@/api/axios';
 
 const STATUS_FILTERS = [
@@ -35,9 +36,10 @@ export default function AdminSupport() {
     const chatSectionRef = useRef<HTMLElement | null>(null);
 
     const { data: tickets = [], isLoading, isError, error: loadError, refetch } = useAdminSupportTickets(status);
-    const { data: ticket, refetch: refetchTicket } = useSupportTicket(selectedId);
+    const { data: ticket } = useSupportTicket(selectedId);
     const updateStatus = useAdminUpdateTicketStatus();
     const sendMessage = useSendSupportMessage();
+    useSupportRealtime();
 
     const selected = useMemo(
         () => tickets.find((item) => item.id === selectedId) || ticket || null,
@@ -87,37 +89,14 @@ export default function AdminSupport() {
     }, [tab, selectedId]);
 
     useEffect(() => {
-        const socket = getSupportSocket();
-        if (!socket) return;
-
-        const refresh = () => {
-            refetch();
-            if (selectedId) refetchTicket();
-        };
-
-        socket.on('support:ticket:created', refresh);
-        socket.on('support:ticket:updated', refresh);
-
-        return () => {
-            socket.off('support:ticket:created', refresh);
-            socket.off('support:ticket:updated', refresh);
-        };
-    }, [refetch, refetchTicket, selectedId]);
-
-    useEffect(() => {
         if (!selectedId) return;
         const socket = getSupportSocket();
         if (!socket) return;
 
-        const leaveTicket = joinSupportTicket(selectedId, () => {
-            refetch();
-            refetchTicket();
-        });
+        const leaveTicket = joinSupportTicket(selectedId);
 
-        const onMessage = (payload: { ticket_id: number; message: SupportMessage }) => {
-            if (payload.ticket_id !== selectedId) return;
-            refetchTicket();
-            refetch();
+        const onMessage = (payload: { ticket_id: number; message?: SupportMessage }) => {
+            if (!sameTicketId(payload.ticket_id, selectedId)) return;
             setTypingLabel(null);
         };
 
@@ -126,26 +105,19 @@ export default function AdminSupport() {
             name: string;
             is_typing: boolean;
         }) => {
-            if (payload.ticket_id !== selectedId) return;
+            if (!sameTicketId(payload.ticket_id, selectedId)) return;
             setTypingLabel(payload.is_typing ? `${payload.name} is typing…` : null);
-        };
-
-        const onStatus = () => {
-            refetch();
-            refetchTicket();
         };
 
         socket.on('support:message:new', onMessage);
         socket.on('support:typing', onTyping);
-        socket.on('support:status', onStatus);
 
         return () => {
             leaveTicket();
             socket.off('support:message:new', onMessage);
             socket.off('support:typing', onTyping);
-            socket.off('support:status', onStatus);
         };
-    }, [selectedId, refetchTicket, refetch]);
+    }, [selectedId]);
 
     function scrollMessagesToEnd() {
         const el = messagesRef.current;
@@ -166,9 +138,7 @@ export default function AdminSupport() {
         getSupportSocket()?.emit('support:typing', { ticketId: selectedId, is_typing: false });
 
         try {
-            // Persist via REST so assigned_admin_id / messages always save
             await sendMessage.mutateAsync({ ticketId: selectedId, message: text });
-            await Promise.all([refetchTicket(), refetch()]);
             scrollMessagesToEnd();
         } catch (err) {
             setError(getApiErrorMessage(err, 'Failed to send message'));
@@ -324,15 +294,7 @@ export default function AdminSupport() {
                                                 type="button"
                                                 disabled={updateStatus.isPending}
                                                 onClick={() =>
-                                                    updateStatus.mutate(
-                                                        { ticketId: selected.id, status: next },
-                                                        {
-                                                            onSuccess: () => {
-                                                                refetch();
-                                                                refetchTicket();
-                                                            },
-                                                        },
-                                                    )
+                                                    updateStatus.mutate({ ticketId: selected.id, status: next })
                                                 }
                                                 className="rounded-full border border-gray-200 px-3 py-1.5 text-[11px] font-bold capitalize text-gray-700 hover:bg-gray-50"
                                             >

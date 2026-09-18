@@ -1,5 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import api from '@/api/axios';
+import { getSupportSocket, sameTicketId } from '@/lib/supportSocket';
 
 export type SupportFaq = {
     id: number;
@@ -188,14 +190,130 @@ export function useMySupportTickets() {
 }
 
 export function useSupportTicket(ticketId?: number | null) {
+    const id = ticketId != null ? Number(ticketId) : null;
     return useQuery({
-        queryKey: ['support', 'tickets', ticketId],
-        enabled: Boolean(ticketId),
+        queryKey: ['support', 'tickets', id],
+        enabled: Boolean(id),
         queryFn: async () => {
-            const res = await api.get(`/support/tickets/${ticketId}`);
+            const res = await api.get(`/support/tickets/${id}`);
             return res.data.data as SupportTicket;
         },
     });
+}
+
+function patchTicketLists(queryClient: QueryClient, ticketId: number, patch: (ticket: SupportTicket) => SupportTicket) {
+    const apply = (old: SupportTicket[] | undefined) => {
+        if (!old) return old;
+        return old.map((ticket) => (sameTicketId(ticket.id, ticketId) ? patch(ticket) : ticket));
+    };
+
+    queryClient.setQueryData(['support', 'tickets', 'mine'], apply);
+    queryClient.setQueriesData({ queryKey: ['support', 'admin', 'tickets'] }, apply);
+}
+
+export function applyIncomingSupportMessage(
+    queryClient: QueryClient,
+    ticketId: number,
+    message: SupportMessage,
+) {
+    const id = Number(ticketId);
+    if (!Number.isFinite(id) || !message) return;
+
+    queryClient.setQueryData<SupportTicket>(['support', 'tickets', id], (old) => {
+        if (!old) return old;
+        if (old.messages?.some((item) => Number(item.id) === Number(message.id))) return old;
+        return {
+            ...old,
+            last_message: message,
+            messages: [...(old.messages || []), message],
+        };
+    });
+
+    patchTicketLists(queryClient, id, (ticket) => ({
+        ...ticket,
+        last_message: message,
+        updatedAt: message.createdAt || ticket.updatedAt,
+    }));
+}
+
+export function applyIncomingSupportTicket(queryClient: QueryClient, ticket: SupportTicket) {
+    if (!ticket?.id) return;
+    const id = Number(ticket.id);
+
+    queryClient.setQueryData<SupportTicket>(['support', 'tickets', id], (old) => {
+        if (!old) return ticket;
+        const oldMessages = old.messages || [];
+        const nextMessages = ticket.messages || [];
+        const merged = nextMessages.length >= oldMessages.length ? nextMessages : oldMessages;
+        return { ...old, ...ticket, messages: merged.length ? merged : oldMessages };
+    });
+
+    const apply = (old: SupportTicket[] | undefined) => {
+        if (!old) return old;
+        const exists = old.some((item) => sameTicketId(item.id, id));
+        if (!exists) return [ticket, ...old];
+        return old.map((item) => (sameTicketId(item.id, id) ? { ...item, ...ticket, messages: item.messages } : item));
+    };
+
+    queryClient.setQueryData(['support', 'tickets', 'mine'], apply);
+    queryClient.setQueriesData({ queryKey: ['support', 'admin', 'tickets'] }, apply);
+}
+
+/** Keep React Query in sync from socket payloads. Do not HTTP-refetch messages. */
+export function useSupportRealtime() {
+    const queryClient = useQueryClient();
+
+    useEffect(() => {
+        const socket = getSupportSocket();
+        if (!socket) return;
+
+        const onMessage = (payload: { ticket_id?: number; message?: SupportMessage }) => {
+            if (!payload?.message || payload.ticket_id == null) return;
+            applyIncomingSupportMessage(queryClient, payload.ticket_id, payload.message);
+        };
+
+        const onTicket = (ticket: SupportTicket) => {
+            applyIncomingSupportTicket(queryClient, ticket);
+        };
+
+        const onStatus = (payload: {
+            ticket_id?: number;
+            status?: SupportTicket['status'];
+            assigned_admin_id?: number | null;
+        }) => {
+            const id = Number(payload?.ticket_id);
+            if (!Number.isFinite(id)) return;
+
+            queryClient.setQueryData<SupportTicket>(['support', 'tickets', id], (old) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    status: payload.status ?? old.status,
+                    assigned_admin_id:
+                        payload.assigned_admin_id !== undefined ? payload.assigned_admin_id : old.assigned_admin_id,
+                };
+            });
+
+            patchTicketLists(queryClient, id, (ticket) => ({
+                ...ticket,
+                status: payload.status ?? ticket.status,
+                assigned_admin_id:
+                    payload.assigned_admin_id !== undefined ? payload.assigned_admin_id : ticket.assigned_admin_id,
+            }));
+        };
+
+        socket.on('support:message:new', onMessage);
+        socket.on('support:ticket:created', onTicket);
+        socket.on('support:ticket:updated', onTicket);
+        socket.on('support:status', onStatus);
+
+        return () => {
+            socket.off('support:message:new', onMessage);
+            socket.off('support:ticket:created', onTicket);
+            socket.off('support:ticket:updated', onTicket);
+            socket.off('support:status', onStatus);
+        };
+    }, [queryClient]);
 }
 
 export function useCreateSupportTicket() {
@@ -211,8 +329,8 @@ export function useCreateSupportTicket() {
             const res = await api.post('/support/tickets', payload);
             return res.data.data as SupportTicket;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['support', 'tickets'] });
+        onSuccess: (ticket) => {
+            applyIncomingSupportTicket(queryClient, ticket);
         },
     });
 }
@@ -231,9 +349,9 @@ export function useSendSupportMessage() {
             });
             return res.data.data as { message: SupportMessage; ticket: SupportTicket };
         },
-        onSuccess: (_data, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['support', 'tickets', variables.ticketId] });
-            queryClient.invalidateQueries({ queryKey: ['support', 'tickets'] });
+        onSuccess: (data, variables) => {
+            applyIncomingSupportMessage(queryClient, variables.ticketId, data.message);
+            if (data.ticket) applyIncomingSupportTicket(queryClient, data.ticket);
         },
     });
 }
@@ -259,8 +377,8 @@ export function useAdminUpdateTicketStatus() {
             });
             return res.data.data as SupportTicket;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['support'] });
+        onSuccess: (ticket) => {
+            applyIncomingSupportTicket(queryClient, ticket);
         },
     });
 }

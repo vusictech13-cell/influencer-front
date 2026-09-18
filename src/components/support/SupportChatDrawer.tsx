@@ -5,11 +5,12 @@ import {
     BOT_RESPONSES,
     useCreateSupportTicket,
     useSendSupportMessage,
+    useSupportRealtime,
     useSupportTicket,
     type SupportMessage,
     type SupportTicket,
 } from '@/hooks/useSupport';
-import { getSupportSocket, joinSupportTicket } from '@/lib/supportSocket';
+import { getSupportSocket, joinSupportTicket, sameTicketId } from '@/lib/supportSocket';
 import { getApiErrorMessage } from '@/api/axios';
 
 type ChatMode = 'bot' | 'awaiting_admin' | 'human';
@@ -69,7 +70,8 @@ export default function SupportChatDrawer({
 
     const createTicket = useCreateSupportTicket();
     const sendMessage = useSendSupportMessage();
-    const { data: ticket, refetch: refetchTicket } = useSupportTicket(ticketId);
+    const { data: ticket } = useSupportTicket(ticketId);
+    useSupportRealtime();
 
     const ticketStatus = ticket?.status;
     const isTicketClosed = ticketStatus === 'closed';
@@ -127,13 +129,7 @@ export default function SupportChatDrawer({
 
     useEffect(() => {
         if (!ticket?.messages?.length || mode !== 'human') return;
-        setMessages(
-            ticket.messages.map((msg) => ({
-                id: String(msg.id),
-                role: mapRole(msg),
-                body: msg.body,
-            })),
-        );
+        setMessages((prev) => mergeHumanMessages(prev, ticket.messages || []));
     }, [ticket, mode]);
 
     useEffect(() => {
@@ -191,7 +187,7 @@ export default function SupportChatDrawer({
         const leaveTicket = joinSupportTicket(ticketId);
 
         const onMessage = (payload: { ticket_id: number; message: SupportMessage }) => {
-            if (payload.ticket_id !== ticketId) return;
+            if (!sameTicketId(payload.ticket_id, ticketId) || !payload.message) return;
             setMessages((prev) => {
                 if (prev.some((m) => m.id === String(payload.message.id))) return prev;
                 return [
@@ -204,7 +200,6 @@ export default function SupportChatDrawer({
                 ];
             });
             setTypingLabel(null);
-            refetchTicket();
         };
 
         const onTyping = (payload: {
@@ -213,21 +208,15 @@ export default function SupportChatDrawer({
             role: string;
             is_typing: boolean;
         }) => {
-            if (payload.ticket_id !== ticketId) return;
-            if (ticketStatus === 'closed') {
-                setTypingLabel(null);
-                return;
-            }
+            if (!sameTicketId(payload.ticket_id, ticketId)) return;
             setTypingLabel(payload.is_typing ? `${payload.name} is typing…` : null);
         };
 
         const onStatus = (payload: {
             ticket_id: number;
             status?: SupportTicket['status'];
-            assigned_admin_id?: number | null;
         }) => {
-            if (payload.ticket_id !== ticketId) return;
-            refetchTicket();
+            if (!sameTicketId(payload.ticket_id, ticketId)) return;
             if (payload.status === 'closed') {
                 setTypingLabel(null);
                 setInput('');
@@ -244,7 +233,7 @@ export default function SupportChatDrawer({
             socket.off('support:typing', onTyping);
             socket.off('support:status', onStatus);
         };
-    }, [open, ticketId, refetchTicket, ticketStatus]);
+    }, [open, ticketId]);
 
     function addLocal(role: LocalMsg['role'], body: string) {
         setMessages((prev) => [...prev, { id: `${Date.now()}-${Math.random()}`, role, body }]);
@@ -535,4 +524,15 @@ function mapRole(msg: SupportMessage): LocalMsg['role'] {
     if (msg.sender_role === 'admin') return 'admin';
     if (msg.sender_role === 'creator') return 'creator';
     return 'bot';
+}
+
+function mergeHumanMessages(prev: LocalMsg[], incoming: SupportMessage[]): LocalMsg[] {
+    const mapped = incoming.map((msg) => ({
+        id: String(msg.id),
+        role: mapRole(msg),
+        body: msg.body,
+    }));
+    const seen = new Set(mapped.map((msg) => msg.id));
+    const ahead = prev.filter((msg) => !seen.has(msg.id) && /^\d+$/.test(msg.id));
+    return [...mapped, ...ahead];
 }
