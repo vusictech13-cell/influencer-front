@@ -454,6 +454,22 @@ export default function SupportChatDrawer({
                                 {msg.body}
                             </div>
                         ))}
+
+                        {mode === 'bot' && buttons.length > 0 && !botBusy && (
+                            <div className="max-w-[92%] flex flex-wrap gap-2 pt-0.5">
+                                {buttons.map((button, index) => (
+                                    <button
+                                        key={`${button.id ?? button.action}-${button.label}-${index}`}
+                                        type="button"
+                                        onClick={() => void chooseButton(button)}
+                                        className="rounded-[15px] rounded-tl-[5px] border border-[#cfe4f0] bg-white px-3 py-2.5 text-left text-[12px] font-semibold text-[#0b2744] shadow-sm transition hover:border-brand-orange/40 hover:bg-[#f4fbff]"
+                                    >
+                                        {button.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
                         {botBusy && mode === 'bot' && (
                             <p className="text-[11px] text-[#7a8796]">Support is typing…</p>
                         )}
@@ -464,22 +480,7 @@ export default function SupportChatDrawer({
                 </div>
 
                 <div className="shrink-0 border-t border-[#dce8f0] bg-white">
-                    {mode === 'bot' && buttons.length > 0 && !botBusy && (
-                        <div className="grid max-h-[min(36vh,280px)] gap-2 overflow-y-auto p-3 sm:max-h-56">
-                            {buttons.map((button, index) => (
-                                <button
-                                    key={`${button.id ?? button.action}-${button.label}-${index}`}
-                                    type="button"
-                                    onClick={() => void chooseButton(button)}
-                                    className="rounded-[11px] border border-[#cfe4f0] bg-[#f4fbff] px-3 py-2.5 text-left text-[12px] font-semibold text-[#0b2744] hover:border-brand-orange/40"
-                                >
-                                    {button.label}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {error && <p className="px-4 pb-1 text-xs text-red-500">{error}</p>}
+                    {error && <p className="px-4 pb-1 pt-2 text-xs text-red-500">{error}</p>}
 
                     {isTicketClosed ? (
                         <div
