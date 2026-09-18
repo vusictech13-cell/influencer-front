@@ -1,5 +1,21 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type RefObject } from 'react';
-import { ChevronLeft, Loader2, Send, X } from 'lucide-react';
+import {
+    BarChart3,
+    ChevronLeft,
+    ChevronRight,
+    CreditCard,
+    FileText,
+    Info,
+    Loader2,
+    MessageCircle,
+    MoreHorizontal,
+    Pencil,
+    Send,
+    Trash2,
+    User,
+    Wallet,
+    X,
+} from 'lucide-react';
 import {
     useAdminFaqs,
     useAdminDeleteFaq,
@@ -985,10 +1001,22 @@ function AdminFaqManager() {
     );
 }
 
-const BOT_ACTIONS: { key: SupportBotAction; label: string }[] = [
-    { key: 'show_children', label: 'Show children (branch)' },
-    { key: 'answer', label: 'Answer (leaf)' },
-    { key: 'escalate', label: 'Escalate to admin' },
+const BOT_ACTIONS: { key: SupportBotAction; label: string; hint: string }[] = [
+    {
+        key: 'show_children',
+        label: 'Has more options',
+        hint: 'Shows child buttons in chat after this reply',
+    },
+    {
+        key: 'answer',
+        label: 'Final answer',
+        hint: 'Shows reply only — children are ignored',
+    },
+    {
+        key: 'escalate',
+        label: 'Contact admin',
+        hint: 'Starts the admin ticket flow',
+    },
 ];
 
 const EMPTY_BOT_FORM: Partial<SupportBotNode> & {
@@ -1005,44 +1033,59 @@ const EMPTY_BOT_FORM: Partial<SupportBotNode> & {
     is_active: true,
 };
 
+function optionIcon(node: SupportBotNode) {
+    const label = node.label.toLowerCase();
+    if (node.action === 'escalate' || label.includes('something else')) return MoreHorizontal;
+    if (label.includes('payment') || label.includes('wallet') || label.includes('earning')) return CreditCard;
+    if (label.includes('instagram') || label.includes('account') || label.includes('profile')) return User;
+    if (label.includes('gift') || label.includes('payout') || label.includes('amount')) return Wallet;
+    if (label.includes('status')) return BarChart3;
+    if (label.includes('application') || label.includes('apply') || label.includes('submit')) return FileText;
+    if (node.action === 'answer') return Info;
+    return MessageCircle;
+}
+
 function AdminBotManager() {
     const { data: nodes = [], isLoading } = useAdminBotNodes();
     const saveNode = useAdminSaveBotNode();
     const deleteNode = useAdminDeleteBotNode();
     const [form, setForm] = useState(EMPTY_BOT_FORM);
     const [error, setError] = useState<string | null>(null);
-    const [filterParent, setFilterParent] = useState<'all' | 'root' | number>('all');
+    const [openBranches, setOpenBranches] = useState<Set<number>>(() => new Set());
+    const [pendingDelete, setPendingDelete] = useState<SupportBotNode | null>(null);
 
-    const roots = useMemo(() => nodes.filter((node) => node.parent_id == null), [nodes]);
+    useEffect(() => {
+        if (!pendingDelete) return;
+        const onKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && !deleteNode.isPending) setPendingDelete(null);
+        };
+        const previous = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', onKey);
+        return () => {
+            document.body.style.overflow = previous;
+            document.removeEventListener('keydown', onKey);
+        };
+    }, [pendingDelete, deleteNode.isPending]);
 
-    const visibleNodes = useMemo(() => {
-        if (filterParent === 'all') return nodes;
-        if (filterParent === 'root') return nodes.filter((node) => node.parent_id == null);
+    const roots = useMemo(
+        () => nodes.filter((node) => node.parent_id == null).sort((a, b) => a.sort_order - b.sort_order || a.id - b.id),
+        [nodes],
+    );
 
-        const ids = new Set<number>([filterParent]);
-        let grew = true;
-        while (grew) {
-            grew = false;
-            for (const node of nodes) {
-                if (node.parent_id != null && ids.has(node.parent_id) && !ids.has(node.id)) {
-                    ids.add(node.id);
-                    grew = true;
-                }
-            }
-        }
-        return nodes.filter((node) => ids.has(node.id));
-    }, [nodes, filterParent]);
-
-    const grouped = useMemo(() => {
-        const byParent = new Map<number | 'root', SupportBotNode[]>();
-        for (const node of visibleNodes) {
-            const key = node.parent_id == null ? 'root' : node.parent_id;
-            const list = byParent.get(key) || [];
+    const childrenByParent = useMemo(() => {
+        const map = new Map<number, SupportBotNode[]>();
+        for (const node of nodes) {
+            if (node.parent_id == null) continue;
+            const list = map.get(node.parent_id) || [];
             list.push(node);
-            byParent.set(key, list);
+            map.set(node.parent_id, list);
         }
-        return byParent;
-    }, [visibleNodes]);
+        for (const [, list] of map) {
+            list.sort((a, b) => a.sort_order - b.sort_order || a.id - b.id);
+        }
+        return map;
+    }, [nodes]);
 
     function startEdit(node: SupportBotNode) {
         setForm({
@@ -1054,19 +1097,41 @@ function AdminBotManager() {
     }
 
     function startChild(parentId: number) {
+        setOpenBranches((prev) => new Set(prev).add(parentId));
+        const siblings = childrenByParent.get(parentId) || [];
         setForm({
             ...EMPTY_BOT_FORM,
             parent_id: parentId,
             action: 'answer',
+            sort_order: siblings.length + 1,
         });
         setError(null);
+    }
+
+    function startRoot() {
+        setForm({
+            ...EMPTY_BOT_FORM,
+            parent_id: null,
+            action: 'show_children',
+            sort_order: roots.length + 1,
+        });
+        setError(null);
+    }
+
+    function toggleBranch(id: number) {
+        setOpenBranches((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
     }
 
     async function onSubmit(event: FormEvent) {
         event.preventDefault();
         setError(null);
         try {
-            await saveNode.mutateAsync({
+            const saved = await saveNode.mutateAsync({
                 id: form.id,
                 parent_id: form.parent_id ?? null,
                 label: form.label,
@@ -1079,124 +1144,186 @@ function AdminBotManager() {
                 sort_order: form.sort_order ?? 0,
                 is_active: form.is_active !== false,
             });
+            if (saved.parent_id != null) {
+                setOpenBranches((prev) => new Set(prev).add(saved.parent_id as number));
+                const parent = nodes.find((node) => node.id === saved.parent_id);
+                if (parent && parent.action === 'answer') {
+                    await saveNode.mutateAsync({
+                        id: parent.id,
+                        parent_id: parent.parent_id,
+                        label: parent.label,
+                        reply: parent.reply,
+                        action: 'show_children',
+                        keywords: parent.keywords,
+                        sort_order: parent.sort_order,
+                        is_active: parent.is_active,
+                    });
+                }
+            }
+            if (saved.action === 'show_children') {
+                setOpenBranches((prev) => new Set(prev).add(saved.id));
+            }
             setForm(EMPTY_BOT_FORM);
         } catch (err) {
             setError(getApiErrorMessage(err, 'Failed to save bot node'));
         }
     }
 
-    function renderNodeCard(node: SupportBotNode, depth = 0) {
-        const children = grouped.get(node.id) || [];
+    function renderAddOption(parentId: number | null, accent: 'orange' | 'gray' = 'gray') {
+        const isRoot = parentId == null;
+        const isDraftHere = !form.id && (form.parent_id ?? null) === parentId && (form.sort_order ?? 0) > 0;
+        const orange = accent === 'orange' || isDraftHere;
         return (
-            <div key={node.id} className={depth > 0 ? 'ml-4 border-l border-gray-100 pl-3' : ''}>
-                <div className="rounded-xl border border-gray-100 p-3">
-                    <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                            <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">
-                                #{node.id}
-                                {node.parent ? ` · under ${node.parent.label}` : ' · root'}
-                                {' · '}
-                                {node.action}
-                                {' · #'}
-                                {node.sort_order}
-                                {' · '}
-                                {node.is_active ? 'active' : 'hidden'}
-                            </p>
-                            <p className="mt-1 text-sm font-semibold text-gray-900">{node.label}</p>
-                            {node.reply && (
-                                <p className="mt-1 text-xs text-gray-500 whitespace-pre-wrap">{node.reply}</p>
-                            )}
-                            {node.keywords?.length > 0 && (
-                                <p className="mt-1 text-[11px] text-gray-400">
-                                    Keywords: {node.keywords.join(', ')}
-                                </p>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-1">
+            <button
+                type="button"
+                onClick={() => (isRoot ? startRoot() : startChild(parentId))}
+                className={`flex w-full items-center justify-center rounded-2xl border border-dashed px-3 py-3 text-[13px] font-semibold transition ${
+                    orange
+                        ? 'border-brand-orange/50 bg-[#fff7f2] text-brand-orange hover:bg-[#ffefe6]'
+                        : 'border-gray-200 bg-white text-gray-400 hover:border-gray-300 hover:text-gray-600'
+                }`}
+            >
+                + {isRoot ? 'Add root option' : 'Add option'}
+            </button>
+        );
+    }
+
+    function renderOption(node: SupportBotNode) {
+        const children = childrenByParent.get(node.id) || [];
+        const canExpand = node.action !== 'escalate';
+        const isOpen = openBranches.has(node.id);
+        const isEditing = form.id === node.id;
+        const Icon = optionIcon(node);
+        const subtitle =
+            node.reply?.trim() ||
+            (node.action === 'escalate' ? 'Starts an admin support ticket' : 'No reply yet');
+
+        return (
+            <div key={node.id} className="space-y-2">
+                <div
+                    className={`group relative flex items-center gap-3 rounded-2xl border bg-white px-3 py-3 transition ${
+                        isEditing
+                            ? 'border-brand-orange shadow-[0_0_0_1px_rgba(255,106,26,0.15)]'
+                            : node.is_active
+                              ? 'border-gray-200 hover:border-gray-300'
+                              : 'border-dashed border-gray-200 opacity-70'
+                    }`}
+                >
+                    <div className="flex min-w-0 flex-1 items-center gap-3 pr-24">
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#f4f6f8] text-gray-500">
+                            <Icon size={16} />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[13px] font-semibold text-gray-900">{node.label}</span>
+                            <span className="mt-0.5 block truncate text-[12px] text-gray-400">{subtitle}</span>
+                        </span>
+                    </div>
+
+                    <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
+                        <div className="flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
                             <button
                                 type="button"
-                                className="text-[11px] font-bold text-[#00B4EB]"
+                                title="Edit"
                                 onClick={() => startEdit(node)}
+                                className="grid h-8 w-8 place-items-center rounded-md text-gray-400 hover:bg-gray-50 hover:text-[#00B4EB]"
                             >
-                                Edit
+                                <Pencil size={14} />
                             </button>
-                            {node.action === 'show_children' && (
-                                <button
-                                    type="button"
-                                    className="text-[11px] font-bold text-emerald-600"
-                                    onClick={() => startChild(node.id)}
-                                >
-                                    + Child
-                                </button>
-                            )}
                             <button
                                 type="button"
-                                className="text-[11px] font-bold text-red-500"
-                                onClick={() => {
-                                    if (window.confirm(`Delete “${node.label}” and its children?`)) {
-                                        deleteNode.mutate(node.id);
-                                    }
-                                }}
+                                title="Delete"
+                                onClick={() => setPendingDelete(node)}
+                                className="grid h-8 w-8 place-items-center rounded-md text-gray-400 hover:bg-red-50 hover:text-red-500"
                             >
-                                Delete
+                                <Trash2 size={14} />
                             </button>
                         </div>
+                        {canExpand && (
+                            <button
+                                type="button"
+                                title={isOpen ? 'Collapse' : 'Expand'}
+                                onClick={() => toggleBranch(node.id)}
+                                className="grid h-8 w-8 place-items-center rounded-md text-gray-400 hover:bg-gray-50 hover:text-gray-700"
+                            >
+                                <ChevronRight
+                                    size={16}
+                                    className={`transition ${isOpen ? 'rotate-90' : ''}`}
+                                />
+                            </button>
+                        )}
                     </div>
                 </div>
-                {children.length > 0 && (
-                    <div className="mt-2 space-y-2">
-                        {children.map((child) => renderNodeCard(child, depth + 1))}
+
+                {isOpen && canExpand && (
+                    <div className="ml-5 space-y-2 border-l border-gray-200 pl-4">
+                        {children.map((child) => renderOption(child))}
+                        {renderAddOption(node.id, children.length ? 'gray' : 'orange')}
                     </div>
                 )}
             </div>
         );
     }
 
-    const rootList =
-        filterParent === 'all' || filterParent === 'root'
-            ? roots.filter((node) => visibleNodes.some((item) => item.id === node.id))
-            : nodes.filter((node) => node.id === filterParent);
+    const editingParentLabel =
+        form.parent_id == null
+            ? 'Main menu (root)'
+            : nodes.find((node) => node.id === form.parent_id)?.label || `Node #${form.parent_id}`;
 
     return (
         <div className="grid gap-4 lg:grid-cols-[1fr_380px]">
-            <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <h2 className="text-sm font-semibold text-gray-900">Chat bot tree</h2>
-                    <div className="w-auto min-w-[180px]">
-                        <FieldSelect
-                            value={filterParent === 'all' || filterParent === 'root' ? filterParent : String(filterParent)}
-                            onChange={(value) => {
-                                if (value === 'all' || value === 'root') setFilterParent(value);
-                                else setFilterParent(Number(value));
-                            }}
-                            options={[
-                                { value: 'all', label: 'All nodes' },
-                                { value: 'root', label: 'Root topics only' },
-                                ...roots.map((node) => ({
-                                    value: String(node.id),
-                                    label: `Branch: ${node.label}`,
-                                })),
-                            ]}
-                        />
-                    </div>
+            <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+                <div className="min-h-[420px] p-4 sm:p-5">
+                    {isLoading ? (
+                        <Loader2 className="mx-auto my-16 animate-spin text-[#00B4EB]" />
+                    ) : (
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3 rounded-2xl bg-[#f6f8fa] px-4 py-3">
+                                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#0b2744] text-white">
+                                    ✦
+                                </span>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-400">
+                                        Bot message
+                                    </p>
+                                    <p className="text-[14px] font-medium text-gray-800">
+                                        Hi! How can we help you today?
+                                    </p>
+                                </div>
+                            </div>
+
+                            {roots.length === 0 ? (
+                                <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-10 text-center">
+                                    <p className="text-sm font-semibold text-gray-700">No chat options yet</p>
+                                    <p className="mt-1 text-xs text-gray-400">
+                                        Add a root option to start the menu creators see when chat opens.
+                                    </p>
+                                </div>
+                            ) : (
+                                roots.map((node) => renderOption(node))
+                            )}
+
+                            {renderAddOption(null)}
+
+                            <p className="pt-1 text-[11px] text-gray-400">
+                                <span className="font-semibold text-gray-500">Tip:</span> Hover over any option to
+                                edit or delete it. Use <span className="font-semibold text-gray-500">+ Add option</span>{' '}
+                                to create the next step in the conversation.
+                            </p>
+                        </div>
+                    )}
                 </div>
-                {isLoading ? (
-                    <Loader2 className="mx-auto my-8 animate-spin text-[#00B4EB]" />
-                ) : rootList.length === 0 ? (
-                    <p className="py-8 text-center text-sm text-gray-400">No bot nodes yet.</p>
-                ) : (
-                    <div className="space-y-3">
-                        {rootList.map((node) => renderNodeCard(node))}
-                    </div>
-                )}
             </div>
 
             <form onSubmit={onSubmit} className="h-fit space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                <h2 className="text-sm font-semibold text-gray-900">
-                    {form.id ? `Edit node #${form.id}` : 'Add bot node'}
-                </h2>
+                <div>
+                    <h2 className="text-sm font-semibold text-gray-900">
+                        {form.id ? 'Edit option' : 'New option'}
+                    </h2>
+                    <p className="mt-0.5 text-[11px] text-gray-400">Under: {editingParentLabel}</p>
+                </div>
+
                 <label className="block space-y-1">
-                    <span className="text-xs font-semibold text-gray-700">Parent</span>
+                    <span className="text-xs font-semibold text-gray-700">Parent menu</span>
                     <FieldSelect
                         value={form.parent_id ?? ''}
                         onChange={(value) =>
@@ -1206,9 +1333,9 @@ function AdminBotManager() {
                             }))
                         }
                         options={[
-                            { value: '', label: 'Root (main topics)' },
+                            { value: '', label: 'Main menu (root)' },
                             ...nodes
-                                .filter((node) => node.id !== form.id)
+                                .filter((node) => node.id !== form.id && node.action !== 'escalate')
                                 .map((node) => ({
                                     value: String(node.id),
                                     label:
@@ -1219,28 +1346,31 @@ function AdminBotManager() {
                         ]}
                     />
                 </label>
+
                 <label className="block space-y-1">
-                    <span className="text-xs font-semibold text-gray-700">Button label</span>
+                    <span className="text-xs font-semibold text-gray-700">Option button text</span>
                     <input
                         value={form.label}
                         onChange={(e) => setForm((prev) => ({ ...prev, label: e.target.value }))}
-                        placeholder="Shown on the chat button"
+                        placeholder="e.g. Campaign application"
                         className={FIELD_CLASS}
                         required
                     />
                 </label>
+
                 <label className="block space-y-1">
-                    <span className="text-xs font-semibold text-gray-700">Bot reply</span>
+                    <span className="text-xs font-semibold text-gray-700">Bot reply after tap</span>
                     <textarea
                         value={form.reply || ''}
                         onChange={(e) => setForm((prev) => ({ ...prev, reply: e.target.value }))}
-                        placeholder="Message shown when this option is selected"
+                        placeholder="Message shown when creator taps this option"
                         rows={4}
                         className={FIELD_CLASS}
                     />
                 </label>
+
                 <label className="block space-y-1">
-                    <span className="text-xs font-semibold text-gray-700">Action</span>
+                    <span className="text-xs font-semibold text-gray-700">What happens next?</span>
                     <FieldSelect
                         value={form.action}
                         onChange={(value) =>
@@ -1251,9 +1381,13 @@ function AdminBotManager() {
                             label: action.label,
                         }))}
                     />
+                    <p className="text-[11px] text-gray-400">
+                        {BOT_ACTIONS.find((action) => action.key === form.action)?.hint}
+                    </p>
                 </label>
+
                 <label className="block space-y-1">
-                    <span className="text-xs font-semibold text-gray-700">Keywords (comma-separated)</span>
+                    <span className="text-xs font-semibold text-gray-700">Keywords (typed questions)</span>
                     <input
                         value={form.keywordsText}
                         onChange={(e) => setForm((prev) => ({ ...prev, keywordsText: e.target.value }))}
@@ -1261,6 +1395,7 @@ function AdminBotManager() {
                         className={FIELD_CLASS}
                     />
                 </label>
+
                 <label className="block space-y-1">
                     <span className="text-xs font-semibold text-gray-700">Sort order</span>
                     <input
@@ -1270,17 +1405,20 @@ function AdminBotManager() {
                         className={FIELD_CLASS}
                     />
                 </label>
+
                 <label className="flex items-center gap-2 text-xs text-gray-600">
                     <input
                         type="checkbox"
                         checked={form.is_active !== false}
                         onChange={(e) => setForm((prev) => ({ ...prev, is_active: e.target.checked }))}
                     />
-                    Active
+                    Show in chat
                 </label>
+
                 {error && <p className="text-xs text-red-500">{error}</p>}
+
                 <div className="flex gap-2">
-                    {form.id ? (
+                    {form.id || form.label ? (
                         <button
                             type="button"
                             onClick={() => setForm(EMPTY_BOT_FORM)}
@@ -1294,10 +1432,60 @@ function AdminBotManager() {
                         disabled={saveNode.isPending}
                         className="flex-1 rounded-full bg-brand-orange py-2.5 text-sm font-bold text-white"
                     >
-                        {saveNode.isPending ? 'Saving…' : form.id ? 'Update node' : 'Create node'}
+                        {saveNode.isPending ? 'Saving…' : form.id ? 'Save changes' : 'Add option'}
                     </button>
                 </div>
             </form>
+
+            {pendingDelete && (
+                <div
+                    className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="delete-bot-node-title"
+                >
+                    <button
+                        type="button"
+                        className="absolute inset-0 bg-[#0b2744]/45 backdrop-blur-[2px]"
+                        aria-label="Dismiss"
+                        onClick={() => !deleteNode.isPending && setPendingDelete(null)}
+                    />
+                    <div className="relative w-full max-w-sm rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_24px_60px_rgba(11,39,68,0.28)]">
+                        <div className="mx-auto mb-3 grid h-11 w-11 place-items-center rounded-full bg-red-50 text-red-600">
+                            <Trash2 size={18} />
+                        </div>
+                        <h3 id="delete-bot-node-title" className="text-center text-base font-semibold text-gray-900">
+                            Delete this option?
+                        </h3>
+                        <p className="mt-2 text-center text-sm leading-relaxed text-gray-500">
+                            “{pendingDelete.label}” and any options nested under it will be removed from the chat bot.
+                        </p>
+                        <div className="mt-5 flex gap-2">
+                            <button
+                                type="button"
+                                disabled={deleteNode.isPending}
+                                onClick={() => setPendingDelete(null)}
+                                className="flex-1 rounded-full border border-gray-200 bg-white py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                disabled={deleteNode.isPending}
+                                onClick={async () => {
+                                    const id = pendingDelete.id;
+                                    await deleteNode.mutateAsync(id);
+                                    if (form.id === id) setForm(EMPTY_BOT_FORM);
+                                    setPendingDelete(null);
+                                }}
+                                className="flex-1 rounded-full bg-red-600 py-2.5 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-60"
+                            >
+                                {deleteNode.isPending ? 'Deleting…' : 'Yes, delete'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
