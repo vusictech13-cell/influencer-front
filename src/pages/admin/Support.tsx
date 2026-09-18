@@ -29,7 +29,10 @@ export default function AdminSupport() {
     const [message, setMessage] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [typingLabel, setTypingLabel] = useState<string | null>(null);
+    /** Mobile: shrink chat panel to visualViewport so the composer stays above the keyboard. */
+    const [chatFrameHeight, setChatFrameHeight] = useState<number | null>(null);
     const messagesRef = useRef<HTMLDivElement>(null);
+    const chatSectionRef = useRef<HTMLElement | null>(null);
 
     const { data: tickets = [], isLoading, isError, error: loadError, refetch } = useAdminSupportTickets(status);
     const { data: ticket, refetch: refetchTicket } = useSupportTicket(selectedId);
@@ -47,7 +50,41 @@ export default function AdminSupport() {
 
     useEffect(() => {
         messagesRef.current?.scrollTo({ top: messagesRef.current.scrollHeight });
-    }, [ticket?.messages, typingLabel]);
+    }, [ticket?.messages, typingLabel, chatFrameHeight]);
+
+    useEffect(() => {
+        if (tab !== 'inbox') {
+            setChatFrameHeight(null);
+            return;
+        }
+
+        const isMobile = () => window.matchMedia('(max-width: 1023px)').matches;
+
+        const syncViewport = () => {
+            if (!isMobile()) {
+                setChatFrameHeight(null);
+                return;
+            }
+            const vv = window.visualViewport;
+            const visible = Math.round(vv?.height ?? window.innerHeight);
+            const keyboardLikely = visible < window.innerHeight - 80;
+            // When the keyboard is open, give the chat nearly the full visible area.
+            // Otherwise leave room for the page header + ticket list above it.
+            const chrome = keyboardLikely ? 16 : 220;
+            setChatFrameHeight(Math.max(260, visible - chrome));
+        };
+
+        syncViewport();
+        const vv = window.visualViewport;
+        vv?.addEventListener('resize', syncViewport);
+        vv?.addEventListener('scroll', syncViewport);
+        window.addEventListener('resize', syncViewport);
+        return () => {
+            vv?.removeEventListener('resize', syncViewport);
+            vv?.removeEventListener('scroll', syncViewport);
+            window.removeEventListener('resize', syncViewport);
+        };
+    }, [tab, selectedId]);
 
     useEffect(() => {
         const socket = getSupportSocket();
@@ -110,6 +147,15 @@ export default function AdminSupport() {
         };
     }, [selectedId, refetchTicket, refetch]);
 
+    function scrollMessagesToEnd() {
+        const el = messagesRef.current;
+        if (!el) return;
+        requestAnimationFrame(() => {
+            el.scrollTo({ top: el.scrollHeight });
+        });
+        chatSectionRef.current?.scrollIntoView({ block: 'end' });
+    }
+
     async function handleSend(event: FormEvent) {
         event.preventDefault();
         if (!selectedId || !message.trim()) return;
@@ -123,10 +169,17 @@ export default function AdminSupport() {
             // Persist via REST so assigned_admin_id / messages always save
             await sendMessage.mutateAsync({ ticketId: selectedId, message: text });
             await Promise.all([refetchTicket(), refetch()]);
+            scrollMessagesToEnd();
         } catch (err) {
             setError(getApiErrorMessage(err, 'Failed to send message'));
         }
     }
+
+    const keyboardOpen = Boolean(
+        chatFrameHeight != null &&
+            typeof window !== 'undefined' &&
+            chatFrameHeight < window.innerHeight * 0.55,
+    );
 
     return (
         <div className="mx-auto max-w-6xl space-y-5">
@@ -160,8 +213,12 @@ export default function AdminSupport() {
             {tab === 'faqs' ? (
                 <AdminFaqManager />
             ) : (
-                <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
-                    <aside className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+                <div className="grid gap-4 lg:h-[calc(100dvh-11rem)] lg:min-h-[480px] lg:grid-cols-[320px_1fr] lg:overflow-hidden">
+                    <aside
+                        className={`overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm lg:flex lg:min-h-0 lg:flex-col ${
+                            keyboardOpen ? 'hidden lg:flex' : ''
+                        }`}
+                    >
                         <div className="flex flex-wrap gap-1 border-b border-gray-100 p-3">
                             {STATUS_FILTERS.map((filter) => (
                                 <button
@@ -198,7 +255,7 @@ export default function AdminSupport() {
                         ) : tickets.length === 0 ? (
                             <p className="p-6 text-center text-sm text-gray-400">No tickets</p>
                         ) : (
-                            <div className="max-h-[70vh] divide-y divide-gray-50 overflow-y-auto">
+                            <div className="max-h-[36vh] divide-y divide-gray-50 overflow-y-auto lg:max-h-none lg:min-h-0 lg:flex-1">
                                 {tickets.map((item) => (
                                     <button
                                         key={item.id}
@@ -224,14 +281,22 @@ export default function AdminSupport() {
                         )}
                     </aside>
 
-                    <section className="flex min-h-[70vh] flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+                    <section
+                        ref={chatSectionRef}
+                        style={
+                            chatFrameHeight
+                                ? { height: chatFrameHeight, maxHeight: chatFrameHeight }
+                                : undefined
+                        }
+                        className="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm lg:min-h-0 lg:h-full"
+                    >
                         {!selected ? (
                             <div className="flex flex-1 items-center justify-center text-sm text-gray-400">
                                 Select a ticket
                             </div>
                         ) : (
                             <>
-                                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+                                <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
                                     <div>
                                         <h2 className="font-semibold text-gray-900">
                                             {selected.ticket_code} · {selected.subject}
@@ -277,46 +342,66 @@ export default function AdminSupport() {
                                     </div>
                                 </div>
 
-                                <div ref={messagesRef} className="flex-1 space-y-2.5 overflow-y-auto bg-[#f8fafc] px-5 py-4">
-                                    {(ticket?.messages || []).map((msg) => (
-                                        <MessageBubble key={msg.id} message={msg} />
-                                    ))}
-                                    {typingLabel && <p className="text-[11px] text-gray-400">{typingLabel}</p>}
+                                <div
+                                    ref={messagesRef}
+                                    className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-[#f8fafc] [-webkit-overflow-scrolling:touch]"
+                                >
+                                    <div className="space-y-2.5 px-5 py-4">
+                                        {(ticket?.messages || []).map((msg) => (
+                                            <MessageBubble key={msg.id} message={msg} />
+                                        ))}
+                                        {typingLabel && <p className="text-[11px] text-gray-400">{typingLabel}</p>}
+                                    </div>
                                 </div>
 
-                                {error && <p className="px-5 text-xs text-red-500">{error}</p>}
+                                <div className="shrink-0 border-t border-gray-100 bg-white">
+                                    {error && <p className="px-5 pt-2 text-xs text-red-500">{error}</p>}
 
-                                {selected.status === 'closed' ? (
-                                    <div className="border-t border-gray-100 bg-[#f8fafc] px-5 py-4 text-center">
-                                        <p className="text-sm font-semibold text-gray-900">This ticket is closed</p>
-                                        <p className="mt-1 text-xs text-gray-500">
-                                            Creator messaging is disabled for closed tickets.
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <form onSubmit={handleSend} className="flex gap-2 border-t border-gray-100 p-4">
-                                        <input
-                                            value={message}
-                                            onChange={(event) => {
-                                                setMessage(event.target.value);
-                                                getSupportSocket()?.emit('support:typing', {
-                                                    ticketId: selected.id,
-                                                    is_typing: true,
-                                                });
-                                            }}
-                                            placeholder="Reply to creator…"
-                                            className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-orange"
-                                        />
-                                        <button
-                                            type="submit"
-                                            disabled={sendMessage.isPending || !message.trim()}
-                                            className="grid h-11 w-11 place-items-center rounded-xl bg-brand-orange text-white disabled:opacity-60"
-                                            aria-label="Send"
+                                    {selected.status === 'closed' ? (
+                                        <div className="bg-[#f8fafc] px-5 py-4 text-center">
+                                            <p className="text-sm font-semibold text-gray-900">This ticket is closed</p>
+                                            <p className="mt-1 text-xs text-gray-500">
+                                                Creator messaging is disabled for closed tickets.
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <form
+                                            onSubmit={handleSend}
+                                            className={`flex gap-2 p-4 ${
+                                                keyboardOpen
+                                                    ? 'pb-3'
+                                                    : 'pb-[max(1rem,env(safe-area-inset-bottom))] lg:pb-4'
+                                            }`}
                                         >
-                                            {sendMessage.isPending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                                        </button>
-                                    </form>
-                                )}
+                                            <input
+                                                value={message}
+                                                onChange={(event) => {
+                                                    setMessage(event.target.value);
+                                                    getSupportSocket()?.emit('support:typing', {
+                                                        ticketId: selected.id,
+                                                        is_typing: true,
+                                                    });
+                                                }}
+                                                onFocus={scrollMessagesToEnd}
+                                                placeholder="Reply to creator…"
+                                                enterKeyHint="send"
+                                                className="min-w-0 flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-orange"
+                                            />
+                                            <button
+                                                type="submit"
+                                                disabled={sendMessage.isPending || !message.trim()}
+                                                className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-brand-orange text-white disabled:opacity-60"
+                                                aria-label="Send"
+                                            >
+                                                {sendMessage.isPending ? (
+                                                    <Loader2 size={16} className="animate-spin" />
+                                                ) : (
+                                                    <Send size={16} />
+                                                )}
+                                            </button>
+                                        </form>
+                                    )}
+                                </div>
                             </>
                         )}
                     </section>
