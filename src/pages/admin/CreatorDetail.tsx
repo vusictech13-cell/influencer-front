@@ -347,7 +347,7 @@ export default function AdminCreatorDetail() {
                                 style={{
                                     background: `conic-gradient(var(--accent) 0deg, var(--accent) ${ringDeg}deg, #f0f0ec ${ringDeg}deg, #f0f0ec 360deg)`,
                                 }}
-                            >
+                            > 
                                 <div className="score-number">
                                     <strong>{overall ?? '—'}</strong>
                                     <span>{isCollecting ? 'collecting' : 'out of 100'}</span>
