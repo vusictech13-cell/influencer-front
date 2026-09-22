@@ -6,7 +6,7 @@ export default function About() {
     return (
         <div className="container max-w-3xl py-16 px-4 sm:px-6 lg:px-8 space-y-12">
             <div className="space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight">About MeloTap</h1>
+                <h1 className="text-4xl font-bold tracking-tight">About TapnLike</h1>
                 <p className="text-lg text-muted-foreground leading-relaxed">
                     {COMPANY.description}
                 </p>
@@ -18,7 +18,7 @@ export default function About() {
                     <h2 className="text-2xl font-semibold">{COMPANY.legalName}</h2>
                 </div>
                 <p className="text-muted-foreground leading-relaxed">
-                    {COMPANY.legalName} is the legal entity that owns and operates the MeloTap platform.
+                    {COMPANY.legalName} is the legal entity that owns and operates the TapnLike platform.
                     The company is registered in {COMPANY.country} and develops technology products for the
                     music and creator economy.
                 </p>
@@ -50,7 +50,7 @@ export default function About() {
                     <h2 className="text-2xl font-semibold">Contact</h2>
                 </div>
                 <p className="text-muted-foreground leading-relaxed">
-                    For platform support, partnership inquiries, or general questions about MeloTap, reach
+                    For platform support, partnership inquiries, or general questions about TapnLike, reach
                     out to our team.
                 </p>
                 <div className="bg-muted/30 border rounded-lg p-6 space-y-2 text-sm">

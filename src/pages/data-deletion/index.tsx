@@ -48,7 +48,7 @@ export default function DataDeletion() {
                         </p>
                         <ul className="list-disc pl-6 text-sm text-muted-foreground space-y-1">
                             <li>Your full name</li>
-                            <li>The email address associated with your MeloTap account</li>
+                            <li>The email address associated with your TapnLike account</li>
                             <li>Your connected Instagram username (if applicable)</li>
                         </ul>
                     </div>

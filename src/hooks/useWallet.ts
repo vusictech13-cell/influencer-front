@@ -85,7 +85,7 @@ export function useRazorpayTopup() {
                     key: order.keyId,
                     amount: order.amount,
                     currency: order.currency,
-                    name: 'MeloTap',
+                    name: 'TapnLike',
                     description: 'Brand Wallet Top-up',
                     order_id: order.orderId,
                     prefill: order.prefill,

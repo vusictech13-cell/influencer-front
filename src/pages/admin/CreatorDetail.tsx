@@ -364,7 +364,7 @@ export default function AdminCreatorDetail() {
                                             : isIneligible
                                                 ? 'Creator Score requires an Instagram Professional account (Business or Creator).'
                                                 : isScoreError
-                                                    ? 'Instagram Insights failed. Buzzooka will retry instead of scoring incomplete data.'
+                                                    ? 'Instagram Insights failed. TapnLike will retry instead of scoring incomplete data.'
                                                     : instagram
                                                         ? 'Need at least 5 recent Reels plus usable Insights before a mature Creator Score is published.'
                                                         : 'Link an Instagram account to generate a live Creator Score.')}
