@@ -29,7 +29,7 @@ const NAV_ITEMS = [
     { key: '/creator/bulk-reels', icon: Upload, label: 'Bulk Reel Upload', section: 'Creator' },
     { key: '/creator/analytics', icon: TrendingUp, label: 'Analytics', section: 'Creator', aliases: ['/creator/insights'] },
     { key: '/creator/campaigns', icon: List, label: 'Campaigns', section: 'Creator' },
-    { key: '/creator/brands', icon: Building2, label: 'Brands', section: 'Creator' },
+    { key: '/creator/brands', icon: Building2, label: 'Brands', section: 'Creator', aliases: ['/creator/campaign-details'] },
     { key: '/creator/profile', icon: User, label: 'Profile', section: 'My profile' },
     { key: '/creator/payments', icon: Wallet, label: 'Earnings', section: 'My profile' },
     { key: '/creator/media-kit', icon: FileText, label: 'Media kit', section: 'My profile' },

@@ -18,6 +18,7 @@ export interface Campaign {
     genre: string;
     spotify_link?: string;
     hashtags?: string;
+    required_tags?: string;
     track_artwork_url?: string;
     rank_allocations: RankAllocation[];
     status: string;

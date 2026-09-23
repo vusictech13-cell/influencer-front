@@ -26,6 +26,7 @@ import CreatorPayments from './pages/creator/Payments';
 import CreatorInsights from './pages/creator/Insights';
 import CreatorAnalytics from './pages/creator/Analytics';
 import CreatorBrands from './pages/creator/Brands';
+import CreatorCampaignDetails from './pages/creator/CampaignDetails';
 import CreatorProfile from './pages/creator/Profile';
 import CreatorMediaKit from './pages/creator/MediaKit';
 import CreatorSettings from './pages/creator/Settings';
@@ -85,6 +86,7 @@ function App() {
             <Route path="/creator/campaigns/:id" element={<CreatorLayout children={<CreatorCampaign />} />} />
             <Route path="/creator/campaigns" element={<CreatorLayout children={<CreatorCampaigns />} />} />
             <Route path="/creator/brands" element={<CreatorLayout children={<CreatorBrands />} />} />
+            <Route path="/creator/campaign-details/:id" element={<CreatorLayout children={<CreatorCampaignDetails />} />} />
             <Route path="/creator/profile" element={<CreatorLayout children={<CreatorProfile />} />} />
             <Route path="/creator/media-kit" element={<CreatorLayout children={<CreatorMediaKit />} />} />
             <Route path="/creator/payments" element={<CreatorLayout children={<CreatorPayments />} />} />

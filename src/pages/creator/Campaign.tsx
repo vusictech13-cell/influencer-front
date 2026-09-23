@@ -203,11 +203,16 @@ export default function CreatorCampaign() {
                         <div className="space-y-4 border-t border-gray-100 pt-6">
                             <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 border border-amber-100 rounded-xl p-3">
                                 <Clock size={16} />
-                                <span className="font-medium">Applied — create your reel on the official campaign sound, then submit the post link below.</span>
+                                <span className="font-medium">
+                                    {campaign.spotify_link
+                                        ? 'Applied — create your reel on the official campaign sound, then submit the post link below.'
+                                        : 'Applied — publish your reel, then submit the post link below.'}
+                                </span>
                             </div>
                             <div className="rounded-xl border border-[#00B4EB]/20 bg-[#00B4EB]/5 p-3 text-xs text-gray-600 leading-relaxed">
-                                When you submit, we automatically check that the reel uses the official campaign audio from Spotify.
-                                The reel must be posted from your connected Instagram account.
+                                {campaign.spotify_link
+                                    ? 'When you submit, we automatically check that the reel uses the official campaign audio from Spotify. The reel must be posted from your connected Instagram account.'
+                                    : 'This campaign has no required song, so your reel is submitted without a sound check.'}
                             </div>
                             <div>
                                 <label htmlFor="submission-url" className="text-xs font-semibold text-gray-900 block mb-2">
@@ -235,11 +240,11 @@ export default function CreatorCampaign() {
                                 {isSubmitting ? (
                                     <>
                                         <Loader2 size={18} className="animate-spin" />
-                                        Verifying official sound...
+                                        {campaign.spotify_link ? 'Verifying official sound...' : 'Submitting reel...'}
                                     </>
                                 ) : (
                                     <>
-                                        Verify Sound & Submit <ExternalLink size={18} />
+                                        {campaign.spotify_link ? 'Verify Sound & Submit' : 'Submit Reel'} <ExternalLink size={18} />
                                     </>
                                 )}
                             </button>
@@ -257,7 +262,7 @@ export default function CreatorCampaign() {
                                     <CheckCircle2 className="h-12 w-12 text-[#00B4EB] mx-auto" />
                                 )}
                                 <p className="font-semibold text-gray-900">
-                                    {submitSuccess && 'Sound verified — submitted!'}
+                                    {submitSuccess && (campaign.spotify_link ? 'Sound verified — submitted!' : 'Reel submitted!')}
                                     {!submitSuccess && submission?.status === 'pending' && 'Awaiting Brand Review'}
                                     {!submitSuccess && submission?.status === 'approved' && 'Approved'}
                                     {!submitSuccess && submission?.status === 'rejected' && 'Rejected'}

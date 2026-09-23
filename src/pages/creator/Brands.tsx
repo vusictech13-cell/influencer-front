@@ -1,32 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
-import {
-    CampaignGiftCard,
-    GigApplyModal,
-    campaignMatch,
-    toSelectedGig,
-    type SelectedGig,
-} from '@/components/creator/CampaignGiftCard';
+import { CampaignGiftCard, campaignMatch } from '@/components/creator/CampaignGiftCard';
 import { useInstagramAccount } from '@/hooks/useSocialAccounts';
-import {
-    useApplyCampaign,
-    useCampaigns,
-    useMySubmissions,
-    getPayoutForRank,
-    type Campaign,
-} from '@/hooks/useCampaigns';
+import { useCampaigns, useMySubmissions, getPayoutForRank, type Campaign } from '@/hooks/useCampaigns';
 import { getVusicRank } from '@/utils/creator';
-import { getApiErrorMessage } from '@/api/axios';
 
 export default function CreatorBrands() {
     const navigate = useNavigate();
     const { instagram } = useInstagramAccount();
     const { data: campaigns, isLoading } = useCampaigns();
     const { data: submissions } = useMySubmissions();
-    const { mutate: applyCampaign, isPending: isApplying } = useApplyCampaign();
-    const [selectedGig, setSelectedGig] = useState<SelectedGig | null>(null);
-    const [applyError, setApplyError] = useState('');
 
     const rank = getVusicRank(instagram?.followers_count ?? 0);
     const appliedIds = useMemo(
@@ -48,25 +32,6 @@ export default function CreatorBrands() {
             openCount: items.filter((item) => !appliedIds.has(item.id)).length,
         }));
     }, [appliedIds, campaigns]);
-
-    const handleApply = (gig: SelectedGig) => {
-        if (!instagram) {
-            navigate('/creator/dashboard');
-            return;
-        }
-        setApplyError('');
-        applyCampaign(
-            { campaign_id: gig.id, social_account_id: Number(instagram.id) },
-            {
-                onSuccess: () => {
-                    if (gig.spotify_link) window.open(gig.spotify_link, '_blank');
-                    setSelectedGig(null);
-                    navigate(`/creator/campaigns/${gig.id}`);
-                },
-                onError: (error) => setApplyError(getApiErrorMessage(error, 'Failed to apply')),
-            },
-        );
-    };
 
     return (
         <div className="mx-auto max-w-[1420px]">
@@ -105,7 +70,7 @@ export default function CreatorBrands() {
                                             payout={payout}
                                             match={campaignMatch(campaign)}
                                             index={index}
-                                            onView={() => setSelectedGig(toSelectedGig(campaign, rank.rank, payout))}
+                                            onView={() => navigate(`/creator/campaign-details/${campaign.id}`)}
                                         />
                                     );
                                 })}
@@ -115,15 +80,6 @@ export default function CreatorBrands() {
                 </div>
             )}
 
-            {selectedGig && (
-                <GigApplyModal
-                    gig={selectedGig}
-                    applyError={applyError}
-                    isApplying={isApplying}
-                    onClose={() => setSelectedGig(null)}
-                    onApply={() => handleApply(selectedGig)}
-                />
-            )}
         </div>
     );
 }
