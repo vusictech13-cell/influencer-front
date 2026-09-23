@@ -61,8 +61,8 @@ function spotCount(campaign: Campaign) {
 
 function isInstagramReelUrl(value: string) {
     try {
-        const url = new URL(value);
-        return /(^|\.)instagram\.com$/i.test(url.hostname) && /\/(reel|reels)\//i.test(url.pathname);
+        const url = new URL(value.trim());
+        return /(^|\.)instagram\.com$/i.test(url.hostname) && /\/(reel|reels|p)\//i.test(url.pathname);
     } catch {
         return false;
     }
@@ -183,7 +183,7 @@ export default function CreatorCampaignDetails() {
             return;
         }
         if (!isInstagramReelUrl(url)) {
-            setFlowError('Use a public Instagram Reel link, like https://www.instagram.com/reel/...');
+            setFlowError('Use a public Instagram Reel link, like https://www.instagram.com/reel/... or https://www.instagram.com/p/...');
             return;
         }
         if (!submission) return;
@@ -493,7 +493,7 @@ export default function CreatorCampaignDetails() {
                                         type="text"
                                         value={reelUrl}
                                         onChange={(event) => setReelUrl(event.target.value)}
-                                        placeholder="https://www.instagram.com/reel/..."
+                                        placeholder="https://www.instagram.com/reel/... or /p/..."
                                         className="w-full rounded-[11px] border border-[#dce4eb] px-3.5 py-3.5 text-sm text-[#15385f] outline-none focus:border-[#9dc7dd] focus:shadow-[0_0_0_3px_rgba(24,181,217,0.08)]"
                                     />
                                     <div className="mt-4 rounded-[13px] border-[1.5px] border-dashed border-[#cbd7e1] px-4 py-4 text-center text-xs text-[#8290a0]">
