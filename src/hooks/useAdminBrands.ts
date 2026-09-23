@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import api from '@/api/axios';
-import type { AdminSortOrder } from '@/hooks/useAdminCreators';
+import type { AdminSortOrder } from '@/hooks/useAdminCreators'; 
 
 export interface AdminBrand {
     id: number;
