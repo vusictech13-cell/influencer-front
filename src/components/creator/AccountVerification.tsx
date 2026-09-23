@@ -32,7 +32,7 @@ function OtpInput({
 }
 
 function DevOtpHint({ otp }: { otp?: string }) {
-    if (!otp) return null;
+    if (!import.meta.env.DEV || !otp) return null;
     return <p className="text-[11px] text-amber-600">Dev code: {otp}</p>;
 }
 
@@ -52,6 +52,8 @@ export function AccountVerification() {
     }, [user?.phone]);
     const [emailHint, setEmailHint] = useState<string | undefined>();
     const [phoneHint, setPhoneHint] = useState<string | undefined>();
+    const [emailSent, setEmailSent] = useState(false);
+    const [phoneSent, setPhoneSent] = useState(false);
     const [emailError, setEmailError] = useState<string | null>(null);
     const [phoneError, setPhoneError] = useState<string | null>(null);
 
@@ -66,6 +68,7 @@ export function AccountVerification() {
         setEmailError(null);
         try {
             const result = await sendEmailOtp.mutateAsync();
+            setEmailSent(true);
             setEmailHint(result.devOtp);
         } catch (error) {
             setEmailError(getApiErrorMessage(error, 'Could not send email code'));
@@ -86,6 +89,7 @@ export function AccountVerification() {
         setPhoneError(null);
         try {
             const result = await sendPhoneOtp.mutateAsync(phone);
+            setPhoneSent(true);
             setPhoneHint(result.devOtp);
         } catch (error) {
             setPhoneError(getApiErrorMessage(error, 'Could not send mobile code'));
@@ -118,6 +122,9 @@ export function AccountVerification() {
                             <div>
                                 <p className="text-sm font-semibold text-gray-900">Verify your email</p>
                                 <p className="text-xs text-gray-500">{user.email}</p>
+                                {emailSent && !emailError && (
+                                    <p className="mt-1 text-xs text-[#147a4b]">Check your inbox for a 6-digit code. It expires in 10 minutes.</p>
+                                )}
                                 {emailError && <p className="mt-1 text-xs text-red-500">{emailError}</p>}
                                 <DevOtpHint otp={emailHint} />
                             </div>
@@ -139,7 +146,7 @@ export function AccountVerification() {
                                 disabled={sendEmailOtp.isPending}
                                 className="h-10 rounded-xl border border-gray-200 px-3 text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                             >
-                                {sendEmailOtp.isPending ? 'Sending...' : emailHint ? 'Resend' : 'Send code'}
+                                {sendEmailOtp.isPending ? 'Sending...' : emailSent ? 'Resend' : 'Send code'}
                             </button>
                         </div>
                     </div>
@@ -158,6 +165,9 @@ export function AccountVerification() {
                                 <p className="text-xs text-gray-500">
                                     {user.phone ? `+91 ${user.phone}` : 'Add your mobile number to receive a code'}
                                 </p>
+                                {phoneSent && !phoneError && (
+                                    <p className="mt-1 text-xs text-[#147a4b]">Check your messages for a 6-digit code. It expires in 10 minutes.</p>
+                                )}
                                 {phoneError && <p className="mt-1 text-xs text-red-500">{phoneError}</p>}
                                 <DevOtpHint otp={phoneHint} />
                             </div>
@@ -191,7 +201,7 @@ export function AccountVerification() {
                                 disabled={sendPhoneOtp.isPending || phone.length !== 10}
                                 className="h-10 rounded-xl border border-gray-200 px-3 text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                             >
-                                {sendPhoneOtp.isPending ? 'Sending...' : phoneHint ? 'Resend' : 'Send code'}
+                                {sendPhoneOtp.isPending ? 'Sending...' : phoneSent ? 'Resend' : 'Send code'}
                             </button>
                         </div>
                     </div>
