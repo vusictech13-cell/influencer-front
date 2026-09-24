@@ -131,6 +131,10 @@ module.exports = {
           "0%, 100%": { boxShadow: "0 12px 28px rgba(255,106,26,0.35)" },
           "50%": { boxShadow: "0 12px 28px rgba(255,106,26,0.55), 0 0 0 10px rgba(255,106,26,0.12)" },
         },
+        "onboard-chip": {
+          "0%": { opacity: "0", transform: "translateY(16px) scale(0.92)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -144,6 +148,7 @@ module.exports = {
         "support-panel-in": "support-panel-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards",
         "support-panel-out": "support-panel-out 0.22s ease-in forwards",
         "fab-pulse": "fab-pulse 2.4s ease-in-out infinite",
+        "onboard-chip": "onboard-chip 0.35s ease",
       },
     },
   },

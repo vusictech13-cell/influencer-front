@@ -118,7 +118,10 @@ export function AuthSplitShell({
     const isSignup = mode === 'signup';
 
     return (
-        <div className="relative h-svh overflow-hidden bg-white font-jakarta text-brand-ink sm:h-auto sm:min-h-svh sm:overflow-x-hidden">
+        <div className={cn(
+            'relative h-svh overflow-hidden bg-white font-jakarta text-brand-ink sm:h-auto sm:min-h-svh sm:overflow-x-hidden',
+            isSignup && 'max-lg:h-auto max-lg:min-h-svh max-lg:overflow-y-auto',
+        )}>
             {isSignup ? <SignupVisual /> : null}
 
             <div className="relative z-10 mx-auto flex h-full min-h-0 w-full min-w-0 max-w-[1120px] flex-col px-4 pb-3 sm:min-h-svh sm:px-10 sm:pb-8 lg:px-14">
@@ -126,7 +129,10 @@ export function AuthSplitShell({
                     <ModeSwitch mode={mode} />
                 </div>
 
-                <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center justify-start overflow-hidden pt-2 sm:justify-center sm:overflow-visible sm:pt-0">
+                <div className={cn(
+                    'flex min-h-0 min-w-0 flex-1 flex-col items-center justify-start overflow-hidden pt-2 sm:justify-center sm:overflow-visible sm:pt-0',
+                    isSignup && 'max-lg:overflow-visible',
+                )}>
                     <div className={cn('w-full min-w-0', isSignup ? 'max-w-[500px]' : 'max-w-[460px]')}>
                         {children}
                         <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[#9aa3ad] sm:mt-6 sm:gap-x-4 sm:text-[12px]">

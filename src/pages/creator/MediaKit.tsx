@@ -48,7 +48,7 @@ export default function CreatorMediaKit() {
                             <div className="mb-2 inline-flex rounded-full bg-white/10 px-2.5 py-1 text-[9px]">Creator media kit</div>
                             <h2 className="text-[28px] font-extrabold tracking-[-1px]">{user?.name || instagram?.display_name || 'Creator'}</h2>
                             <p className="text-xs text-[#c4c6ce]">
-                                {instagram ? `@${instagram.username}` : 'Instagram not connected'} · {creatorTypeLabel(onboarding?.creatorType)}
+                                {instagram ? `@${instagram.username}` : 'Instagram not connected'} · {creatorTypeLabel(onboarding?.creatorType, onboarding?.creatorTypeOther)}
                                 {onboarding?.location ? ` · ${onboarding.location}` : ''}
                             </p>
                         </div>

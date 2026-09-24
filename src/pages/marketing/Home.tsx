@@ -230,7 +230,7 @@ export default function Home() {
                 </div>
             </section>
 
-            <section className="relative bg-brand-blue py-2.5" id="music">
+            <section className="relative bg-brand-blue py-2.5">
                 <div className={cn(wrap, 'grid grid-cols-1 items-center gap-8 min-[1100px]:grid-cols-[1.1fr_0.9fr]')}>
                     <div className="relative grid min-h-0 justify-items-center min-[1100px]:block min-[1100px]:min-h-[540px]">
                         <p className="mt-4 absolute left-0 font-handwriting text-sm md:text-2xl font-normal md:font-bold uppercase leading-[1.55] tracking-[0.2em] text-white min-[1100px]:absolute min-[1100px]:bottom-[200px] min-[1100px]:left-[-100px] min-[1100px]:mt-0 min-[1100px]:rotate-[353deg]">
@@ -285,7 +285,7 @@ export default function Home() {
                             />
                         </figure>
                     </div>
-                    <div className="p-2 relative top-[44%] md:top-0 md:p-12 text-white">
+                    <div className="relative top-[44%] scroll-mt-[76px] p-2 text-white md:top-0 md:p-12" id="music">
                         <p className={cn(eyebrow, 'text-white/90 text-[0.85rem] tracking-[0.15em] uppercase font-bold mb-3')}>
                             FOR MUSIC LABELS &amp; ARTISTS
                         </p>

@@ -136,7 +136,7 @@ export default function CreatorProfile() {
                 <div className="space-y-4">
                     <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                         <FieldLabel>Creator type</FieldLabel>
-                        <p className="text-sm font-bold">{creatorTypeLabel(current?.creatorType)}</p>
+                        <p className="text-sm font-bold">{creatorTypeLabel(current?.creatorType, current?.creatorTypeOther)}</p>
                         <p className="mt-1 text-[11px] text-[#8b8d95]">
                             {instagram ? `@${instagram.username}` : 'Connect Instagram from Home to complete matching.'}
                         </p>

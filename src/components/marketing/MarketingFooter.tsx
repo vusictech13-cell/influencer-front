@@ -5,8 +5,6 @@ const FOOTER_LINKS = [
     { label: 'For Creators', href: '/#creators' },
     { label: 'For Brands', href: '/#brands' },
     { label: 'For Music', href: '/#music' },
-    { label: 'How It Works', href: '/#how-it-works' },
-    { label: 'Pricing', href: '/#cta' },
 ];
 
 const LEGAL_LINKS = [

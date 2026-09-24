@@ -1,14 +1,13 @@
-import { useEffect, useState, type ComponentType, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import {
     Check,
     Instagram,
-    List,
+    Lock,
     LogOut,
-    MessageSquareOff,
     Shield,
     ShieldCheck,
-    Sparkles,
+    SlidersHorizontal,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Logo from '@/components/marketing/Logo';
@@ -23,7 +22,7 @@ import {
     CREATOR_TYPES,
     LANGUAGES,
     LOCATIONS,
-    ONBOARDING_STEPS,
+    ONBOARDING_FLOW,
     creatorTypeLabel,
 } from '@/constants/onboarding';
 
@@ -85,28 +84,88 @@ function ChoiceCard({
     );
 }
 
-function Pill({
-    selected,
-    children,
-    onClick,
+function SearchDropdown({
+    options,
+    value,
+    onChange,
+    multiple = false,
+    placeholder,
 }: {
-    selected: boolean;
-    children: string;
-    onClick: () => void;
+    options: string[];
+    value: string | string[];
+    onChange: (value: string | string[]) => void;
+    multiple?: boolean;
+    placeholder: string;
 }) {
+    const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState('');
+    const rootRef = useRef<HTMLDivElement>(null);
+    const selected = multiple ? (Array.isArray(value) ? value : []) : value ? [String(value)] : [];
+    const filtered = options.filter((item) => item.toLowerCase().includes(query.trim().toLowerCase()));
+
+    useEffect(() => {
+        function onDocumentClick(event: MouseEvent) {
+            if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+        }
+        document.addEventListener('mousedown', onDocumentClick);
+        return () => document.removeEventListener('mousedown', onDocumentClick);
+    }, []);
+
     return (
-        <button
-            type="button"
-            onClick={onClick}
-            className={cn(
-                'rounded-[11px] border px-3 py-2 text-[13px] transition sm:px-3.5 sm:py-2.5',
-                selected
-                    ? 'border-[#ff6a1a] bg-[#e8f8fe] font-bold text-[#f05a0c]'
-                    : 'border-[#dce8f0] bg-white text-brand-ink',
+        <div className="relative" ref={rootRef}>
+            <button
+                type="button"
+                onClick={() => setOpen((prev) => !prev)}
+                className="flex w-full items-center justify-between gap-2 rounded-xl border border-[#dce8f0] bg-white px-3.5 py-3 text-left text-sm"
+                aria-expanded={open}
+            >
+                <span className={cn('truncate', selected.length ? 'font-semibold text-brand-ink' : 'text-[#8a8c94]')}>
+                    {selected.length ? selected.join(', ') : placeholder}
+                </span>
+                <span className="text-[#8a8c94]" aria-hidden="true">▾</span>
+            </button>
+            {open && (
+                <div className="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-xl border border-[#dce8f0] bg-white shadow-[0_12px_32px_rgba(11,39,68,0.12)]">
+                    <input
+                        autoFocus
+                        value={query}
+                        onChange={(event) => setQuery(event.target.value)}
+                        placeholder="Search"
+                        className="w-full border-b border-[#ededf1] px-3.5 py-2.5 text-sm outline-none"
+                    />
+                    <ul className="max-h-52 overflow-y-auto py-1">
+                        {filtered.map((item) => {
+                            const active = selected.includes(item);
+                            return (
+                                <li key={item}>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (multiple) {
+                                                onChange(active ? selected.filter((entry) => entry !== item) : [...selected, item]);
+                                                return;
+                                            }
+                                            onChange(item);
+                                            setQuery('');
+                                            setOpen(false);
+                                        }}
+                                        className={cn(
+                                            'flex w-full px-3.5 py-2.5 text-left text-sm hover:bg-[#f4fbff]',
+                                            active && 'bg-[#e8f8fe] font-bold text-[#f05a0c]',
+                                        )}
+                                    >
+                                        {item}
+                                    </button>
+                                </li>
+                            );
+                        })}
+                        {filtered.length === 0 && (
+                            <li className="px-3.5 py-2.5 text-sm text-[#8a8c94]">No matches</li>
+                        )}
+                    </ul>
+                </div>
             )}
-        >
-            {children}
-        </button>
+        </div>
     );
 }
 
@@ -167,7 +226,8 @@ function Progress({ value }: { value: number }) {
 }
 
 function mapSavedStep(saved: number) {
-    if (saved <= 4) return Math.max(saved, 1);
+    if (saved <= 2) return 1;
+    if (saved <= 4) return saved;
     if (saved === 5) return 4;
     if (saved === 6) return 5;
     return 6;
@@ -201,23 +261,18 @@ function InfoList({
 const INSTAGRAM_SECURITY = [
     {
         icon: Shield,
-        title: 'Official Instagram authorization',
-        body: 'Instagram is connected through Instagram Login — TapnLike never asks you for your Instagram password. Facebook Login is optional later for Reels Studio.',
+        title: 'Official Instagram Login',
+        body: 'Securely connect through Instagram.',
     },
     {
-        icon: List,
-        title: 'Only approved permissions',
-        body: 'You choose what to authorize. We only request the permissions needed for the creator features you use.',
+        icon: Lock,
+        title: 'No password access',
+        body: 'We never see or store your Instagram password.',
     },
     {
-        icon: MessageSquareOff,
-        title: 'No password or private messages',
-        body: 'TapnLike cannot see your Instagram password. We do not request access to your private messages through this connection.',
-    },
-    {
-        icon: ShieldCheck,
-        title: 'You stay in control',
-        body: "You can review, approve or cancel the connection on Instagram's screen before access is granted.",
+        icon: SlidersHorizontal,
+        title: 'You control the connection',
+        body: 'Choose the permissions you want to approve.',
     },
 ];
 
@@ -284,7 +339,7 @@ export default function Onboarding() {
     const avatarUrl = instagram?.profile_image || stored?.profile_image;
     const profileMeta = [
         instagram ? `${formatCount(followers)} followers` : null,
-        data.creatorType ? creatorTypeLabel(data.creatorType) : null,
+        data.creatorType ? creatorTypeLabel(data.creatorType, data.creatorTypeOther) : null,
         data.location || data.contentCategories?.[0],
     ]
         .filter(Boolean)
@@ -322,6 +377,13 @@ export default function Onboarding() {
         });
     };
 
+    const firstName = (stored.name || 'there').trim().split(/\s+/)[0];
+    const displayStep = Math.max(1, ONBOARDING_FLOW.findIndex((item) => item.step === step) + 1);
+    const categoryLimitReached = (data.contentCategories?.length || 0) >= 5;
+    const creatorReady = Boolean(
+        data.creatorType && (data.creatorType !== 'other' || data.creatorTypeOther?.trim()),
+    );
+
     const toggleList = (key: 'contentCategories' | 'opportunities' | 'brandInterests' | 'languages', value: string, max?: number) => {
         const current = data[key] || [];
         const exists = current.includes(value);
@@ -343,7 +405,7 @@ export default function Onboarding() {
                     </p>
                     <div className="flex items-center gap-2 sm:gap-2.5">
                         <div className="rounded-full border border-[#dce8f0] bg-white px-3 py-1.5 text-xs text-[#777] sm:px-3.5 sm:py-2 sm:text-[13px]">
-                            Step {step} of {ONBOARDING_STEPS.length}
+                            Step {displayStep} of {ONBOARDING_FLOW.length}
                         </div>
                         <button
                             type="button"
@@ -361,13 +423,13 @@ export default function Onboarding() {
                         <p className="mb-[18px] ml-2.5 mt-1 text-xs uppercase tracking-[1px] text-[#999]">
                             Creator onboarding
                         </p>
-                        {ONBOARDING_STEPS.map((label, index) => {
+                        {ONBOARDING_FLOW.map((item, index) => {
                             const number = index + 1;
-                            const active = number === step;
-                            const done = number < step;
+                            const active = item.step === step;
+                            const done = item.step < step;
                             return (
                                 <div
-                                    key={label}
+                                    key={item.label}
                                     className={cn(
                                         'mb-1.5 flex items-center gap-3 rounded-xl px-2.5 py-3 text-sm',
                                         active ? 'bg-[#e8f8fe] text-[#111]' : done ? 'text-[#333]' : 'text-[#8a8c94]',
@@ -385,7 +447,7 @@ export default function Onboarding() {
                                     >
                                         {done ? '✓' : number}
                                     </span>
-                                    {label}
+                                    {item.label}
                                 </div>
                             );
                         })}
@@ -414,40 +476,16 @@ export default function Onboarding() {
                             {step === 1 && (
                                 <>
                                     <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">
-                                        Welcome to TapnLike
+                                        Hi, {firstName}
                                     </p>
-                                    <h1 className={headingClass}>
-                                        Let's build your creator profile.
-                                    </h1>
-                                    <p className={bodyClass}>
-                                        A few quick questions help us match you with better brands, campaigns and opportunities.
-                                    </p>
-                                    <div className="mb-5 flex items-center gap-3 rounded-[19px] border border-[#dce8f0] p-3.5 sm:mb-7 sm:gap-4 sm:p-5">
-                                        <div className="grid h-11 w-11 flex-none place-items-center rounded-2xl bg-brand-orange text-white sm:h-[54px] sm:w-[54px]">
-                                            <Sparkles size={22} />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <div className="text-sm font-bold sm:text-base">Built for creators</div>
-                                            <div className="mt-1 text-[13px] text-[#858791]">
-                                                Tell us what you create. We'll handle the rest.
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <PrimaryButton className="w-full sm:w-auto" onClick={() => go(2)}>Let's get started →</PrimaryButton>
-                                </>
-                            )}
-
-                            {step === 2 && (
-                                <>
-                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">About you</p>
-                                    <h1 className={headingClass}>
+                                    <h2 className={headingClass}>
                                         What best describes you?
-                                    </h1>
+                                    </h2>
                                     <p className={bodyClass}>
                                         Choose the option that fits your creator identity.
                                     </p>
                                     <Progress value={28} />
-                                    <div className="mb-7 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    <div className={cn('grid grid-cols-1 gap-3 sm:grid-cols-2', data.creatorType === 'other' ? 'mb-4' : 'mb-7')}>
                                         {CREATOR_TYPES.map((item) => (
                                             <ChoiceCard
                                                 key={item.id}
@@ -455,40 +493,62 @@ export default function Onboarding() {
                                                 icon={item.icon}
                                                 title={item.title}
                                                 desc={item.desc}
-                                                onClick={() => setData({ ...data, creatorType: item.id })}
+                                                onClick={() => setData({
+                                                    ...data,
+                                                    creatorType: item.id,
+                                                    creatorTypeOther: item.id === 'other' ? data.creatorTypeOther : '',
+                                                })}
                                             />
                                         ))}
                                     </div>
-                                    <ActionRow>
-                                        <SecondaryButton onClick={() => setStep(1)}>Back</SecondaryButton>
-                                        <PrimaryButton className="w-full sm:flex-1" disabled={!data.creatorType} onClick={() => go(3)}>
-                                            Continue →
-                                        </PrimaryButton>
-                                    </ActionRow>
+                                    {data.creatorType === 'other' && (
+                                        <input
+                                            value={data.creatorTypeOther || ''}
+                                            onChange={(event) => setData({ ...data, creatorTypeOther: event.target.value })}
+                                            placeholder="Add your category"
+                                            className="mb-7 w-full rounded-xl border border-[#dce8f0] px-3.5 py-3 text-sm outline-none focus:border-[#ff6a1a]"
+                                        />
+                                    )}
+                                    <PrimaryButton className="w-full sm:w-auto" disabled={!creatorReady} onClick={() => go(3)}>
+                                        Continue →
+                                    </PrimaryButton>
                                 </>
                             )}
 
                             {step === 3 && (
                                 <>
-                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">Your content</p>
+                                    <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">So, {firstName}</p>
                                     <h1 className={headingClass}>
                                         What do you create?
                                     </h1>
                                     <p className={bodyClass}>
                                         Pick up to 5 categories. This helps brands find the right creators.
                                     </p>
+                                    {(data.contentCategories?.length || 0) > 0 && (
+                                        <div className="mb-4 flex flex-wrap gap-2">
+                                            {data.contentCategories?.map((item) => (
+                                                <button
+                                                    key={item}
+                                                    type="button"
+                                                    onClick={() => toggleList('contentCategories', item, 5)}
+                                                    className="animate-onboard-chip rounded-full border border-[#ff6a1a] bg-[#e8f8fe] px-3 py-2 text-[13px] font-bold text-[#f05a0c] sm:px-3.5 sm:py-2.5"
+                                                >
+                                                    {item}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                     <Progress value={42} />
                                     <div className="mb-4 flex flex-wrap gap-2">
-                                        {CONTENT_CATEGORIES.map((item) => (
+                                        {CONTENT_CATEGORIES.filter((item) => !data.contentCategories?.includes(item)).map((item) => (
                                             <button
                                                 key={item}
                                                 type="button"
+                                                disabled={categoryLimitReached}
                                                 onClick={() => toggleList('contentCategories', item, 5)}
                                                 className={cn(
-                                                    'rounded-full border px-3 py-2 text-[13px] transition sm:px-3.5 sm:py-2.5',
-                                                    data.contentCategories?.includes(item)
-                                                        ? 'border-[#ff6a1a] bg-[#e8f8fe] font-bold text-[#f05a0c]'
-                                                        : 'border-[#dce8f0] bg-white',
+                                                    'rounded-full border border-[#dce8f0] bg-white px-3 py-2 text-[13px] transition sm:px-3.5 sm:py-2.5',
+                                                    categoryLimitReached && 'cursor-not-allowed opacity-40',
                                                 )}
                                             >
                                                 {item}
@@ -499,7 +559,7 @@ export default function Onboarding() {
                                         {data.contentCategories?.length || 0} of 5 selected
                                     </p>
                                     <ActionRow>
-                                        <SecondaryButton onClick={() => setStep(2)}>Back</SecondaryButton>
+                                        <SecondaryButton onClick={() => setStep(1)}>Back</SecondaryButton>
                                         <PrimaryButton
                                             className="w-full sm:flex-1"
                                             disabled={!data.contentCategories?.length}
@@ -521,7 +581,7 @@ export default function Onboarding() {
                                         Get discovered. Get paid.
                                     </h1>
                                     <p className={bodyClass}>
-                                        Connect your Instagram with Instagram Login. You need a Professional Instagram account (Business or Creator) so we can read your profile, insights, and campaign activity. Facebook Login is not required for this step.
+                                        Connect your Instagram Creator or Business account to join campaigns and earn rewards.
                                     </p>
                                     {connectError && (
                                         <div className="mb-4 rounded-xl border border-red-100 bg-red-50 px-3.5 py-3">
@@ -555,13 +615,13 @@ export default function Onboarding() {
                                                 )}
                                             </div>
                                             <div className="mt-1 text-[13px] text-[#858791]">
-                                                Secure professional account connection
+                                                Secure creator account connection
                                             </div>
                                         </div>
                                     </div>
                                     <p className="mb-2.5 flex items-center gap-1.5 text-[13px] font-bold">
                                         <ShieldCheck size={14} className="text-[#168d58]" />
-                                        Private & secure
+                                        Safe & Secure
                                     </p>
                                     <div className="mb-7">
                                         <InfoList items={INSTAGRAM_SECURITY} />
@@ -581,7 +641,7 @@ export default function Onboarding() {
                                         </PrimaryButton>
                                     </ActionRow>
                                     <p className="mt-4 text-xs leading-relaxed text-[#8b8d96]">
-                                        You'll be redirected to Instagram's official authorization flow. TapnLike does not collect your Instagram password. Access is granted by Instagram using the permissions you approve.
+                                        Powered by Instagram Login. We only access the creator information you approve.
                                     </p>
                                 </>
                             )}
@@ -607,7 +667,7 @@ export default function Onboarding() {
                                                 {username ? `@${username}` : displayName || '@yourusername'}
                                             </div>
                                             {profileMeta && (
-                                                <div className="mt-1 truncate text-[13px] text-[#858791]">{profileMeta}</div>
+                                                <div className="mt-1 truncate text-base text-[#5c6570]">{profileMeta}</div>
                                             )}
                                         </div>
                                         <div className="w-full text-[13px] font-bold text-[#ee3c89] sm:ml-auto sm:w-auto">
@@ -616,31 +676,22 @@ export default function Onboarding() {
                                     </div>
                                     <div className="mb-6">
                                         <label className="mb-2.5 block text-[13px] font-bold">Where are you based?</label>
-                                        <div className="flex flex-wrap gap-2.5">
-                                            {LOCATIONS.map((item) => (
-                                                <Pill
-                                                    key={item}
-                                                    selected={data.location === item}
-                                                    onClick={() => setData({ ...data, location: item })}
-                                                >
-                                                    {item}
-                                                </Pill>
-                                            ))}
-                                        </div>
+                                        <SearchDropdown
+                                            options={LOCATIONS}
+                                            value={data.location || ''}
+                                            placeholder="Select a city"
+                                            onChange={(value) => setData({ ...data, location: String(value) })}
+                                        />
                                     </div>
                                     <div className="mb-8">
                                         <label className="mb-2.5 block text-[13px] font-bold">What languages do you create in?</label>
-                                        <div className="flex flex-wrap gap-2.5">
-                                            {LANGUAGES.map((item) => (
-                                                <Pill
-                                                    key={item}
-                                                    selected={!!data.languages?.includes(item)}
-                                                    onClick={() => toggleList('languages', item)}
-                                                >
-                                                    {item}
-                                                </Pill>
-                                            ))}
-                                        </div>
+                                        <SearchDropdown
+                                            multiple
+                                            options={LANGUAGES}
+                                            value={data.languages || []}
+                                            placeholder="Select languages"
+                                            onChange={(value) => setData({ ...data, languages: value as string[] })}
+                                        />
                                     </div>
                                     <ActionRow>
                                         <SecondaryButton onClick={() => setStep(4)}>Back</SecondaryButton>
@@ -689,7 +740,7 @@ export default function Onboarding() {
                                                     )}
                                                 </div>
                                                 <div className="mt-1 text-[13px] text-[#858791]">
-                                                    {creatorTypeLabel(data.creatorType)}
+                                                    {creatorTypeLabel(data.creatorType, data.creatorTypeOther)}
                                                     {data.contentCategories?.length
                                                         ? ` · ${data.contentCategories.slice(0, 2).join(' · ')}`
                                                         : ''}

@@ -87,13 +87,32 @@ export default function Register() {
 
                 <input type="hidden" {...register('role')} />
 
+                <div className="relative">
+                    <img
+                        src="/images/auth-login-creator.png?v=3"
+                        alt=""
+                        className="pointer-events-none absolute left-[20%] top-[10px] z-[1] h-[128px] w-auto max-w-none select-none lg:hidden"
+                    />
+                    <img
+                        src="/images/auth-login-creator.png?v=3"
+                        alt=""
+                        className="pointer-events-none absolute left-[20%] top-[10px] z-20 h-[128px] w-auto max-w-none select-none lg:hidden"
+                        style={{ clipPath: 'polygon(0% 72%, 30% 72%, 30% 90%, 0% 90%)' }}
+                    />
+                    <img
+                        src="/images/auth-login-creator.png?v=3"
+                        alt=""
+                        className="pointer-events-none absolute left-[20%] top-[10px] z-20 h-[128px] w-auto max-w-none select-none lg:hidden"
+                    />
+                    <div className="h-[90px] lg:hidden" aria-hidden="true" />
+
                 <div className="mb-3 grid grid-cols-1 gap-y-2.5 sm:mb-4 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-4">
                     <div>
-                        <AuthFieldLabel htmlFor="name">Full name</AuthFieldLabel>
+                        <AuthFieldLabel htmlFor="name" className="relative z-30">Full name</AuthFieldLabel>
                         <input
                             id="name"
                             placeholder="Your name"
-                            className={authInputClassName}
+                            className={cn(authInputClassName, 'relative z-10 bg-white')}
                             {...register('name')}
                         />
                         {errors.name && (
@@ -148,6 +167,7 @@ export default function Register() {
                             <p className="mt-1 text-[11px] text-red-500">{errors.password.message}</p>
                         )}
                     </div>
+                </div>
                 </div>
 
                 <p className="mb-3.5 text-[11px] leading-snug text-[#999ca4] sm:mb-5 sm:text-[12px] sm:leading-relaxed">

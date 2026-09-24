@@ -128,7 +128,7 @@ export default function CreatorDashboard() {
     });
     const creatorScore = Math.min(100, Math.round(36 + engagement * 5 + Math.min(24, followers / 8000)));
     const nicheLine = [
-        creatorTypeLabel(onboarding?.creatorType),
+        creatorTypeLabel(onboarding?.creatorType, onboarding?.creatorTypeOther),
         ...(onboarding?.contentCategories?.slice(0, 2) || []),
         onboarding?.location,
     ]

@@ -27,6 +27,7 @@ export type CreatorRates = {
 
 export type OnboardingData = {
     creatorType?: string;
+    creatorTypeOther?: string;
     contentCategories?: string[];
     opportunities?: string[];
     brandInterests?: string[];
