@@ -11,7 +11,7 @@ import {
 } from '@/hooks/useSocialAccounts';
 import { accountAvatarStyle } from '@/components/creator/CreatorInstagramAccounts';
 import { formatCount } from '@/utils/creator';
-import { logout } from '@/utils/auth';
+import { hasFeature, logout } from '@/utils/auth';
 import {
     accountHasMeta,
     clearInstagramOAuthSearchParams,
@@ -122,6 +122,7 @@ export default function CreatorSettings() {
                     )}
                 </div>
 
+                {(hasFeature(user, 'reel_studio') || hasFeature(user, 'bulk_reel_upload')) && (
                 <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                     <div className="mb-3 flex items-start justify-between gap-3">
                         <div>
@@ -152,16 +153,21 @@ export default function CreatorSettings() {
                         <p className="text-sm text-[#8b8d95]">Connect Facebook Account to use Reels Studio.</p>
                     )}
                 </div>
+                )}
 
                 <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                     <div className="mb-3 text-[10px] font-extrabold uppercase tracking-[1.1px] text-[#8b8d95]">Shortcuts</div>
                     <div className="flex flex-wrap gap-2">
-                        <button type="button" onClick={() => navigate('/creator/reel-studio')} className="rounded-[9px] border border-[#dce8f0] px-3 py-2 text-[11px] font-bold">
-                            Reel Studio
-                        </button>
-                        <button type="button" onClick={() => navigate('/creator/bulk-reels')} className="rounded-[9px] border border-[#dce8f0] px-3 py-2 text-[11px] font-bold">
-                            Bulk upload
-                        </button>
+                        {hasFeature(user, 'reel_studio') && (
+                            <button type="button" onClick={() => navigate('/creator/reel-studio')} className="rounded-[9px] border border-[#dce8f0] px-3 py-2 text-[11px] font-bold">
+                                Reel Studio
+                            </button>
+                        )}
+                        {hasFeature(user, 'bulk_reel_upload') && (
+                            <button type="button" onClick={() => navigate('/creator/bulk-reels')} className="rounded-[9px] border border-[#dce8f0] px-3 py-2 text-[11px] font-bold">
+                                Bulk upload
+                            </button>
+                        )}
                         <button type="button" onClick={() => navigate('/creator/profile')} className="rounded-[9px] border border-[#dce8f0] px-3 py-2 text-[11px] font-bold">
                             Edit profile
                         </button>

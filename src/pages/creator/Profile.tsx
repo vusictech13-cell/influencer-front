@@ -6,10 +6,9 @@ import { useAuthUser } from '@/hooks/useAuthUser';
 import { getApiErrorMessage } from '@/api/axios';
 import {
     CONTENT_CATEGORIES,
-    LANGUAGES,
-    LOCATIONS,
     creatorTypeLabel,
 } from '@/constants/onboarding';
+import { useLanguages, useLocations } from '@/hooks/useCatalog';
 import { computeProfileStrength, hasCreatorRates } from '@/utils/creator';
 import { useInstagramAccount } from '@/hooks/useSocialAccounts';
 import type { CreatorRates, OnboardingData } from '@/utils/auth';
@@ -45,6 +44,8 @@ export default function CreatorProfile() {
     const { data: user } = useAuthUser();
     const { instagram } = useInstagramAccount();
     const saveOnboarding = useSaveOnboarding();
+    const { data: locationOptions = [] } = useLocations();
+    const { data: languageOptions = [] } = useLanguages();
     const current = user?.onboarding_data;
 
     const [location, setLocation] = useState(current?.location || '');
@@ -103,6 +104,14 @@ export default function CreatorProfile() {
         [categories, current, languages, location, rates],
     );
 
+    const cityNames = locationOptions.map((item) => item.name);
+    const languageNames = languageOptions.map((item) => item.name);
+    const cityChoices = location && !cityNames.includes(location) ? [location, ...cityNames] : cityNames;
+    const languageChoices = [
+        ...languages.filter((item) => !languageNames.includes(item)),
+        ...languageNames,
+    ];
+
     const toggle = (list: string[], value: string, setter: (next: string[]) => void) => {
         setter(list.includes(value) ? list.filter((item) => item !== value) : [...list, value]);
         setSaved(false);
@@ -145,7 +154,7 @@ export default function CreatorProfile() {
                     <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                         <FieldLabel>Location</FieldLabel>
                         <div className="flex flex-wrap gap-2">
-                            {LOCATIONS.map((item) => (
+                            {cityChoices.map((item) => (
                                 <Chip key={item} selected={location === item} onClick={() => { setLocation(item); setSaved(false); }}>
                                     {item}
                                 </Chip>
@@ -167,7 +176,7 @@ export default function CreatorProfile() {
                     <div className="rounded-[18px] border border-[#dce8f0] bg-white p-5">
                         <FieldLabel>Languages</FieldLabel>
                         <div className="flex flex-wrap gap-2">
-                            {LANGUAGES.map((item) => (
+                            {languageChoices.map((item) => (
                                 <Chip key={item} selected={languages.includes(item)} onClick={() => toggle(languages, item, setLanguages)}>
                                     {item}
                                 </Chip>

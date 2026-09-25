@@ -12,7 +12,7 @@ import TermsOfService from './pages/terms-of-service';
 import DataDeletion from './pages/data-deletion';
 import About from './pages/marketing/About';
 import BrandLayout from './layouts/BrandLayout';
-import CreatorLayout from './layouts/CreatorLayout';
+import CreatorLayout, { FeatureGate } from './layouts/CreatorLayout';
 import AdminLayout from './layouts/AdminLayout';
 import BrandCreateCampaign from './pages/brand/CreateCampaign';
 import BrandCampaigns from './pages/brand/Campaigns';
@@ -43,6 +43,7 @@ import AdminCreatorInsights from './pages/admin/CreatorInsights';
 import AdminBrandDetail from './pages/admin/BrandDetail';
 import AdminCompareProfiles from './pages/admin/CompareProfiles';
 import AdminSupport from './pages/admin/Support';
+import AdminSettings from './pages/admin/Settings';
 
 
 const queryClient = new QueryClient();
@@ -79,8 +80,8 @@ function App() {
             {/* Creator Routes */}
             <Route path="/creator" element={<CreatorLayout children={<Navigate to="/creator/dashboard" replace />} />} />
             <Route path="/creator/dashboard" element={<CreatorLayout children={<CreatorDashboard />} />} />
-            <Route path="/creator/reel-studio" element={<CreatorLayout children={<CreatorReelStudio />} />} />
-            <Route path="/creator/bulk-reels" element={<CreatorLayout children={<CreatorBulkReelUpload />} />} />
+            <Route path="/creator/reel-studio" element={<CreatorLayout children={<FeatureGate feature="reel_studio"><CreatorReelStudio /></FeatureGate>} />} />
+            <Route path="/creator/bulk-reels" element={<CreatorLayout children={<FeatureGate feature="bulk_reel_upload"><CreatorBulkReelUpload /></FeatureGate>} />} />
             <Route path="/creator/analytics" element={<CreatorLayout children={<CreatorAnalytics />} />} />
             <Route path="/creator/insights/:id" element={<CreatorLayout children={<CreatorInsights />} />} />
             <Route path="/creator/campaigns/:id" element={<CreatorLayout children={<CreatorCampaign />} />} />
@@ -103,7 +104,7 @@ function App() {
             <Route path="/admin/brands" element={<AdminLayout children={<AdminBrands />} />} />
             <Route path="/admin/brands/:id" element={<AdminLayout children={<AdminBrandDetail />} />} />
             <Route path="/admin/support" element={<AdminLayout children={<AdminSupport />} />} />
-            <Route path="/admin/settings" element={<AdminLayout children={<div>Admin Settings</div>} />} />
+            <Route path="/admin/settings" element={<AdminLayout children={<AdminSettings />} />} />
 
             <Route path="*" element={<MarketingLayout children={<NotFound />} />} />
           </Routes>

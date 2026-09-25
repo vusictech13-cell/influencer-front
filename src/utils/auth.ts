@@ -17,7 +17,12 @@ export type StoredUser = {
     onboarding_completed?: boolean;
     onboarding_step?: number;
     onboarding_data?: OnboardingData | null;
+    features?: string[];
 };
+
+export function hasFeature(user: StoredUser | null | undefined, key: string) {
+    return !!user?.features?.includes(key);
+}
 
 export type CreatorRates = {
     reel?: number;

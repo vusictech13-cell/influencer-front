@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/api/axios';
 
 export interface AdminCreatorInstagram {
@@ -124,6 +124,7 @@ export interface AdminCreatorDetail {
         email: string;
         profile_image?: string;
         status: 'active' | 'inactive';
+        plan_id?: number | null;
         createdAt: string;
         updatedAt: string;
     };
@@ -158,6 +159,15 @@ export interface AdminCreatorDetail {
         createdAt: string;
         campaign?: { id: number; title: string; brand_name?: string };
     }[];
+    features: AdminCreatorFeature[];
+}
+
+export interface AdminCreatorFeature {
+    id: number;
+    key: string;
+    name: string;
+    description?: string | null;
+    enabled: boolean;
 }
 
 export function useAdminCreatorDetail(id?: string) {
@@ -168,6 +178,26 @@ export function useAdminCreatorDetail(id?: string) {
             return res.data.data as AdminCreatorDetail;
         },
         enabled: !!id,
+    });
+}
+
+export function useUpdateCreatorFeature(id?: string) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ key, enabled }: { key: string; enabled: boolean }) => {
+            const res = await api.patch(`/admin/creators/${id}/features/${key}`, { enabled });
+            return res.data.data as AdminCreatorFeature;
+        },
+        onSuccess: (feature) => {
+            queryClient.setQueryData(['admin-creator', id], (current: AdminCreatorDetail | undefined) => (
+                current
+                    ? {
+                        ...current,
+                        features: (current.features || []).map((item) => (item.key === feature.key ? feature : item)),
+                    }
+                    : current
+            ));
+        },
     });
 }
 

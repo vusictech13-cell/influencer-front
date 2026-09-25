@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import {
     useAdminCreatorDetail,
     useAdminCreatorInsights,
+    useUpdateCreatorFeature,
     type AdminCreatorScore,
 } from '@/hooks/useAdminCreators';
 import { resolveAssetUrl } from '@/utils/image';
@@ -155,6 +156,7 @@ export default function AdminCreatorDetail() {
     const navigate = useNavigate();
     const [copied, setCopied] = useState(false);
     const { data, isLoading, isError } = useAdminCreatorDetail(id);
+    const updateFeature = useUpdateCreatorFeature(id);
     const { data: insights, isLoading: insightsLoading } = useAdminCreatorInsights(
         data?.instagram ? id : undefined,
     );
@@ -291,6 +293,31 @@ export default function AdminCreatorDetail() {
                         </button>
                     </div>
                 </header>
+
+                <section className="mb-4 rounded-2xl border border-[#e7e7ed] bg-white p-4">
+                    <h2 className="text-sm font-bold text-gray-900">Features</h2>
+                    <p className="mt-1 text-xs text-gray-500">Allow or disallow tools for this creator. Plans can grant these later.</p>
+                    <div className="mt-3 divide-y divide-[#ededf1]">
+                        {(data.features || []).map((feature) => (
+                            <div key={feature.key} className="flex items-center justify-between gap-3 py-2.5">
+                                <div>
+                                    <p className="text-sm font-semibold text-gray-900">{feature.name}</p>
+                                    {feature.description && (
+                                        <p className="text-xs text-gray-500">{feature.description}</p>
+                                    )}
+                                </div>
+                                <button
+                                    type="button"
+                                    className={feature.enabled ? 'btn primary' : 'btn'}
+                                    disabled={updateFeature.isPending}
+                                    onClick={() => updateFeature.mutate({ key: feature.key, enabled: !feature.enabled })}
+                                >
+                                    {feature.enabled ? 'Disallow' : 'Allow'}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </section>
 
                 <section className="profile-header">
                     {avatarUrl ? (

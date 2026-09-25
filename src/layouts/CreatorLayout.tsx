@@ -17,16 +17,17 @@ import {
 } from 'lucide-react';
 import PortalShell from './shared/PortalShell';
 import { OnboardingGate } from '@/components/auth/OnboardingGate';
-import { getStoredUser } from '@/utils/auth';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { getStoredUser, hasFeature } from '@/utils/auth';
+import { useAuthUser } from '@/hooks/useAuthUser';
 import { useInstagramAccount } from '@/hooks/useSocialAccounts';
 import { useCampaigns, useMySubmissions } from '@/hooks/useCampaigns';
-import { useNavigate } from 'react-router-dom';
 import CreatorInstagramAccounts from '@/components/creator/CreatorInstagramAccounts';
 
 const NAV_ITEMS = [
     { key: '/creator/dashboard', icon: LayoutGrid, label: 'Home', section: 'Creator' },
-    { key: '/creator/reel-studio', icon: Clapperboard, label: 'Reel Studio', section: 'Creator' },
-    { key: '/creator/bulk-reels', icon: Upload, label: 'Bulk Reel Upload', section: 'Creator' },
+    { key: '/creator/reel-studio', icon: Clapperboard, label: 'Reel Studio', section: 'Creator', feature: 'reel_studio' },
+    { key: '/creator/bulk-reels', icon: Upload, label: 'Bulk Reel Upload', section: 'Creator', feature: 'bulk_reel_upload' },
     { key: '/creator/analytics', icon: TrendingUp, label: 'Analytics', section: 'Creator', aliases: ['/creator/insights'] },
     { key: '/creator/campaigns', icon: List, label: 'Campaigns', section: 'Creator' },
     { key: '/creator/brands', icon: Building2, label: 'Brands', section: 'Creator', aliases: ['/creator/campaign-details'] },
@@ -222,7 +223,20 @@ function CreatorHeader() {
     );
 }
 
+export function FeatureGate({ feature, children }: { feature: string; children: ReactNode }) {
+    const { data: user, isFetching } = useAuthUser();
+    if (isFetching && !hasFeature(user, feature)) return null;
+    if (!hasFeature(user, feature)) return <Navigate to="/creator/dashboard" replace />;
+    return children;
+}
+
 export default function CreatorLayout({ children }: { children: ReactNode }) {
+    const { data: user } = useAuthUser();
+    const navItems = useMemo(
+        () => NAV_ITEMS.filter((item) => !item.feature || hasFeature(user, item.feature)),
+        [user],
+    );
+
     return (
         <OnboardingGate>
             <PortalShell
@@ -230,7 +244,7 @@ export default function CreatorLayout({ children }: { children: ReactNode }) {
                 headerLeft={<CreatorHeader />}
                 logoIcon={LayoutGrid}
                 title="tapnlike"
-                navItems={NAV_ITEMS}
+                navItems={navItems}
                 afterNav={<CreatorInstagramAccounts />}
                 sidebarFooter={<SidebarUpgrade />}
             >

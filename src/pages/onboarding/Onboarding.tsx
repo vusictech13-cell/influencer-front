@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import {
     Check,
@@ -16,12 +17,11 @@ import { getApiErrorMessage } from '@/api/axios';
 import { getInstagramOAuthErrorMessage, clearInstagramOAuthSearchParams } from '@/utils/socialAccounts';
 import { getRoleDashboardPath, getStoredUser, logout, needsOnboarding, type OnboardingData } from '@/utils/auth';
 import { useSaveOnboarding } from '@/hooks/useOnboarding';
+import { useLanguages, useLocations } from '@/hooks/useCatalog';
 import { useConnectInstagram, useInstagramAccount, useSyncAccount } from '@/hooks/useSocialAccounts';
 import {
     CONTENT_CATEGORIES,
     CREATOR_TYPES,
-    LANGUAGES,
-    LOCATIONS,
     ONBOARDING_FLOW,
     creatorTypeLabel,
 } from '@/constants/onboarding';
@@ -84,24 +84,226 @@ function ChoiceCard({
     );
 }
 
+type ChipRect = { left: number; top: number; width: number; height: number };
+
+type CategoryFlight = {
+    id: number;
+    label: string;
+    from: ChipRect;
+    to: ChipRect | null;
+    run: boolean;
+};
+
+function chipRect(el: HTMLElement): ChipRect {
+    const rect = el.getBoundingClientRect();
+    return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+}
+
+function prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function ContentCategoryPicker({
+    selected,
+    onChange,
+    limit = 5,
+}: {
+    selected: string[];
+    onChange: (updater: (current: string[]) => string[]) => void;
+    limit?: number;
+}) {
+    const [flights, setFlights] = useState<CategoryFlight[]>([]);
+    const [leaving, setLeaving] = useState<string[]>([]);
+    const [returning, setReturning] = useState<string | null>(null);
+    const destRefs = useRef(new Map<string, HTMLButtonElement>());
+    const flightId = useRef(0);
+    const limitReached = selected.length >= limit;
+    const arriving = new Set(flights.map((flight) => flight.label));
+
+    const selectCategory = (label: string, el: HTMLButtonElement) => {
+        if (limitReached || selected.includes(label)) return;
+        if (prefersReducedMotion()) {
+            onChange((current) => (current.includes(label) || current.length >= limit ? current : [...current, label]));
+            return;
+        }
+        const id = ++flightId.current;
+        setFlights((prev) => [...prev, { id, label, from: chipRect(el), to: null, run: false }]);
+        onChange((current) => (current.includes(label) || current.length >= limit ? current : [...current, label]));
+    };
+
+    useLayoutEffect(() => {
+        let changed = false;
+        const next = flights.map((flight) => {
+            if (flight.to) return flight;
+            const node = destRefs.current.get(flight.label);
+            if (!node) return flight;
+            changed = true;
+            return { ...flight, to: chipRect(node) };
+        });
+        if (changed) setFlights(next);
+    }, [flights]);
+
+    useEffect(() => {
+        if (!flights.some((flight) => flight.to && !flight.run)) return;
+        const frame = requestAnimationFrame(() => {
+            setFlights((prev) => prev.map((flight) => (flight.to && !flight.run ? { ...flight, run: true } : flight)));
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [flights]);
+
+    useEffect(() => {
+        if (!flights.length) return;
+        const timer = window.setTimeout(() => setFlights([]), 1100);
+        return () => window.clearTimeout(timer);
+    }, [flights]);
+
+    const deselectCategory = (label: string) => {
+        if (leaving.includes(label)) return;
+        if (prefersReducedMotion()) {
+            onChange((current) => current.filter((item) => item !== label));
+            return;
+        }
+        setLeaving((prev) => (prev.includes(label) ? prev : [...prev, label]));
+    };
+
+    const finishLeave = (label: string) => {
+        onChange((current) => current.filter((item) => item !== label));
+        setLeaving((prev) => prev.filter((item) => item !== label));
+        setReturning(label);
+    };
+
+    return (
+        <>
+            {selected.length > 0 && (
+                <div className="mb-4 flex flex-wrap gap-2">
+                    {selected.map((item) => (
+                        <button
+                            key={item}
+                            type="button"
+                            ref={(node) => {
+                                if (node) destRefs.current.set(item, node);
+                                else destRefs.current.delete(item);
+                            }}
+                            onClick={() => deselectCategory(item)}
+                            onAnimationEnd={(event) => {
+                                if (event.animationName === 'category-chip-out') finishLeave(item);
+                            }}
+                            className={cn(
+                                'rounded-full border border-[#ff6a1a] bg-[#e8f8fe] px-3 py-2 text-[13px] font-bold text-[#f05a0c] sm:px-3.5 sm:py-2.5',
+                                arriving.has(item) && 'pointer-events-none invisible',
+                                leaving.includes(item) && 'category-chip-out',
+                            )}
+                        >
+                            {item}
+                        </button>
+                    ))}
+                </div>
+            )}
+            <Progress value={42} />
+            <div className="mb-4 flex flex-wrap gap-2">
+                {CONTENT_CATEGORIES.filter((item) => !selected.includes(item)).map((item) => (
+                    <button
+                        key={item}
+                        type="button"
+                        disabled={limitReached}
+                        onClick={(event) => selectCategory(item, event.currentTarget)}
+                        onAnimationEnd={() => {
+                            if (returning === item) setReturning(null);
+                        }}
+                        className={cn(
+                            'rounded-full border border-[#dce8f0] bg-white px-3 py-2 text-[13px] sm:px-3.5 sm:py-2.5',
+                            limitReached && 'cursor-not-allowed opacity-40',
+                            returning === item && 'category-chip-return',
+                        )}
+                    >
+                        {item}
+                    </button>
+                ))}
+            </div>
+            {createPortal(
+                flights.map((flight) => (
+                    <span
+                        key={flight.id}
+                        aria-hidden="true"
+                        onAnimationEnd={(event) => {
+                            if (event.animationName === 'category-chip-fly') {
+                                setFlights((prev) => prev.filter((item) => item.id !== flight.id));
+                            }
+                        }}
+                        className={cn(
+                            'pointer-events-none fixed z-[80] box-border inline-flex items-center justify-center whitespace-nowrap rounded-full border border-[#dce8f0] bg-white px-3 text-[13px] font-bold text-[#1c1c1c] sm:px-3.5',
+                            flight.run && flight.to && 'category-chip-fly',
+                        )}
+                        style={(() => {
+                            if (!flight.run || !flight.to) {
+                                return {
+                                    left: flight.from.left,
+                                    top: flight.from.top,
+                                    width: flight.from.width,
+                                    height: flight.from.height,
+                                };
+                            }
+                            const sx = flight.to.width ? flight.from.width / flight.to.width : 1;
+                            const sy = flight.to.height ? flight.from.height / flight.to.height : 1;
+                            const invX = flight.from.left - flight.to.left - (flight.to.width * (1 - sx)) / 2;
+                            const invY = flight.from.top - flight.to.top - (flight.to.height * (1 - sy)) / 2;
+                            return {
+                                left: flight.to.left,
+                                top: flight.to.top,
+                                width: flight.to.width,
+                                height: flight.to.height,
+                                ['--inv-x' as string]: `${invX}px`,
+                                ['--inv-y' as string]: `${invY}px`,
+                                ['--inv-sx' as string]: String(sx),
+                                ['--inv-sy' as string]: String(sy),
+                            };
+                        })()}
+                    >
+                        {flight.label}
+                    </span>
+                )),
+                document.body,
+            )}
+        </>
+    );
+}
+
 function SearchDropdown({
     options,
     value,
     onChange,
     multiple = false,
     placeholder,
+    onSearch,
+    searching = false,
 }: {
     options: string[];
     value: string | string[];
     onChange: (value: string | string[]) => void;
     multiple?: boolean;
     placeholder: string;
+    onSearch?: (query: string) => void;
+    searching?: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
+    const [submittedQuery, setSubmittedQuery] = useState('');
     const rootRef = useRef<HTMLDivElement>(null);
     const selected = multiple ? (Array.isArray(value) ? value : []) : value ? [String(value)] : [];
-    const filtered = options.filter((item) => item.toLowerCase().includes(query.trim().toLowerCase()));
+    const trimmedQuery = query.trim();
+    const filtered = onSearch
+        ? options
+        : options.filter((item) => item.toLowerCase().includes(trimmedQuery.toLowerCase()));
+    const waitingForResults = !!onSearch && trimmedQuery.length >= 2 && (searching || submittedQuery !== trimmedQuery);
+
+    useEffect(() => {
+        if (!onSearch) return undefined;
+        const timer = window.setTimeout(() => {
+            setSubmittedQuery(trimmedQuery);
+            onSearch(trimmedQuery);
+        }, 250);
+        return () => window.clearTimeout(timer);
+    }, [onSearch, trimmedQuery]);
 
     useEffect(() => {
         function onDocumentClick(event: MouseEvent) {
@@ -134,7 +336,7 @@ function SearchDropdown({
                         className="w-full border-b border-[#ededf1] px-3.5 py-2.5 text-sm outline-none"
                     />
                     <ul className="max-h-52 overflow-y-auto py-1">
-                        {filtered.map((item) => {
+                        {!waitingForResults && filtered.map((item) => {
                             const active = selected.includes(item);
                             return (
                                 <li key={item}>
@@ -159,8 +361,13 @@ function SearchDropdown({
                                 </li>
                             );
                         })}
-                        {filtered.length === 0 && (
-                            <li className="px-3.5 py-2.5 text-sm text-[#8a8c94]">No matches</li>
+                        {waitingForResults && (
+                            <li className="px-3.5 py-2.5 text-sm text-[#8a8c94]">Searching cities...</li>
+                        )}
+                        {!waitingForResults && filtered.length === 0 && (
+                            <li className="px-3.5 py-2.5 text-sm text-[#8a8c94]">
+                                {onSearch && trimmedQuery.length < 2 ? 'Type at least 2 letters' : 'No matches'}
+                            </li>
                         )}
                     </ul>
                 </div>
@@ -226,11 +433,9 @@ function Progress({ value }: { value: number }) {
 }
 
 function mapSavedStep(saved: number) {
-    if (saved <= 2) return 1;
-    if (saved <= 4) return saved;
-    if (saved === 5) return 4;
-    if (saved === 6) return 5;
-    return 6;
+    if (saved <= 1) return 1;
+    if (saved >= ONBOARDING_FLOW.length) return ONBOARDING_FLOW.length;
+    return saved;
 }
 
 function InfoList({
@@ -297,6 +502,9 @@ export default function Onboarding() {
     const [searchParams, setSearchParams] = useSearchParams();
     const stored = getStoredUser();
     const saveOnboarding = useSaveOnboarding();
+    const [cityQuery, setCityQuery] = useState('');
+    const { data: locationOptions = [], isFetching: locationsLoading } = useLocations(cityQuery);
+    const { data: languageOptions = [], isLoading: languagesLoading } = useLanguages();
     const { instagram } = useInstagramAccount();
     const { mutate: connectInstagram, isPending: isConnecting } = useConnectInstagram('onboarding');
     const { data: syncData } = useSyncAccount(instagram?.id);
@@ -307,7 +515,7 @@ export default function Onboarding() {
     );
     const oauthSuccess = searchParams.get('success') === 'connected';
 
-    const [step, setStep] = useState(() => (oauthError ? 4 : mapSavedStep(stored?.onboarding_step || 1)));
+    const [step, setStep] = useState(() => (oauthError ? 3 : mapSavedStep(stored?.onboarding_step || 1)));
     const [data, setData] = useState<OnboardingData>({
         ...emptyData,
         ...(stored?.onboarding_data || {}),
@@ -319,12 +527,12 @@ export default function Onboarding() {
         if (!oauthSuccess && !oauthError) return;
         if (oauthSuccess) {
             setConnectError(null);
-            setStep(5);
-            saveOnboarding.mutate({ step: 5, data });
+            setStep(4);
+            saveOnboarding.mutate({ step: 4, data });
         } else {
             setConnecting(false);
             setConnectError(oauthError);
-            setStep(4);
+            setStep(3);
         }
         clearInstagramOAuthSearchParams(searchParams);
         setSearchParams(searchParams, { replace: true });
@@ -368,7 +576,7 @@ export default function Onboarding() {
     const startInstagram = () => {
         setConnecting(true);
         setConnectError(null);
-        saveOnboarding.mutate({ step: 4, data });
+        saveOnboarding.mutate({ step: 3, data });
         connectInstagram(undefined, {
             onError: (err) => {
                 setConnecting(false);
@@ -379,20 +587,9 @@ export default function Onboarding() {
 
     const firstName = (stored.name || 'there').trim().split(/\s+/)[0];
     const displayStep = Math.max(1, ONBOARDING_FLOW.findIndex((item) => item.step === step) + 1);
-    const categoryLimitReached = (data.contentCategories?.length || 0) >= 5;
     const creatorReady = Boolean(
         data.creatorType && (data.creatorType !== 'other' || data.creatorTypeOther?.trim()),
     );
-
-    const toggleList = (key: 'contentCategories' | 'opportunities' | 'brandInterests' | 'languages', value: string, max?: number) => {
-        const current = data[key] || [];
-        const exists = current.includes(value);
-        if (!exists && max && current.length >= max) return;
-        setData({
-            ...data,
-            [key]: exists ? current.filter((item) => item !== value) : [...current, value],
-        });
-    };
 
     return (
         <div className="min-h-screen bg-white font-jakarta text-brand-ink sm:bg-brand-lightbg">
@@ -478,6 +675,12 @@ export default function Onboarding() {
                                     <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">
                                         Hi, {firstName}
                                     </p>
+                                    {/* <h1 className={headingClass}>
+                                        Let's build your creator profile.
+                                    </h1>
+                                    <p className={bodyClass}>
+                                        A few quick questions help us match you with better brands, campaigns and opportunities.
+                                    </p> */}
                                     <h2 className={headingClass}>
                                         What best describes you?
                                     </h2>
@@ -509,13 +712,13 @@ export default function Onboarding() {
                                             className="mb-7 w-full rounded-xl border border-[#dce8f0] px-3.5 py-3 text-sm outline-none focus:border-[#ff6a1a]"
                                         />
                                     )}
-                                    <PrimaryButton className="w-full sm:w-auto" disabled={!creatorReady} onClick={() => go(3)}>
+                                    <PrimaryButton className="w-full sm:w-auto" disabled={!creatorReady} onClick={() => go(2)}>
                                         Continue →
                                     </PrimaryButton>
                                 </>
                             )}
 
-                            {step === 3 && (
+                            {step === 2 && (
                                 <>
                                     <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">So, {firstName}</p>
                                     <h1 className={headingClass}>
@@ -524,37 +727,13 @@ export default function Onboarding() {
                                     <p className={bodyClass}>
                                         Pick up to 5 categories. This helps brands find the right creators.
                                     </p>
-                                    {(data.contentCategories?.length || 0) > 0 && (
-                                        <div className="mb-4 flex flex-wrap gap-2">
-                                            {data.contentCategories?.map((item) => (
-                                                <button
-                                                    key={item}
-                                                    type="button"
-                                                    onClick={() => toggleList('contentCategories', item, 5)}
-                                                    className="animate-onboard-chip rounded-full border border-[#ff6a1a] bg-[#e8f8fe] px-3 py-2 text-[13px] font-bold text-[#f05a0c] sm:px-3.5 sm:py-2.5"
-                                                >
-                                                    {item}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                    <Progress value={42} />
-                                    <div className="mb-4 flex flex-wrap gap-2">
-                                        {CONTENT_CATEGORIES.filter((item) => !data.contentCategories?.includes(item)).map((item) => (
-                                            <button
-                                                key={item}
-                                                type="button"
-                                                disabled={categoryLimitReached}
-                                                onClick={() => toggleList('contentCategories', item, 5)}
-                                                className={cn(
-                                                    'rounded-full border border-[#dce8f0] bg-white px-3 py-2 text-[13px] transition sm:px-3.5 sm:py-2.5',
-                                                    categoryLimitReached && 'cursor-not-allowed opacity-40',
-                                                )}
-                                            >
-                                                {item}
-                                            </button>
-                                        ))}
-                                    </div>
+                                    <ContentCategoryPicker
+                                        selected={data.contentCategories || []}
+                                        onChange={(updater) => setData((prev) => ({
+                                            ...prev,
+                                            contentCategories: updater(prev.contentCategories || []),
+                                        }))}
+                                    />
                                     <p className="mb-6 text-xs text-[#8b8d96]">
                                         {data.contentCategories?.length || 0} of 5 selected
                                     </p>
@@ -563,7 +742,7 @@ export default function Onboarding() {
                                         <PrimaryButton
                                             className="w-full sm:flex-1"
                                             disabled={!data.contentCategories?.length}
-                                            onClick={() => go(4)}
+                                            onClick={() => go(3)}
                                         >
                                             Continue →
                                         </PrimaryButton>
@@ -571,7 +750,7 @@ export default function Onboarding() {
                                 </>
                             )}
 
-                            {step === 4 && (
+                            {step === 3 && (
                                 <>
                                     <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">
                                         Connect account
@@ -627,11 +806,11 @@ export default function Onboarding() {
                                         <InfoList items={INSTAGRAM_SECURITY} />
                                     </div>
                                     <ActionRow>
-                                        <SecondaryButton onClick={() => setStep(3)}>Back</SecondaryButton>
+                                        <SecondaryButton onClick={() => setStep(2)}>Back</SecondaryButton>
                                         <PrimaryButton
                                             className="w-full sm:flex-1"
                                             disabled={!instagram && (isConnecting || connecting)}
-                                            onClick={() => (instagram ? go(5) : startInstagram())}
+                                            onClick={() => (instagram ? go(4) : startInstagram())}
                                         >
                                             {instagram
                                                 ? 'Continue →'
@@ -646,7 +825,7 @@ export default function Onboarding() {
                                 </>
                             )}
 
-                            {step === 5 && (
+                            {step === 4 && (
                                 <>
                                     <p className="mb-2.5 text-xs font-extrabold uppercase tracking-[1.5px] text-[#ff6a1a]">
                                         Your creator goals
@@ -667,7 +846,7 @@ export default function Onboarding() {
                                                 {username ? `@${username}` : displayName || '@yourusername'}
                                             </div>
                                             {profileMeta && (
-                                                <div className="mt-1 truncate text-base text-[#5c6570]">{profileMeta}</div>
+                                                <div className="mt-1 truncate text-base font-bold text-[#5c6570]">{profileMeta}</div>
                                             )}
                                         </div>
                                         <div className="w-full text-[13px] font-bold text-[#ee3c89] sm:ml-auto sm:w-auto">
@@ -677,9 +856,11 @@ export default function Onboarding() {
                                     <div className="mb-6">
                                         <label className="mb-2.5 block text-[13px] font-bold">Where are you based?</label>
                                         <SearchDropdown
-                                            options={LOCATIONS}
+                                            options={locationOptions.map((item) => item.name)}
                                             value={data.location || ''}
-                                            placeholder="Select a city"
+                                            placeholder="Search for a city"
+                                            searching={locationsLoading}
+                                            onSearch={setCityQuery}
                                             onChange={(value) => setData({ ...data, location: String(value) })}
                                         />
                                     </div>
@@ -687,18 +868,18 @@ export default function Onboarding() {
                                         <label className="mb-2.5 block text-[13px] font-bold">What languages do you create in?</label>
                                         <SearchDropdown
                                             multiple
-                                            options={LANGUAGES}
+                                            options={languageOptions.map((item) => item.name)}
                                             value={data.languages || []}
-                                            placeholder="Select languages"
+                                            placeholder={languagesLoading ? 'Loading languages...' : 'Select languages'}
                                             onChange={(value) => setData({ ...data, languages: value as string[] })}
                                         />
                                     </div>
                                     <ActionRow>
-                                        <SecondaryButton onClick={() => setStep(4)}>Back</SecondaryButton>
+                                        <SecondaryButton onClick={() => setStep(3)}>Back</SecondaryButton>
                                         <PrimaryButton
                                             className="w-full sm:flex-1"
                                             disabled={!data.location || !data.languages?.length}
-                                            onClick={() => go(6)}
+                                            onClick={() => go(5)}
                                         >
                                             Create my profile →
                                         </PrimaryButton>
@@ -706,7 +887,7 @@ export default function Onboarding() {
                                 </>
                             )}
 
-                            {step === 6 && (
+                            {step === 5 && (
                                 <div className="text-center">
                                     <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-[#eaf9f1] text-[#15945a] sm:mb-[22px] sm:h-[78px] sm:w-[78px]">
                                         <Check size={28} />
@@ -786,7 +967,7 @@ export default function Onboarding() {
                                             Add your rates, bio and portfolio later to reach 100%.
                                         </p>
                                     </div>
-                                    <PrimaryButton className="mt-5 w-full sm:mt-[22px] sm:w-auto" onClick={() => go(6, undefined, true)}>
+                                    <PrimaryButton className="mt-5 w-full sm:mt-[22px] sm:w-auto" onClick={() => go(5, undefined, true)}>
                                         Go to my dashboard →
                                     </PrimaryButton>
                                 </div>

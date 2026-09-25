@@ -16,8 +16,8 @@ export function useAuthUser() {
             const user = res.data.data.user as StoredUser;
             return applyUser(user);
         },
-        initialData: stored ?? undefined,
-        staleTime: 30 * 1000,
+        placeholderData: stored ?? undefined,
+        staleTime: 0,
     });
 }
 

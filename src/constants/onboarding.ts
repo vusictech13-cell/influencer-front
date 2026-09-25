@@ -17,10 +17,10 @@ import {
 
 export const ONBOARDING_FLOW = [
     { step: 1, label: 'Welcome' },
-    { step: 3, label: 'Content' },
-    { step: 4, label: 'Instagram' },
-    { step: 5, label: 'Preferences' },
-    { step: 6, label: 'Your profile' },
+    { step: 2, label: 'Content' },
+    { step: 3, label: 'Instagram' },
+    { step: 4, label: 'Preferences' },
+    { step: 5, label: 'Your profile' },
 ] as const;
 
 export const CREATOR_TYPES: { id: string; title: string; desc: string; icon: LucideIcon }[] = [
@@ -87,10 +87,6 @@ export const BRAND_INTERESTS = [
     'Automotive',
     'Finance',
 ];
-
-export const LOCATIONS = ['Delhi NCR', 'Mumbai', 'Bangalore', 'Hyderabad', 'Other'];
-
-export const LANGUAGES = ['English', 'Hindi', 'Punjabi', 'Haryanvi', 'Tamil', 'Telugu'];
 
 export const EARNING_GOALS: { id: string; title: string; desc: string; icon: LucideIcon }[] = [
     { id: 'max_earn', title: 'Maximum earning potential', desc: 'Prioritize higher-value campaigns', icon: TrendingUp },
