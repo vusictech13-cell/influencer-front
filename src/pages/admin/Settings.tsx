@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pagination, Select } from 'antd';
-import { Eye, EyeOff, Loader2, Pencil, Trash2 } from 'lucide-react';
+import { Check, Eye, EyeOff, Loader2, Pencil, Trash2 } from 'lucide-react';
 import { getApiErrorMessage } from '@/api/axios';
 import {
     useAdminCountries,
@@ -58,6 +58,18 @@ function IconAction({
         >
             {children}
         </button>
+    );
+}
+
+function SuccessToast({ message }: { message: string }) {
+    return (
+        <div
+            role="status"
+            className="fixed right-4 top-4 z-[90] flex items-center gap-2 rounded-xl bg-[#0b2744] px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_32px_rgba(11,39,68,0.28)]"
+        >
+            <Check size={16} className="text-[#3ddc97]" />
+            {message}
+        </div>
     );
 }
 
@@ -154,7 +166,7 @@ function Pager({
     );
 }
 
-function LanguagesPanel() {
+function LanguagesPanel({ onSuccess }: { onSuccess: (message: string) => void }) {
     const [page, setPage] = useState(1);
     const [name, setName] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -195,6 +207,7 @@ function LanguagesPanel() {
             await createItem.mutateAsync(next);
             setName('');
             setPage(1);
+            onSuccess(`${next} added`);
         } catch (err) {
             setError(getApiErrorMessage(err, 'Could not add this language.'));
         }
@@ -211,6 +224,7 @@ function LanguagesPanel() {
         try {
             await updateItem.mutateAsync({ id: editing.id, name: next });
             resetLanguageForm();
+            onSuccess(`${next} updated`);
         } catch (err) {
             setError(getApiErrorMessage(err, 'Could not update this language.'));
         }
@@ -220,8 +234,10 @@ function LanguagesPanel() {
         if (!pendingDelete) return;
         setDeleteError(null);
         try {
+            const label = pendingDelete.name;
             await deleteItem.mutateAsync(pendingDelete.id);
             setPendingDelete(null);
+            onSuccess(`${label} deleted`);
         } catch (err) {
             setDeleteError(getApiErrorMessage(err, 'Could not delete this language.'));
         }
@@ -290,7 +306,15 @@ function LanguagesPanel() {
                                 </IconAction>
                                 <IconAction
                                     label={item.is_active ? 'Hide' : 'Show'}
-                                    onClick={() => updateItem.mutate({ id: item.id, is_active: !item.is_active })}
+                                    onClick={async () => {
+                                        setError(null);
+                                        try {
+                                            await updateItem.mutateAsync({ id: item.id, is_active: !item.is_active });
+                                            onSuccess(item.is_active ? `${item.name} hidden` : `${item.name} shown`);
+                                        } catch (err) {
+                                            setError(getApiErrorMessage(err, 'Could not update this language.'));
+                                        }
+                                    }}
                                 >
                                     {item.is_active ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </IconAction>
@@ -325,7 +349,7 @@ function LanguagesPanel() {
     );
 }
 
-function CitiesPanel() {
+function CitiesPanel({ onSuccess }: { onSuccess: (message: string) => void }) {
     const [page, setPage] = useState(1);
     const [country, setCountry] = useState(DEFAULT_COUNTRY);
     const [searchInput, setSearchInput] = useState('');
@@ -409,6 +433,7 @@ function CitiesPanel() {
             setCity('');
             setStateName('');
             setAddCountry(DEFAULT_COUNTRY);
+            onSuccess(`${nextCity} added`);
             if (nextCountry !== country) setCountry(nextCountry);
             setPage(1);
         } catch (err) {
@@ -436,6 +461,7 @@ function CitiesPanel() {
             await updateItem.mutateAsync({ id: editing.id, ...next });
             resetCityForm();
             if (next.country !== country) setCountry(next.country);
+            onSuccess(`${next.city} updated`);
         } catch (err) {
             setError(getApiErrorMessage(err, 'Could not update this city.'));
         }
@@ -445,8 +471,10 @@ function CitiesPanel() {
         if (!pendingDelete) return;
         setDeleteError(null);
         try {
+            const label = pendingDelete.city || 'City';
             await deleteItem.mutateAsync(pendingDelete.id);
             setPendingDelete(null);
+            onSuccess(`${label} deleted`);
         } catch (err) {
             setDeleteError(getApiErrorMessage(err, 'Could not delete this city.'));
         }
@@ -593,6 +621,15 @@ function CitiesPanel() {
 
 export default function AdminSettings() {
     const [tab, setTab] = useState<CatalogKind>('locations');
+    const [toast, setToast] = useState<{ id: number; text: string } | null>(null);
+
+    useEffect(() => {
+        if (!toast) return undefined;
+        const timer = window.setTimeout(() => setToast(null), 2000);
+        return () => window.clearTimeout(timer);
+    }, [toast]);
+
+    const notify = (text: string) => setToast({ id: Date.now(), text });
 
     return (
         <div className="mx-auto max-w-3xl">
@@ -624,7 +661,8 @@ export default function AdminSettings() {
                     Languages
                 </button>
             </div>
-            {tab === 'locations' ? <CitiesPanel /> : <LanguagesPanel />}
+            {tab === 'locations' ? <CitiesPanel onSuccess={notify} /> : <LanguagesPanel onSuccess={notify} />}
+            {toast && <SuccessToast message={toast.text} />}
         </div>
     );
 }
