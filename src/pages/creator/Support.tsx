@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
     ChevronDown,
     ChevronRight,
@@ -140,6 +141,7 @@ export default function CreatorSupport() {
     const [initialTopic, setInitialTopic] = useState<string | null>(null);
     const [openAdminDirect, setOpenAdminDirect] = useState(false);
     const [activeTicketId, setActiveTicketId] = useState<number | null>(null);
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const faqGroups = useMemo(() => {
         const map = new Map<string, SupportFaq[]>();
@@ -164,6 +166,21 @@ export default function CreatorSupport() {
         const items = faqGroups.get(activeCategory);
         return items ? [[activeCategory, items] as [string, SupportFaq[]]] : [];
     }, [activeCategory, faqGroups]);
+
+    useEffect(() => {
+        const raw = searchParams.get('ticket');
+        if (!raw) return;
+        const ticketId = Number(raw);
+        if (Number.isFinite(ticketId) && ticketId > 0) {
+            setInitialTopic(null);
+            setOpenAdminDirect(false);
+            setActiveTicketId(ticketId);
+            setChatOpen(true);
+        }
+        const next = new URLSearchParams(searchParams);
+        next.delete('ticket');
+        setSearchParams(next, { replace: true });
+    }, [searchParams, setSearchParams]);
 
     function openChat(options?: { topic?: string; admin?: boolean; ticketId?: number }) {
         setInitialTopic(options?.topic || null);

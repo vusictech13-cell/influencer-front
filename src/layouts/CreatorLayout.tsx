@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
-    Bell,
     Building2,
     Clapperboard,
     FileText,
@@ -21,8 +20,9 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { getStoredUser, hasFeature } from '@/utils/auth';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { useInstagramAccount } from '@/hooks/useSocialAccounts';
-import { useCampaigns, useMySubmissions } from '@/hooks/useCampaigns';
+import { useCampaigns } from '@/hooks/useCampaigns';
 import CreatorInstagramAccounts from '@/components/creator/CreatorInstagramAccounts';
+import CreatorNotifications from '@/components/creator/CreatorNotifications';
 
 const NAV_ITEMS = [
     { key: '/creator/dashboard', icon: LayoutGrid, label: 'Home', section: 'Creator' },
@@ -62,12 +62,9 @@ function CreatorHeader() {
     const user = getStoredUser();
     const { instagram } = useInstagramAccount();
     const { data: campaigns } = useCampaigns();
-    const { data: submissions } = useMySubmissions();
     const [query, setQuery] = useState('');
     const [searchOpen, setSearchOpen] = useState(false);
-    const [notesOpen, setNotesOpen] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
-    const notesRef = useRef<HTMLDivElement>(null);
 
     const avatar =
         instagram?.profile_image ||
@@ -86,19 +83,10 @@ function CreatorHeader() {
             .slice(0, 6);
     }, [campaigns, query]);
 
-    const appliedIds = useMemo(
-        () => new Set(submissions?.map((item) => item.campaign_id) ?? []),
-        [submissions],
-    );
-    const freshCount = (campaigns ?? []).filter((campaign) => !appliedIds.has(campaign.id)).length;
-    const inProgress = submissions?.filter((item) => item.status === 'applied' || item.status === 'pending').length ?? 0;
-    const noteCount = (freshCount > 0 ? 1 : 0) + (inProgress > 0 ? 1 : 0);
-
     useEffect(() => {
         const onPointerDown = (event: MouseEvent) => {
             const target = event.target as Node;
             if (!searchRef.current?.contains(target)) setSearchOpen(false);
-            if (!notesRef.current?.contains(target)) setNotesOpen(false);
         };
         document.addEventListener('mousedown', onPointerDown);
         return () => document.removeEventListener('mousedown', onPointerDown);
@@ -150,59 +138,7 @@ function CreatorHeader() {
                 )}
             </div>
             <div className="ml-auto flex items-center gap-2.5">
-                <div ref={notesRef} className="relative">
-                    <button
-                        type="button"
-                        className="relative grid h-[37px] w-[37px] place-items-center rounded-[10px] border border-[#dce8f0] bg-white text-[#6f727b]"
-                        onClick={() => setNotesOpen((open) => !open)}
-                        aria-label="Notifications"
-                    >
-                        <Bell size={16} />
-                        {noteCount > 0 && (
-                            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand-orange" />
-                        )}
-                    </button>
-                    {notesOpen && (
-                        <div className="absolute right-0 top-[calc(100%+10px)] z-30 w-[280px] overflow-hidden rounded-2xl border border-[#dce8f0] bg-white shadow-[0_16px_40px_rgba(20,20,40,0.12)]">
-                            {noteCount === 0 ? (
-                                <p className="px-4 py-4 text-xs text-[#8a8c94]">You are all caught up.</p>
-                            ) : (
-                                <>
-                                    {freshCount > 0 && (
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setNotesOpen(false);
-                                                navigate('/creator/dashboard');
-                                            }}
-                                            className="block w-full px-4 py-3 text-left hover:bg-[#f4fbff]"
-                                        >
-                                            <strong className="block text-xs">Fresh opportunities</strong>
-                                            <span className="text-[10px] text-[#8a8c94]">
-                                                {freshCount} campaign{freshCount === 1 ? '' : 's'} waiting for you today.
-                                            </span>
-                                        </button>
-                                    )}
-                                    {inProgress > 0 && (
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setNotesOpen(false);
-                                                navigate('/creator/campaigns');
-                                            }}
-                                            className="block w-full px-4 py-3 text-left hover:bg-[#f4fbff]"
-                                        >
-                                            <strong className="block text-xs">Campaign updates</strong>
-                                            <span className="text-[10px] text-[#8a8c94]">
-                                                {inProgress} collaboration{inProgress === 1 ? '' : 's'} still in progress.
-                                            </span>
-                                        </button>
-                                    )}
-                                </>
-                            )}
-                        </div>
-                    )}
-                </div>
+                <CreatorNotifications />
                 <button
                     type="button"
                     className="grid h-[37px] w-[37px] place-items-center rounded-[10px] border border-[#dce8f0] bg-white text-[#6f727b]"
