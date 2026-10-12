@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import {
     ChevronRight,
     Copy,
@@ -115,6 +116,20 @@ export default function AdminRoles() {
     useEffect(() => {
         setShowAccess(false);
     }, [selectedId]);
+
+    useEffect(() => {
+        if (!showAccess) return;
+        const onKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setShowAccess(false);
+        };
+        const previous = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', onKey);
+        return () => {
+            document.body.style.overflow = previous;
+            document.removeEventListener('keydown', onKey);
+        };
+    }, [showAccess]);
 
     const grouped = useMemo(() => {
         const groups = new Map<string, AdminPermission[]>();
@@ -526,22 +541,32 @@ export default function AdminRoles() {
                 </div>
             )}
 
-            {showAccess && selected && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm" onClick={() => setShowAccess(false)}>
-                    <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xl" role="dialog" aria-modal="true" aria-labelledby="role-access-title" onClick={(event) => event.stopPropagation()}>
-                        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 p-5">
+            {showAccess && selected && createPortal(
+                <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/40 p-4" onClick={() => setShowAccess(false)}>
+                    <div
+                        className="flex max-h-[min(32rem,calc(100dvh-2rem))] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xl"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="role-access-title"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/50 px-5 py-4">
                             <h3 id="role-access-title" className="text-base font-bold text-slate-900">What {selected.name} can do</h3>
                             <button type="button" aria-label="Close" onClick={() => setShowAccess(false)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
-                        <ul className="space-y-2 p-6">
+                        <ul className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-5 py-4">
                             {summarizeRole(draft).map((line) => (
-                                <li key={line} className="text-sm leading-relaxed text-slate-700">{line}</li>
+                                <li key={line} className="flex gap-2.5 text-sm leading-relaxed text-slate-800">
+                                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500" aria-hidden />
+                                    <span>{line}</span>
+                                </li>
                             ))}
                         </ul>
                     </div>
-                </div>
+                </div>,
+                document.body,
             )}
 
             {confirm && selected && (
