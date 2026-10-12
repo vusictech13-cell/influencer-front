@@ -163,7 +163,7 @@ export default function CreateCampaign() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 text-gray-900">
+    <div className="w-full pb-8 text-gray-900">
       <div className="flex items-center gap-4 mb-6 px-2">
         <div
           className={`flex items-center gap-2 ${step === 1 ? "text-[#00B4EB]" : "text-gray-400"}`}

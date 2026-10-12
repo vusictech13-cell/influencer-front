@@ -13,6 +13,7 @@ import {
 } from '@/hooks/useSupport';
 import { getSupportSocket, joinSupportTicket, sameTicketId } from '@/lib/supportSocket';
 import { getApiErrorMessage } from '@/api/axios';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
 type ChatMode = 'bot' | 'awaiting_admin' | 'human';
 
@@ -59,6 +60,8 @@ export default function SupportChatDrawer({
     const messagesRef = useRef<HTMLDivElement>(null);
     const bootstrapped = useRef(false);
 
+    const { data: authUser } = useAuthUser();
+    const impersonating = !!authUser?.impersonating;
     const createTicket = useCreateSupportTicket();
     const sendMessage = useSendSupportMessage();
     const botNext = useSupportBotNext();
@@ -501,6 +504,13 @@ export default function SupportChatDrawer({
                             >
                                 Back to support
                             </button>
+                        </div>
+                    ) : impersonating ? (
+                        <div className="px-4 py-4 text-center">
+                            <p className="text-sm font-bold text-[#0b2744]">You don't have permission to send a message</p>
+                            <p className="mt-1 text-[12px] text-[#7a8796]">
+                                Support messages stay off while you are viewing this account as an admin.
+                            </p>
                         </div>
                     ) : showInput ? (
                         <form

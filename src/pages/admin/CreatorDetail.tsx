@@ -4,10 +4,17 @@ import { ArrowLeft } from 'lucide-react';
 import {
     useAdminCreatorDetail,
     useAdminCreatorInsights,
+    useImpersonateUser,
+    useSetCreatorStatus,
     useUpdateCreatorFeature,
     type AdminCreatorScore,
 } from '@/hooks/useAdminCreators';
+import { getApiErrorMessage } from '@/api/axios';
 import { resolveAssetUrl } from '@/utils/image';
+import { adminCan, useAdminMe } from '@/hooks/useAdminAccess';
+import { persistSession, stashAdminSession } from '@/utils/auth';
+import { Modal } from './adminUi';
+import AccountSessions from './AccountSessions';
 import './CreatorDetail.css';
 
 const BREAKDOWN = [
@@ -155,8 +162,20 @@ export default function AdminCreatorDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [copied, setCopied] = useState(false);
+    const [accountAction, setAccountAction] = useState<'suspend' | 'approve' | null>(null);
+    const me = useAdminMe();
+    const canEditFeatures = adminCan(me.data, 'CREATOR_EDIT');
+    const canCompare = adminCan(me.data, 'CREATOR_VIEW');
+    const canSuspend = adminCan(me.data, 'CREATOR_SUSPEND');
+    const canApprove = adminCan(me.data, 'CREATOR_APPROVE');
+    const canOpenAccount = adminCan(me.data, 'USER_IMPERSONATE');
+    const canViewSessions = adminCan(me.data, 'SESSION_VIEW_USERS');
+    const canRevokeSessions = adminCan(me.data, 'SESSION_REVOKE_USERS');
     const { data, isLoading, isError } = useAdminCreatorDetail(id);
     const updateFeature = useUpdateCreatorFeature(id);
+    const setStatus = useSetCreatorStatus(id);
+    const impersonate = useImpersonateUser();
+    const [openError, setOpenError] = useState('');
     const { data: insights, isLoading: insightsLoading } = useAdminCreatorInsights(
         data?.instagram ? id : undefined,
     );
@@ -273,13 +292,46 @@ export default function AdminCreatorDetail() {
                         TAKI<span>LA</span>
                     </button> */}
                     <div className="top-actions">
-                        <button
-                            type="button"
-                            className="btn"
-                            onClick={() => navigate(`/admin/compare?ids=${id}`)}
-                        >
-                            Compare
-                        </button>
+                        {user.status === 'active' && canOpenAccount && (
+                            <button
+                                type="button"
+                                className="btn primary"
+                                disabled={impersonate.isPending}
+                                onClick={() => {
+                                    setOpenError('');
+                                    impersonate.mutate(user.id, {
+                                        onSuccess: (session) => {
+                                            stashAdminSession();
+                                            persistSession(session.accessToken, session.refreshToken, session.user, 'user');
+                                            window.location.assign('/creator/dashboard');
+                                        },
+                                        onError: (error) => setOpenError(getApiErrorMessage(error, 'Could not open this account')),
+                                    });
+                                }}
+                            >
+                                {impersonate.isPending ? 'Opening...' : 'Open account'}
+                            </button>
+                        )}
+                        {openError && <p className="text-xs font-semibold text-red-600">{openError}</p>}
+                        {user.status === 'active' && canSuspend && (
+                            <button type="button" className="btn" onClick={() => setAccountAction('suspend')}>
+                                Suspend
+                            </button>
+                        )}
+                        {user.status === 'inactive' && canApprove && (
+                            <button type="button" className="btn primary" onClick={() => setAccountAction('approve')}>
+                                Approve
+                            </button>
+                        )}
+                        {canCompare && (
+                            <button
+                                type="button"
+                                className="btn"
+                                onClick={() => navigate(`/admin/compare?ids=${id}`)}
+                            >
+                                Compare
+                            </button>
+                        )}
                         <button type="button" className="btn" onClick={handleShare} disabled={!instagramUrl}>
                             {copied ? 'Link copied' : 'Share Profile'}
                         </button>
@@ -306,18 +358,28 @@ export default function AdminCreatorDetail() {
                                         <p className="text-xs text-gray-500">{feature.description}</p>
                                     )}
                                 </div>
-                                <button
-                                    type="button"
-                                    className={feature.enabled ? 'btn primary' : 'btn'}
-                                    disabled={updateFeature.isPending}
-                                    onClick={() => updateFeature.mutate({ key: feature.key, enabled: !feature.enabled })}
-                                >
-                                    {feature.enabled ? 'Disallow' : 'Allow'}
-                                </button>
+                                {canEditFeatures ? (
+                                    <button
+                                        type="button"
+                                        className={feature.enabled ? 'btn primary' : 'btn'}
+                                        disabled={updateFeature.isPending}
+                                        onClick={() => updateFeature.mutate({ key: feature.key, enabled: !feature.enabled })}
+                                    >
+                                        {feature.enabled ? 'Disallow' : 'Allow'}
+                                    </button>
+                                ) : (
+                                    <span className="text-xs font-semibold text-gray-500">{feature.enabled ? 'Allowed' : 'Not allowed'}</span>
+                                )}
                             </div>
                         ))}
                     </div>
                 </section>
+
+                {canViewSessions && (
+                    <div className="mb-4">
+                        <AccountSessions owner="user" ownerId={user.id} canRevoke={canRevokeSessions} />
+                    </div>
+                )}
 
                 <section className="profile-header">
                     {avatarUrl ? (
@@ -328,7 +390,10 @@ export default function AdminCreatorDetail() {
 
                     <div className="profile-info">
                         <h1>{displayName}</h1>
-                        <div className="username">{username ? `@${username}` : ''}</div>
+                        <div className="username">{username ? `@${username}` : user.email}</div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            Account {user.status === 'active' ? 'active' : 'suspended'}
+                        </p>
                         <div className="bio">
                             {bio ? bio : insightsLoading ? (
                                 <>
@@ -566,6 +631,36 @@ export default function AdminCreatorDetail() {
                     Missing Insights are excluded rather than treated as zero.
                 </div>
             </div>
+            {accountAction && (
+                <Modal
+                    title={accountAction === 'suspend' ? 'Suspend creator' : 'Approve creator'}
+                    onClose={() => !setStatus.isPending && setAccountAction(null)}
+                >
+                    <div className="space-y-4">
+                        {setStatus.isError && (
+                            <p className="rounded-xl border border-[#f3d0d0] bg-[#fff7f7] px-3 py-2 text-xs text-[#b4232c]">
+                                {getApiErrorMessage(setStatus.error, 'Could not update this creator.')}
+                            </p>
+                        )}
+                        <p className="text-sm text-[#5c6570]">
+                            {accountAction === 'suspend'
+                                ? `${displayName} will be signed out and cannot log in until someone approves them.`
+                                : `${displayName} will be able to sign in again.`}
+                        </p>
+                        <div className="flex gap-2">
+                            <button type="button" className="h-11 flex-1 rounded-xl border border-[#dce8f0] text-sm font-bold" onClick={() => setAccountAction(null)} disabled={setStatus.isPending}>Cancel</button>
+                            <button
+                                type="button"
+                                className="h-11 flex-1 rounded-xl bg-brand-orange text-sm font-bold text-white disabled:opacity-50"
+                                disabled={setStatus.isPending}
+                                onClick={() => setStatus.mutate(accountAction, { onSuccess: () => setAccountAction(null) })}
+                            >
+                                {setStatus.isPending ? 'Working...' : accountAction === 'suspend' ? 'Suspend' : 'Approve'}
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+            )}
         </div>
     );
 }

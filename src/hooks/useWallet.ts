@@ -127,6 +127,8 @@ export function getTransactionLabel(type: string): string {
         campaign_refund: 'Campaign Refund',
         payout_debit: 'Creator Payout',
         payout_credit: 'Campaign Earnings',
+        admin_credit: 'Added by admin',
+        admin_debit: 'Removed by admin',
     };
     return labels[type] || type;
 }

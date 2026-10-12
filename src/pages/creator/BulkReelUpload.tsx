@@ -569,7 +569,7 @@ export default function CreatorBulkReelUpload() {
 
     return (
         <div className="-mx-4 -mt-4 md:-mx-8 md:-mt-7">
-            <div className="mx-auto max-w-[1500px] px-4 pb-10 pt-6 md:px-7">
+            <div className="px-4 pb-10 pt-6 md:px-8">
                 {(banner || notice) && (
                     <div
                         className={`mb-4 rounded-[13px] border px-4 py-3 text-[12px] ${

@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { logout } from '@/utils/auth';
+import { getStoredUser, logout, returnToAdmin } from '@/utils/auth';
 import PortalSidebar, { type PortalNavItem } from './PortalSidebar';
 import type { LucideIcon } from 'lucide-react';
 
@@ -17,6 +17,7 @@ type PortalShellProps = {
     afterNav?: ReactNode;
     headerActions?: ReactNode;
     headerLeft?: ReactNode;
+    banner?: ReactNode;
 };
 
 export default function PortalShell({
@@ -31,12 +32,19 @@ export default function PortalShell({
     afterNav,
     headerActions,
     headerLeft,
+    banner,
 }: PortalShellProps) {
     const location = useLocation();
     const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
 
-    const handleLogout = () => logout(navigate);
+    const handleLogout = () => {
+        if (getStoredUser()?.impersonating) {
+            void returnToAdmin();
+            return;
+        }
+        logout(navigate);
+    };
     const handleNavigate = (path: string) => {
         setMobileOpen(false);
         navigate(path);
@@ -98,6 +106,7 @@ export default function PortalShell({
                     )}
                     {headerActions}
                 </header>
+                {banner}
                 <div className="flex-1 overflow-y-auto p-4 md:px-8 md:py-7">{children}</div>
             </main>
         </div>

@@ -63,7 +63,7 @@ export default function CampaignDetail() {
 
     if (isBrandView) {
         return (
-            <div className="max-w-6xl mx-auto space-y-6">
+            <div className="w-full space-y-6">
                 <button
                     onClick={() => navigate(backPath)}
                     className="flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors"
@@ -138,7 +138,7 @@ export default function CampaignDetail() {
     }
 
     return (
-        <div className="space-y-6 max-w-lg mx-auto">
+        <div className="w-full space-y-6">
             <Button variant="ghost" onClick={() => navigate(backPath)} className="mb-4">
                 <ArrowLeft className="h-4 w-4 mr-2" /> Back to Campaigns
             </Button>

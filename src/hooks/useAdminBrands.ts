@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/api/axios';
 import type { AdminSortOrder } from '@/hooks/useAdminCreators'; 
 
@@ -94,6 +94,7 @@ export interface AdminBrandDetail {
         id: number;
         name: string;
         email: string;
+        phone?: string | null;
         profile_image?: string;
         status: 'active' | 'inactive';
         createdAt: string;
@@ -139,5 +140,39 @@ export function useAdminBrandDetail(id?: string) {
             return res.data.data as AdminBrandDetail;
         },
         enabled: !!id,
+    });
+}
+
+export function useSetBrandStatus(id?: string) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (action: 'suspend' | 'approve') => {
+            const res = await api.post(`/admin/brands/${id}/${action}`, {});
+            return res.data.data as { id: number; status: 'active' | 'inactive' };
+        },
+        onSuccess: (result) => {
+            queryClient.setQueryData(['admin-brand', id], (current: AdminBrandDetail | undefined) => (
+                current ? { ...current, user: { ...current.user, status: result.status } } : current
+            ));
+            queryClient.invalidateQueries({ queryKey: ['admin-brands'] });
+        },
+    });
+}
+
+export function useUpdateBrand(id?: string) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (body: { name: string; email: string; phone: string }) => {
+            const res = await api.patch(`/admin/brands/${id}`, body);
+            return res.data.data as { id: number; name: string; email: string; phone: string | null; status: 'active' | 'inactive' };
+        },
+        onSuccess: (result) => {
+            queryClient.setQueryData(['admin-brand', id], (current: AdminBrandDetail | undefined) => (
+                current
+                    ? { ...current, user: { ...current.user, name: result.name, email: result.email, phone: result.phone } }
+                    : current
+            ));
+            queryClient.invalidateQueries({ queryKey: ['admin-brands'] });
+        },
     });
 }

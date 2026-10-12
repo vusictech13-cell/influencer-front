@@ -107,7 +107,7 @@ export default function BrandCampaigns() {
     const hasFilters = status !== 'all' || dateRange || sort !== 'createdAt' || order !== 'desc';
 
     return (
-        <div className="max-w-6xl mx-auto space-y-6">
+        <div className="w-full space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight text-gray-900 flex items-center gap-2">

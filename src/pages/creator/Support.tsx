@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import SupportChatDrawer from '@/components/support/SupportChatDrawer';
+import { useAuthUser } from '@/hooks/useAuthUser';
 import { COMPANY } from '@/constants/company';
 import {
     SUPPORT_TOPICS,
@@ -132,6 +133,8 @@ function getCategoryMeta(category: string): FaqCategoryMeta {
 }
 
 export default function CreatorSupport() {
+    const { data: authUser } = useAuthUser();
+    const impersonating = !!authUser?.impersonating;
     const { data: faqs = [], isLoading: faqsLoading } = useSupportFaqs();
     const { data: tickets = [], isLoading: ticketsLoading, refetch } = useMySupportTickets();
     useSupportRealtime();
@@ -196,7 +199,7 @@ export default function CreatorSupport() {
     }
 
     return (
-        <div className="relative mx-auto max-w-[1180px] space-y-6 pb-24">
+        <div className="relative space-y-6 pb-24">
             <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#0b2744] via-[#123050] to-[#00B4EB] px-7 py-10 text-white shadow-[0_18px_45px_rgba(11,39,68,0.2)]">
                 <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-white/10" />
                 <h1 className="relative text-3xl font-extrabold tracking-tight sm:text-[38px]">
@@ -206,6 +209,7 @@ export default function CreatorSupport() {
                     Get quick answers from FAQs or start a conversation with TapnLike support.
                 </p>
                 <div className="relative mt-6 flex flex-wrap gap-3">
+                    {!impersonating && (
                     <button
                         type="button"
                         onClick={() => openChat()}
@@ -214,6 +218,7 @@ export default function CreatorSupport() {
                         <MessageCircle size={16} />
                         Start a chat
                     </button>
+                    )}
                     <button
                         type="button"
                         onClick={() => document.getElementById('admin-help')?.scrollIntoView({ behavior: 'smooth' })}
@@ -229,8 +234,11 @@ export default function CreatorSupport() {
                 <section className="rounded-[20px] border border-[#dce8f0] bg-white p-5 shadow-[0_12px_35px_rgba(28,25,60,0.05)]">
                     <h2 className="text-lg font-extrabold text-brand-ink">Choose a topic</h2>
                     <p className="mt-1 text-[13px] text-[#73788b]">
-                        Select what you need help with and our support bot will guide you.
+                        {impersonating
+                            ? "You don't have permission to send a message while viewing this account."
+                            : 'Select what you need help with and our support bot will guide you.'}
                     </p>
+                    {!impersonating && (
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                         {SUPPORT_TOPICS.map((topic) => (
                             <button
@@ -250,6 +258,7 @@ export default function CreatorSupport() {
                             </button>
                         ))}
                     </div>
+                    )}
                 </section>
 
                 <section className="rounded-[20px] border border-[#dce8f0] bg-white p-5 shadow-[0_12px_35px_rgba(28,25,60,0.05)]">
@@ -421,13 +430,18 @@ export default function CreatorSupport() {
                 <div>
                     <h3 className="text-[17px] font-bold text-brand-ink">Need help with something else?</h3>
                     <p className="mt-1 text-[13px] text-[#73788b]">
-                        Send your message directly to the TapnLike admin team, or email{' '}
-                        <a className="font-semibold text-brand-orange" href={`mailto:${COMPANY.supportEmail}`}>
-                            {COMPANY.supportEmail}
-                        </a>
-                        .
+                        {impersonating
+                            ? "You don't have permission to send a message while viewing this account."
+                            : <>
+                                Send your message directly to the TapnLike admin team, or email{' '}
+                                <a className="font-semibold text-brand-orange" href={`mailto:${COMPANY.supportEmail}`}>
+                                    {COMPANY.supportEmail}
+                                </a>
+                                .
+                            </>}
                     </p>
                 </div>
+                {!impersonating && (
                 <button
                     type="button"
                     onClick={() => openChat({ admin: true })}
@@ -436,13 +450,14 @@ export default function CreatorSupport() {
                     <Mail size={16} />
                     Message admin
                 </button>
+                )}
             </section>
 
             <p className="text-center text-xs text-[#9699a7]">
                 {COMPANY.productName} Creator Support · We’re here to help you grow.
             </p>
 
-            {!chatOpen && (
+            {!chatOpen && !impersonating && (
                 <button
                     type="button"
                     onClick={() => openChat()}

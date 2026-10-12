@@ -122,7 +122,7 @@ export default function CreatorProfile() {
     };
 
     return (
-        <div className="mx-auto max-w-[1420px]">
+        <div className="w-full">
             <div className="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-end">
                 <div>
                     <h1 className="mb-1.5 text-[31px] font-extrabold leading-[1.06] tracking-[-1.3px]">Profile</h1>

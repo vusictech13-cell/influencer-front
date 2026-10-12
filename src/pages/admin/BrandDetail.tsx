@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     ArrowLeft,
@@ -10,12 +11,19 @@ import {
     Mail,
     Megaphone,
     Music,
+    Phone,
     Users,
     Wallet,
 } from 'lucide-react';
-import { useAdminBrandDetail, type AdminBrandCampaign } from '@/hooks/useAdminBrands';
+import { getApiErrorMessage } from '@/api/axios';
+import { useAdminBrandDetail, useSetBrandStatus, useUpdateBrand, type AdminBrandCampaign } from '@/hooks/useAdminBrands';
+import { useImpersonateUser } from '@/hooks/useAdminCreators';
+import { persistSession, stashAdminSession } from '@/utils/auth';
+import { adminCan, useAdminMe } from '@/hooks/useAdminAccess';
 import { formatCurrency, getTransactionLabel } from '@/hooks/useWallet';
 import { resolveAssetUrl } from '@/utils/image';
+import { fieldClass, Modal } from './adminUi';
+import AccountSessions from './AccountSessions';
 
 function formatDate(dateStr?: string) {
     if (!dateStr) return '—';
@@ -37,7 +45,7 @@ function formatDateTime(dateStr?: string) {
     });
 }
 
-function StatusBadge({ status }: { status: 'active' | 'inactive' | AdminBrandCampaign['status'] }) {
+function StatusBadge({ status, label }: { status: 'active' | 'inactive' | AdminBrandCampaign['status']; label?: string }) {
     const styles: Record<string, string> = {
         active: 'bg-emerald-50 text-emerald-600 border-emerald-100',
         inactive: 'bg-gray-50 text-gray-500 border-gray-100',
@@ -47,7 +55,7 @@ function StatusBadge({ status }: { status: 'active' | 'inactive' | AdminBrandCam
     };
     return (
         <span className={`inline-flex text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${styles[status] || styles.inactive}`}>
-            {status}
+            {label || status}
         </span>
     );
 }
@@ -77,7 +85,21 @@ function StatCard({
 export default function AdminBrandDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const me = useAdminMe();
+    const canEdit = adminCan(me.data, 'BRAND_EDIT');
+    const canSuspend = adminCan(me.data, 'BRAND_SUSPEND');
+    const canApprove = adminCan(me.data, 'BRAND_APPROVE');
+    const canOpenAccount = adminCan(me.data, 'USER_IMPERSONATE');
+    const canViewSessions = adminCan(me.data, 'SESSION_VIEW_USERS');
+    const canRevokeSessions = adminCan(me.data, 'SESSION_REVOKE_USERS');
     const { data, isLoading, isError } = useAdminBrandDetail(id);
+    const setStatus = useSetBrandStatus(id);
+    const updateBrand = useUpdateBrand(id);
+    const [accountAction, setAccountAction] = useState<'suspend' | 'approve' | null>(null);
+    const [editing, setEditing] = useState(false);
+    const [form, setForm] = useState({ name: '', email: '', phone: '' });
+    const impersonate = useImpersonateUser();
+    const [openError, setOpenError] = useState('');
 
     if (isLoading) {
         return (
@@ -89,7 +111,7 @@ export default function AdminBrandDetail() {
 
     if (isError || !data) {
         return (
-            <div className="max-w-6xl mx-auto text-center py-20">
+            <div className="w-full py-20 text-center">
                 <p className="text-sm font-medium text-gray-900">Brand not found</p>
                 <button
                     type="button"
@@ -115,7 +137,7 @@ export default function AdminBrandDetail() {
     const avatarUrl = resolveAssetUrl(user.profile_image);
 
     return (
-        <div className="max-w-6xl mx-auto space-y-6">
+        <div className="w-full space-y-6">
             <button
                 type="button"
                 onClick={() => navigate('/admin/brands')}
@@ -136,17 +158,70 @@ export default function AdminBrandDetail() {
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-3">
                             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{user.name}</h1>
-                            <StatusBadge status={user.status} />
+                            <StatusBadge status={user.status} label={user.status === 'inactive' ? 'suspended' : 'active'} />
                         </div>
                         <p className="text-sm text-gray-500 mt-1 flex items-center gap-1.5">
                             <Mail size={14} /> {user.email}
                         </p>
+                        {user.phone && (
+                            <p className="text-sm text-gray-500 mt-1 flex items-center gap-1.5">
+                                <Phone size={14} /> {user.phone}
+                            </p>
+                        )}
                         <p className="text-xs text-gray-400 mt-1 flex items-center gap-1.5">
                             <Calendar size={12} /> Joined {formatDate(user.createdAt)}
                         </p>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            {user.status === 'active' && canOpenAccount && (
+                                <button
+                                    type="button"
+                                    className="h-9 rounded-xl bg-brand-orange px-3 text-xs font-bold text-white disabled:opacity-60"
+                                    disabled={impersonate.isPending}
+                                    onClick={() => {
+                                        setOpenError('');
+                                        impersonate.mutate(user.id, {
+                                            onSuccess: (session) => {
+                                                stashAdminSession();
+                                                persistSession(session.accessToken, session.refreshToken, session.user, 'user');
+                                                window.location.assign('/brand/dashboard');
+                                            },
+                                            onError: (error) => setOpenError(getApiErrorMessage(error, 'Could not open this account')),
+                                        });
+                                    }}
+                                >
+                                    {impersonate.isPending ? 'Opening...' : 'Open account'}
+                                </button>
+                            )}
+                            {canEdit && (
+                                <button
+                                    type="button"
+                                    className="h-9 rounded-xl border border-gray-200 px-3 text-xs font-bold text-gray-700"
+                                    onClick={() => {
+                                        setForm({ name: user.name, email: user.email, phone: user.phone || '' });
+                                        updateBrand.reset();
+                                        setEditing(true);
+                                    }}
+                                >
+                                    Edit
+                                </button>
+                            )}
+                            {user.status === 'active' && canSuspend && (
+                                <button type="button" className="h-9 rounded-xl bg-brand-orange px-3 text-xs font-bold text-white" onClick={() => { setStatus.reset(); setAccountAction('suspend'); }}>
+                                    Suspend
+                                </button>
+                            )}
+                            {user.status === 'inactive' && canApprove && (
+                                <button type="button" className="h-9 rounded-xl bg-brand-orange px-3 text-xs font-bold text-white" onClick={() => { setStatus.reset(); setAccountAction('approve'); }}>
+                                    Approve
+                                </button>
+                            )}
+                        </div>
+                        {openError && <p className="mt-2 text-xs font-semibold text-red-600">{openError}</p>}
                     </div>
                 </div>
             </div>
+
+            {canViewSessions && <AccountSessions owner="user" ownerId={user.id} canRevoke={canRevokeSessions} />}
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard
@@ -366,6 +441,65 @@ export default function AdminBrandDetail() {
                     })
                 )}
             </div>
+            {editing && (
+                <Modal title="Edit brand" onClose={() => !updateBrand.isPending && setEditing(false)}>
+                    <form
+                        className="space-y-3"
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            updateBrand.mutate(form, { onSuccess: () => setEditing(false) });
+                        }}
+                    >
+                        {updateBrand.isError && (
+                            <p className="rounded-xl border border-[#f3d0d0] bg-[#fff7f7] px-3 py-2 text-xs text-[#b4232c]">
+                                {getApiErrorMessage(updateBrand.error, 'Could not save this brand.')}
+                            </p>
+                        )}
+                        <label className="block text-xs font-semibold text-[#5c6570]">Name
+                            <input className={`${fieldClass} mt-1`} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
+                        </label>
+                        <label className="block text-xs font-semibold text-[#5c6570]">Email
+                            <input className={`${fieldClass} mt-1`} type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} />
+                        </label>
+                        <label className="block text-xs font-semibold text-[#5c6570]">Phone
+                            <input className={`${fieldClass} mt-1`} inputMode="numeric" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value.replace(/\D/g, '').slice(0, 10) })} />
+                        </label>
+                        <div className="flex gap-2 pt-2">
+                            <button type="button" className="h-11 flex-1 rounded-xl border border-[#dce8f0] text-sm font-bold" onClick={() => setEditing(false)} disabled={updateBrand.isPending}>Cancel</button>
+                            <button type="submit" className="h-11 flex-1 rounded-xl bg-brand-orange text-sm font-bold text-white disabled:opacity-50" disabled={updateBrand.isPending}>
+                                {updateBrand.isPending ? 'Saving...' : 'Save'}
+                            </button>
+                        </div>
+                    </form>
+                </Modal>
+            )}
+            {accountAction && (
+                <Modal title={accountAction === 'suspend' ? 'Suspend brand' : 'Approve brand'} onClose={() => !setStatus.isPending && setAccountAction(null)}>
+                    <div className="space-y-4">
+                        {setStatus.isError && (
+                            <p className="rounded-xl border border-[#f3d0d0] bg-[#fff7f7] px-3 py-2 text-xs text-[#b4232c]">
+                                {getApiErrorMessage(setStatus.error, 'Could not update this brand.')}
+                            </p>
+                        )}
+                        <p className="text-sm text-[#5c6570]">
+                            {accountAction === 'suspend'
+                                ? `${user.name} will be signed out and cannot log in until someone approves them.`
+                                : `${user.name} will be able to sign in again.`}
+                        </p>
+                        <div className="flex gap-2">
+                            <button type="button" className="h-11 flex-1 rounded-xl border border-[#dce8f0] text-sm font-bold" onClick={() => setAccountAction(null)} disabled={setStatus.isPending}>Cancel</button>
+                            <button
+                                type="button"
+                                className="h-11 flex-1 rounded-xl bg-brand-orange text-sm font-bold text-white disabled:opacity-50"
+                                disabled={setStatus.isPending}
+                                onClick={() => setStatus.mutate(accountAction, { onSuccess: () => setAccountAction(null) })}
+                            >
+                                {setStatus.isPending ? 'Working...' : accountAction === 'suspend' ? 'Suspend' : 'Approve'}
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+            )}
         </div>
     );
 }

@@ -107,7 +107,7 @@ export function AccountVerification() {
     };
 
     return (
-        <div className="mx-auto mb-6 max-w-[1420px] space-y-3">
+        <div className="mb-6 space-y-3">
             <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-800">
                 Verify your account to keep campaigns, payouts and important updates secure.
             </div>

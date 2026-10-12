@@ -195,7 +195,7 @@ export default function CreatorDashboard() {
 
     return (
         <>
-            <div className="mx-auto max-w-[1420px]">
+            <div className="w-full">
                 <div className="mb-5 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
                     <div>
                         <h1 className="mb-1.5 font-outfit text-[31px] font-extrabold leading-[1.06] tracking-[-1.3px]">

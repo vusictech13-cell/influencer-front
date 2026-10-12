@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/api/axios';
+import type { StoredUser } from '@/utils/auth';
 
 export interface AdminCreatorInstagram {
     id: number;
@@ -197,6 +198,35 @@ export function useUpdateCreatorFeature(id?: string) {
                     }
                     : current
             ));
+        },
+    });
+}
+
+export function useSetCreatorStatus(id?: string) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (action: 'suspend' | 'approve') => {
+            const res = await api.post(`/admin/creators/${id}/${action}`, {});
+            return res.data.data as { id: number; status: 'active' | 'inactive' };
+        },
+        onSuccess: (result) => {
+            queryClient.setQueryData(['admin-creator', id], (current: AdminCreatorDetail | undefined) => (
+                current ? { ...current, user: { ...current.user, status: result.status } } : current
+            ));
+            queryClient.invalidateQueries({ queryKey: ['admin-creators'] });
+        },
+    });
+}
+
+export function useImpersonateUser() {
+    return useMutation({
+        mutationFn: async (userId: number) => {
+            const res = await api.post(`/admin/users/${userId}/impersonate`, {});
+            return res.data.data as {
+                accessToken: string;
+                refreshToken: string;
+                user: StoredUser;
+            };
         },
     });
 }

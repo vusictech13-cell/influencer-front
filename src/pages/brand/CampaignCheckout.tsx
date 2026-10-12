@@ -121,7 +121,7 @@ export default function CampaignCheckout() {
     };
 
     return (
-        <div className="max-w-5xl mx-auto px-4 pb-10">
+        <div className="w-full pb-10">
             <button
                 type="button"
                 onClick={() => navigate('/brand/campaigns/create', { state: checkoutState })}

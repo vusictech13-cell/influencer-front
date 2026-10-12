@@ -7,6 +7,7 @@ import {
     LayoutGrid,
     List,
     PenLine,
+    ScrollText,
     Search,
     Settings,
     TrendingUp,
@@ -15,6 +16,7 @@ import {
     Wallet,
 } from 'lucide-react';
 import PortalShell from './shared/PortalShell';
+import ImpersonationBanner from '@/components/auth/ImpersonationBanner';
 import { OnboardingGate } from '@/components/auth/OnboardingGate';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { getStoredUser, hasFeature } from '@/utils/auth';
@@ -34,6 +36,7 @@ const NAV_ITEMS = [
     { key: '/creator/profile', icon: User, label: 'Profile', section: 'My profile' },
     { key: '/creator/payments', icon: Wallet, label: 'Earnings', section: 'My profile' },
     { key: '/creator/media-kit', icon: FileText, label: 'Media kit', section: 'My profile' },
+    { key: '/creator/activity', icon: ScrollText, label: 'Activity', section: 'Account' },
     { key: '/creator/support', icon: HelpCircle, label: 'Support', section: 'Account' },
     { key: '/creator/settings', icon: Settings, label: 'Settings', section: 'Account' },
 ];
@@ -183,6 +186,7 @@ export default function CreatorLayout({ children }: { children: ReactNode }) {
                 navItems={navItems}
                 afterNav={<CreatorInstagramAccounts />}
                 sidebarFooter={<SidebarUpgrade />}
+                banner={<ImpersonationBanner />}
             >
                 {children}
             </PortalShell>

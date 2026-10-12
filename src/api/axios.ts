@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { clearAuth } from '@/utils/auth';
+import { clearAuth, getAuthRealm, getLoginPath, getRefreshPath, isReturningToAdmin } from '@/utils/auth';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
@@ -44,25 +44,33 @@ api.interceptors.response.use(
             !originalRequest?._retry &&
             !isAuthRequest
         ) {
+            if (isReturningToAdmin()) return Promise.reject(error);
             originalRequest._retry = true;
 
             try {
                 const refreshToken = localStorage.getItem('refreshToken');
+                const realm = getAuthRealm();
 
                 if (!refreshToken) {
+                    if (isReturningToAdmin()) return Promise.reject(error);
                     clearAuth();
-                    window.location.href = '/';
+                    window.location.href = getLoginPath(realm);
                     return Promise.reject(error);
                 }
 
                 const response = await axios.post(
-                    `${api.defaults.baseURL}/auth/refresh-token`,
+                    `${api.defaults.baseURL}${getRefreshPath(realm)}`,
                     { refreshToken }
                 );
 
-                const { accessToken } = response.data.data;
+                if (isReturningToAdmin()) return Promise.reject(error);
+
+                const { accessToken, refreshToken: nextRefreshToken } = response.data.data;
 
                 localStorage.setItem('accessToken', accessToken);
+                if (nextRefreshToken) {
+                    localStorage.setItem('refreshToken', nextRefreshToken);
+                }
 
                 // Keep live support socket authenticated after silent token refresh.
                 try {
@@ -85,8 +93,12 @@ api.interceptors.response.use(
 
                 return api(originalRequest);
             } catch (refreshError) {
+                if (isReturningToAdmin()) return Promise.reject(refreshError);
+                const reason = sessionEndReason(refreshError) || sessionEndReason(error);
+                const realm = getAuthRealm();
                 clearAuth();
-                window.location.href = '/';
+                const loginPath = getLoginPath(realm);
+                window.location.href = reason ? `${loginPath}?reason=${reason}` : loginPath;
                 return Promise.reject(refreshError);
             }
         }
@@ -96,6 +108,14 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+export function sessionEndReason(error: unknown): 'session_revoked' | 'session_expired' | null {
+    if (!axios.isAxiosError(error)) return null;
+    const message = String((error.response?.data as { message?: string } | undefined)?.message || '');
+    if (/expired/i.test(message)) return 'session_expired';
+    if (/revoked/i.test(message)) return 'session_revoked';
+    return null;
+}
 
 export function getApiErrorMessage(error: unknown, fallback = 'Something went wrong'): string {
     if (axios.isAxiosError(error)) {

@@ -46,7 +46,7 @@ export default function CreatorSettings() {
     }, [oauthSuccess, oauthError]);
 
     return (
-        <div className="mx-auto max-w-[760px]">
+        <div className="w-full">
             <div className="mb-5">
                 <h1 className="mb-1.5 text-[31px] font-extrabold leading-[1.06] tracking-[-1.3px]">Settings</h1>
                 <p className="m-0 text-[13px] text-[#777a83]">Manage verification, connected accounts and your login.</p>

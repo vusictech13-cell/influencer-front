@@ -23,7 +23,7 @@ export default function BrandWallet() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="w-full space-y-6">
             <div>
                 <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Brand Wallet</h1>
                 <p className="text-sm text-gray-500 mt-1">

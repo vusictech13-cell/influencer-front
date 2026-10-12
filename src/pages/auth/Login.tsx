@@ -31,7 +31,12 @@ export default function Login() {
     const [searchParams] = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
-    const [error, setError] = useState<string | null>(searchParams.get('error_description'));
+    const revokedNotice = searchParams.get('reason') === 'session_revoked'
+        ? 'Your session was revoked. Please login again.'
+        : searchParams.get('reason') === 'session_expired'
+            ? 'Your session has expired. Please login again.'
+            : null;
+    const [error, setError] = useState<string | null>(searchParams.get('error_description') || revokedNotice);
 
     const {
         register,
@@ -42,7 +47,7 @@ export default function Login() {
     });
 
     useEffect(() => {
-        if (isAuthenticated()) {
+        if (isAuthenticated() && getStoredUser()?.role !== 'admin') {
             const user = getStoredUser();
             navigate(getPostAuthPath(user), { replace: true });
         }

@@ -33,8 +33,11 @@ import CreatorSettings from './pages/creator/Settings';
 import CreatorReelStudio from './pages/creator/ReelStudio';
 import CreatorBulkReelUpload from './pages/creator/BulkReelUpload';
 import CreatorSupport from './pages/creator/Support';
-import HomeRedirect from './components/auth/HomeRedirect'; 
+import MyActivity from './pages/account/MyActivity';
+import HomeRedirect from './components/auth/HomeRedirect';
+import SessionRevocationListener from './components/auth/SessionRevocationListener'; 
 import NotFound from './pages/NotFound';
+import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminCreators from './pages/admin/Creators';
 import AdminBrands from './pages/admin/Brands';
@@ -43,7 +46,17 @@ import AdminCreatorInsights from './pages/admin/CreatorInsights';
 import AdminBrandDetail from './pages/admin/BrandDetail';
 import AdminCompareProfiles from './pages/admin/CompareProfiles';
 import AdminSupport from './pages/admin/Support';
+import AdminCampaigns from './pages/admin/Campaigns';
+import AdminPayments from './pages/admin/Payments';
+import AdminPayouts from './pages/admin/Payouts';
+import AdminWallets from './pages/admin/Wallets';
+import AdminContent from './pages/admin/Content';
+import AdminReports from './pages/admin/Reports';
 import AdminSettings from './pages/admin/Settings';
+import AdminTeam from './pages/admin/Team';
+import AdminRoles from './pages/admin/Roles';
+import AdminActivity from './pages/admin/Activity';
+import AdminSecurity from './pages/admin/Security';
 
 
 const queryClient = new QueryClient();
@@ -53,6 +66,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <JotaiProvider>
         <BrowserRouter>
+          <SessionRevocationListener />
           <Routes>
             {/* Public marketing & legal pages */}
             <Route path="/" element={<HomeRedirect />} />
@@ -76,6 +90,7 @@ function App() {
             <Route path="/brand/wallet" element={<BrandLayout children={<BrandWallet />} />} />
             <Route path="/brand/creators" element={<BrandLayout children={<div>Brand Creators</div>} />} />
             <Route path="/brand/analytics" element={<BrandLayout children={<div>Brand Analytics</div>} />} />
+            <Route path="/brand/activity" element={<BrandLayout children={<MyActivity />} />} />
 
             {/* Creator Routes */}
             <Route path="/creator" element={<CreatorLayout children={<Navigate to="/creator/dashboard" replace />} />} />
@@ -92,10 +107,12 @@ function App() {
             <Route path="/creator/media-kit" element={<CreatorLayout children={<CreatorMediaKit />} />} />
             <Route path="/creator/payments" element={<CreatorLayout children={<CreatorPayments />} />} />
             <Route path="/creator/settings" element={<CreatorLayout children={<CreatorSettings />} />} />
+            <Route path="/creator/activity" element={<CreatorLayout children={<MyActivity />} />} />
             <Route path="/creator/support" element={<CreatorLayout children={<CreatorSupport />} />} />
             <Route path="/creator/messages" element={<CreatorLayout children={<Navigate to="/creator/support" replace />} />} />
 
-            {/* Admin Routes */}
+            {/* Admin Routes. /admin is the admin login and only checks the admins table. */}
+            <Route path="/admin" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminLayout children={<AdminDashboard />} />} />
             <Route path="/admin/creators" element={<AdminLayout children={<AdminCreators />} />} />
             <Route path="/admin/compare" element={<AdminLayout children={<AdminCompareProfiles />} />} />
@@ -103,8 +120,19 @@ function App() {
             <Route path="/admin/creators/:id" element={<AdminLayout children={<AdminCreatorDetail />} />} />
             <Route path="/admin/brands" element={<AdminLayout children={<AdminBrands />} />} />
             <Route path="/admin/brands/:id" element={<AdminLayout children={<AdminBrandDetail />} />} />
+            <Route path="/admin/campaigns" element={<AdminLayout children={<AdminCampaigns />} />} />
+            <Route path="/admin/payments" element={<AdminLayout children={<AdminPayments />} />} />
+            <Route path="/admin/payouts" element={<AdminLayout children={<AdminPayouts />} />} />
+            <Route path="/admin/wallets" element={<AdminLayout children={<AdminWallets />} />} />
+            <Route path="/admin/content" element={<AdminLayout children={<AdminContent />} />} />
+            <Route path="/admin/reports" element={<AdminLayout children={<AdminReports />} />} />
             <Route path="/admin/support" element={<AdminLayout children={<AdminSupport />} />} />
-            <Route path="/admin/settings" element={<AdminLayout children={<AdminSettings />} />} />
+            <Route path="/admin/team" element={<AdminLayout children={<AdminTeam />} />} />
+            <Route path="/admin/roles" element={<AdminLayout children={<AdminRoles />} />} />
+            <Route path="/admin/activity" element={<AdminLayout children={<AdminActivity />} />} />
+            <Route path="/admin/security" element={<AdminLayout children={<AdminSecurity />} />} />
+            <Route path="/admin/profile-options" element={<AdminLayout children={<AdminSettings />} />} />
+            <Route path="/admin/settings" element={<Navigate to="/admin/profile-options" replace />} />
 
             <Route path="*" element={<MarketingLayout children={<NotFound />} />} />
           </Routes>

@@ -249,7 +249,7 @@ export default function CreatorCampaignDetails() {
     const shownUrl = submission?.submission_url || reelUrl;
 
     return (
-        <div className="mx-auto max-w-[850px] text-[#15385f]">
+        <div className="w-full text-[#15385f]">
             <button
                 type="button"
                 onClick={() => navigate('/creator/brands')}

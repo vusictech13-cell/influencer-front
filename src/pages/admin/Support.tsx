@@ -36,6 +36,8 @@ import {
 } from '@/hooks/useSupport';
 import { getSupportSocket, joinSupportTicket, sameTicketId } from '@/lib/supportSocket';
 import { getApiErrorMessage } from '@/api/axios';
+import { adminCan, useAdminMe } from '@/hooks/useAdminAccess';
+import { LoadingRow, PageHeader, Panel, primaryButtonClass, StatusPill, TabButton, TabGroup } from './adminUi';
 
 const STATUS_FILTERS = [
     { key: 'all', label: 'All' },
@@ -152,6 +154,9 @@ function FieldSelect({
 }
 
 export default function AdminSupport() {
+    const me = useAdminMe();
+    const permissionsReady = Boolean(me.data);
+    const canManage = adminCan(me.data, 'SUPPORT_MANAGE');
     const [tab, setTab] = useState<'inbox' | 'faqs' | 'bot'>('inbox');
     const [status, setStatus] = useState<(typeof STATUS_FILTERS)[number]['key']>('all');
     const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -297,64 +302,42 @@ export default function AdminSupport() {
         : undefined;
 
     return (
-        <div className="mx-auto max-w-6xl space-y-5">
-            <div className={`flex flex-wrap items-center justify-between gap-3 ${mobileChatOpen ? 'lg:flex hidden' : ''}`}>
-                <div>
-                    <h1 className="text-2xl font-semibold text-gray-900">Support</h1>
-                    <p className="text-sm text-gray-500">Creator tickets, FAQ content, and chat bot tree</p>
-                </div>
-                <div className="flex gap-2">
-                    <button
-                        type="button"
-                        onClick={() => setTab('inbox')}
-                        className={`rounded-full px-4 py-2 text-xs font-bold ${
-                            tab === 'inbox' ? 'bg-[#0b2744] text-white' : 'border border-gray-200 bg-white text-gray-600'
-                        }`}
-                    >
-                        Inbox
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setTab('faqs')}
-                        className={`rounded-full px-4 py-2 text-xs font-bold ${
-                            tab === 'faqs' ? 'bg-[#0b2744] text-white' : 'border border-gray-200 bg-white text-gray-600'
-                        }`}
-                    >
-                        FAQs
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setTab('bot')}
-                        className={`rounded-full px-4 py-2 text-xs font-bold ${
-                            tab === 'bot' ? 'bg-[#0b2744] text-white' : 'border border-gray-200 bg-white text-gray-600'
-                        }`}
-                    >
-                        Bot
-                    </button>
-                </div>
+        <div className="space-y-5">
+            <div className={mobileChatOpen ? 'hidden lg:block' : 'space-y-5'}>
+                <PageHeader
+                    title="Support"
+                    description="Creator tickets, the questions on the support page, and the chat bot."
+                />
+                <TabGroup>
+                    <TabButton active={tab === 'inbox'} onClick={() => setTab('inbox')}>Inbox</TabButton>
+                    <TabButton active={tab === 'faqs'} onClick={() => setTab('faqs')}>FAQs</TabButton>
+                    <TabButton active={tab === 'bot'} onClick={() => setTab('bot')}>Bot</TabButton>
+                </TabGroup>
             </div>
 
             {tab === 'faqs' ? (
-                <AdminFaqManager />
+                <AdminFaqManager canManage={canManage} />
             ) : tab === 'bot' ? (
-                <AdminBotManager />
+                <AdminBotManager canManage={canManage} />
             ) : (
-                <div className="grid gap-4 lg:h-[calc(100dvh-11rem)] lg:min-h-[480px] lg:grid-cols-[320px_1fr] lg:overflow-hidden">
+                <div className="grid gap-4 lg:h-[calc(100dvh-16rem)] lg:min-h-[480px] lg:grid-cols-[320px_1fr] lg:overflow-hidden">
                     <aside
                         className={`overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm lg:flex lg:min-h-0 lg:flex-col ${
                             mobileChatOpen ? 'hidden lg:flex' : ''
                         }`}
                     >
-                        <div className="flex flex-wrap gap-1 border-b border-gray-100 p-3">
-                            {STATUS_FILTERS.map((filter) => (
+                        <div className="grid grid-cols-6 gap-1.5 border-b border-gray-100 p-3" role="tablist">
+                            {STATUS_FILTERS.map((filter, index) => (
                                 <button
                                     key={filter.key}
                                     type="button"
+                                    role="tab"
+                                    aria-selected={status === filter.key}
                                     onClick={() => setStatus(filter.key)}
-                                    className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${
+                                    className={`${index >= 3 ? 'col-span-3' : 'col-span-2'} rounded-full px-1 py-2 text-center text-[11px] font-bold leading-none ${
                                         status === filter.key
-                                            ? 'bg-brand-orange text-white'
-                                            : 'bg-gray-50 text-gray-500'
+                                            ? 'bg-brand-ink text-white'
+                                            : 'border border-[#e7e7ed] bg-white text-brand-gray hover:text-brand-ink'
                                     }`}
                                 >
                                     {filter.label}
@@ -419,6 +402,8 @@ export default function AdminSupport() {
                             sendPending={sendMessage.isPending}
                             updatePending={updateStatus.isPending}
                             onUpdateStatus={(next) => selected && updateStatus.mutate({ ticketId: selected.id, status: next })}
+                            canManage={canManage}
+                            permissionsReady={permissionsReady}
                             messagesRef={messagesRef}
                             keyboardOpen={false}
                             onFocusInput={scrollMessagesToEnd}
@@ -472,6 +457,8 @@ export default function AdminSupport() {
                                 sendPending={sendMessage.isPending}
                                 updatePending={updateStatus.isPending}
                                 onUpdateStatus={(next) => updateStatus.mutate({ ticketId: selected.id, status: next })}
+                                canManage={canManage}
+                                permissionsReady={permissionsReady}
                                 messagesRef={mobileMessagesRef}
                                 keyboardOpen={keyboardOpen}
                                 onFocusInput={scrollMessagesToEnd}
@@ -631,6 +618,8 @@ function AdminTicketChat({
     sendPending,
     updatePending,
     onUpdateStatus,
+    canManage,
+    permissionsReady,
     messagesRef,
     keyboardOpen,
     onFocusInput,
@@ -646,6 +635,8 @@ function AdminTicketChat({
     sendPending: boolean;
     updatePending: boolean;
     onUpdateStatus: (status: SupportTicket['status']) => void;
+    canManage: boolean;
+    permissionsReady: boolean;
     messagesRef: RefObject<HTMLDivElement | null>;
     keyboardOpen: boolean;
     onFocusInput: () => void;
@@ -679,15 +670,17 @@ function AdminTicketChat({
                             </span>
                         </p>
                     </div>
-                    <TicketStatusActions
-                        status={selected.status}
-                        updatePending={updatePending}
-                        onUpdateStatus={onUpdateStatus}
-                    />
+                    {canManage && (
+                        <TicketStatusActions
+                            status={selected.status}
+                            updatePending={updatePending}
+                            onUpdateStatus={onUpdateStatus}
+                        />
+                    )}
                 </div>
             )}
 
-            {mobile && (
+            {mobile && canManage && (
                 <div className="shrink-0 border-b border-[#dce8f0] bg-white px-3 py-2">
                     <TicketStatusActions
                         status={selected.status}
@@ -715,7 +708,17 @@ function AdminTicketChat({
             <div className="shrink-0 border-t border-gray-100 bg-white">
                 {error && <p className={`pt-2 text-xs text-red-500 ${mobile ? 'px-4' : 'px-5'}`}>{error}</p>}
 
-                {selected.status === 'closed' ? (
+                {!permissionsReady ? null : !canManage ? (
+                    <div
+                        className={`bg-[#f8fafc] text-center ${
+                            mobile
+                                ? `px-4 py-4 ${keyboardOpen ? 'pb-4' : 'pb-[max(1rem,env(safe-area-inset-bottom))]'}`
+                                : 'px-5 py-4'
+                        }`}
+                    >
+                        <p className="text-sm font-semibold text-gray-900">You don&apos;t have permission to send a message</p>
+                    </div>
+                ) : selected.status === 'closed' ? (
                     <div
                         className={`bg-[#f8fafc] text-center ${
                             mobile
@@ -861,7 +864,7 @@ function AdminInboxEmptyState() {
     );
 }
 
-function AdminFaqManager() {
+function AdminFaqManager({ canManage }: { canManage: boolean }) {
     const { data: faqs = [], isLoading } = useAdminFaqs();
     const saveFaq = useAdminSaveFaq();
     const deleteFaq = useAdminDeleteFaq();
@@ -893,47 +896,57 @@ function AdminFaqManager() {
 
     return (
         <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
-            <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                <h2 className="mb-3 text-sm font-semibold text-gray-900">Published FAQs</h2>
-                {isLoading ? (
-                    <Loader2 className="mx-auto my-8 animate-spin text-[#00B4EB]" />
-                ) : (
-                    <div className="space-y-3">
-                        {faqs.map((faq) => (
-                            <div key={faq.id} className="rounded-xl border border-gray-100 p-3">
-                                <div className="flex items-start justify-between gap-3">
-                                    <div>
-                                        <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">
-                                            {faq.category} · #{faq.sort_order} · {faq.is_active ? 'active' : 'hidden'}
-                                        </p>
-                                        <p className="mt-1 text-sm font-semibold text-gray-900">{faq.question}</p>
-                                        <p className="mt-1 text-xs text-gray-500">{faq.answer}</p>
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <button
-                                            type="button"
-                                            className="text-[11px] font-bold text-[#00B4EB]"
-                                            onClick={() => setForm(faq)}
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="text-[11px] font-bold text-red-500"
-                                            onClick={() => deleteFaq.mutate(faq.id)}
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+            <div className="space-y-3">
+                <p className="text-sm text-brand-gray">
+                    {faqs.length} {faqs.length === 1 ? 'question' : 'questions'} on the creator support page
+                </p>
+                <Panel>
+                    {isLoading ? <LoadingRow /> : (
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full text-left text-sm">
+                                <thead className="border-b border-gray-100 text-[11px] uppercase tracking-wider text-brand-gray">
+                                    <tr>
+                                        <th className="px-4 py-3 font-bold">Question</th>
+                                        <th className="px-4 py-3 font-bold">Category</th>
+                                        <th className="px-4 py-3 font-bold">On support</th>
+                                        {canManage && <th className="px-4 py-3 font-bold">Actions</th>}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {faqs.map((faq) => (
+                                        <tr key={faq.id} className={`border-b border-gray-50 ${form.id === faq.id ? 'bg-[#fff7f2]' : ''}`}>
+                                            <td className="px-4 py-3">
+                                                <p className="font-semibold text-brand-ink">{faq.question}</p>
+                                                <p className="mt-1 max-w-xl text-xs text-brand-gray">{faq.answer}</p>
+                                            </td>
+                                            <td className="px-4 py-3 text-xs text-brand-gray">{faq.category}</td>
+                                            <td className="px-4 py-3">
+                                                <StatusPill status={faq.is_active ? 'active' : 'inactive'} label={faq.is_active ? 'Shown' : 'Hidden'} />
+                                            </td>
+                                            {canManage && (
+                                                <td className="px-4 py-3">
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        <button type="button" className="rounded-full border border-[#dce8f0] px-2.5 py-1 text-[11px] font-bold text-brand-ink" onClick={() => setForm(faq)}>Edit</button>
+                                                        <button type="button" className="rounded-full border border-red-100 px-2.5 py-1 text-[11px] font-bold text-red-500" onClick={() => deleteFaq.mutate(faq.id)}>Delete</button>
+                                                    </div>
+                                                </td>
+                                            )}
+                                        </tr>
+                                    ))}
+                                    {!faqs.length && (
+                                        <tr>
+                                            <td colSpan={canManage ? 4 : 3} className="px-4 py-12 text-center text-sm text-brand-gray">No questions yet.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </Panel>
             </div>
 
-            <form onSubmit={onSubmit} className="h-fit space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                <h2 className="text-sm font-semibold text-gray-900">{form.id ? 'Edit FAQ' : 'Add FAQ'}</h2>
+            {canManage && <form onSubmit={onSubmit} className="h-fit space-y-3 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                <h2 className="text-sm font-bold text-brand-ink">{form.id ? 'Edit question' : 'Add a question'}</h2>
                 <label className="block space-y-1">
                     <span className="text-xs font-semibold text-gray-700">Category</span>
                     <FieldSelect
@@ -992,11 +1005,11 @@ function AdminFaqManager() {
                 <button
                     type="submit"
                     disabled={saveFaq.isPending}
-                    className="w-full rounded-full bg-brand-orange py-2.5 text-sm font-bold text-white"
+                    className={`${primaryButtonClass} w-full`}
                 >
                     {saveFaq.isPending ? 'Saving…' : form.id ? 'Update FAQ' : 'Create FAQ'}
                 </button>
-            </form>
+            </form>}
         </div>
     );
 }
@@ -1045,7 +1058,7 @@ function optionIcon(node: SupportBotNode) {
     return MessageCircle;
 }
 
-function AdminBotManager() {
+function AdminBotManager({ canManage }: { canManage: boolean }) {
     const { data: nodes = [], isLoading } = useAdminBotNodes();
     const saveNode = useAdminSaveBotNode();
     const deleteNode = useAdminDeleteBotNode();
@@ -1170,6 +1183,7 @@ function AdminBotManager() {
     }
 
     function renderAddOption(parentId: number | null, accent: 'orange' | 'gray' = 'gray') {
+        if (!canManage) return null;
         const isRoot = parentId == null;
         const isDraftHere = !form.id && (form.parent_id ?? null) === parentId && (form.sort_order ?? 0) > 0;
         const orange = accent === 'orange' || isDraftHere;
@@ -1220,7 +1234,7 @@ function AdminBotManager() {
                     </div>
 
                     <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
-                        <div className="flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+                        {canManage && <div className="flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
                             <button
                                 type="button"
                                 title="Edit"
@@ -1237,7 +1251,7 @@ function AdminBotManager() {
                             >
                                 <Trash2 size={14} />
                             </button>
-                        </div>
+                        </div>}
                         {canExpand && (
                             <button
                                 type="button"
@@ -1304,17 +1318,17 @@ function AdminBotManager() {
 
                             {renderAddOption(null)}
 
-                            <p className="pt-1 text-[11px] text-gray-400">
+                            {canManage && <p className="pt-1 text-[11px] text-gray-400">
                                 <span className="font-semibold text-gray-500">Tip:</span> Hover over any option to
                                 edit or delete it. Use <span className="font-semibold text-gray-500">+ Add option</span>{' '}
                                 to create the next step in the conversation.
-                            </p>
+                            </p>}
                         </div>
                     )}
                 </div>
             </div>
 
-            <form onSubmit={onSubmit} className="h-fit space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+            {canManage && <form onSubmit={onSubmit} className="h-fit space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
                 <div>
                     <h2 className="text-sm font-semibold text-gray-900">
                         {form.id ? 'Edit option' : 'New option'}
@@ -1435,7 +1449,7 @@ function AdminBotManager() {
                         {saveNode.isPending ? 'Saving…' : form.id ? 'Save changes' : 'Add option'}
                     </button>
                 </div>
-            </form>
+            </form>}
 
             {pendingDelete && (
                 <div

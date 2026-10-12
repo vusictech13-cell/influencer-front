@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pagination, Select } from 'antd';
-import { Check, Eye, EyeOff, Loader2, Pencil, Trash2 } from 'lucide-react';
+import { Check, Languages, MapPin, Plus } from 'lucide-react';
 import { getApiErrorMessage } from '@/api/axios';
+import { adminCan, useAdminMe } from '@/hooks/useAdminAccess';
+import { fieldClass, LoadingRow, Modal, PageHeader, Panel, primaryButtonClass, StatusPill, TabButton, TabGroup } from './adminUi';
 import {
     useAdminCountries,
     useAdminLanguages,
@@ -16,9 +18,6 @@ import {
 const PAGE_SIZE = 10;
 const DEFAULT_COUNTRY = 'India';
 
-const fieldClass =
-    'h-11 w-full rounded-xl border border-[#dce8f0] bg-white px-3 text-sm outline-none focus:border-[#ff6a1a]';
-
 function Field({ label, children }: { label: string; children: ReactNode }) {
     return (
         <label className="block">
@@ -28,35 +27,29 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
     );
 }
 
-function IconAction({
+function RowButton({
     label,
     onClick,
     disabled,
     tone = 'default',
-    children,
 }: {
     label: string;
     onClick: () => void;
     disabled?: boolean;
-    tone?: 'default' | 'edit' | 'danger' | 'ok';
-    children: ReactNode;
+    tone?: 'default' | 'danger';
 }) {
     const tones = {
-        default: 'border-[#e7e7ed] text-[#3d4450] hover:bg-[#f4f6f8]',
-        edit: 'border-[#d7eef8] text-[#0b7cad] hover:bg-[#f3fbff]',
-        danger: 'border-[#f8d4d4] text-red-500 hover:bg-red-50',
-        ok: 'border-[#cdebd8] text-[#15945a] hover:bg-[#f3fbf6]',
+        default: 'border-[#dce8f0] text-brand-ink hover:bg-[#f7fafc]',
+        danger: 'border-red-100 text-red-500 hover:bg-red-50',
     };
     return (
         <button
             type="button"
-            aria-label={label}
-            title={label}
             onClick={onClick}
             disabled={disabled}
-            className={`grid h-8 w-8 place-items-center rounded-lg border transition disabled:opacity-40 ${tones[tone]}`}
+            className={`rounded-full border px-2.5 py-1 text-[11px] font-bold disabled:opacity-40 ${tones[tone]}`}
         >
-            {children}
+            {label}
         </button>
     );
 }
@@ -166,14 +159,14 @@ function Pager({
     );
 }
 
-function LanguagesPanel({ onSuccess }: { onSuccess: (message: string) => void }) {
+function LanguagesPanel({ canManage, onSuccess }: { canManage: boolean; onSuccess: (message: string) => void }) {
     const [page, setPage] = useState(1);
     const [name, setName] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [adding, setAdding] = useState(false);
     const [editing, setEditing] = useState<CatalogItem | null>(null);
     const [pendingDelete, setPendingDelete] = useState<CatalogItem | null>(null);
     const [deleteError, setDeleteError] = useState<string | null>(null);
-    const languageFormRef = useRef<HTMLDivElement>(null);
 
     const { data, isLoading, isFetching } = useAdminLanguages(page, PAGE_SIZE);
     const createItem = useCreateCatalogItem('languages');
@@ -189,14 +182,22 @@ function LanguagesPanel({ onSuccess }: { onSuccess: (message: string) => void })
 
     const resetLanguageForm = () => {
         setEditing(null);
+        setAdding(false);
         setName('');
     };
 
+    const beginAdd = () => {
+        setEditing(null);
+        setName('');
+        setError(null);
+        setAdding(true);
+    };
+
     const beginEdit = (item: CatalogItem) => {
+        setAdding(false);
         setEditing(item);
         setName(item.name);
         setError(null);
-        languageFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
 
     const add = async () => {
@@ -243,98 +244,113 @@ function LanguagesPanel({ onSuccess }: { onSuccess: (message: string) => void })
         }
     };
 
+    const formOpen = adding || !!editing;
+    const saving = editing ? updateItem.isPending : createItem.isPending;
+
     return (
-        <section className="rounded-2xl border border-[#e7e7ed] bg-white p-5">
-            <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className="text-lg font-bold text-brand-ink">Languages</h2>
-                {isFetching && !isLoading && <Loader2 className="h-4 w-4 animate-spin text-[#8b8d96]" />}
-            </div>
-            <div ref={languageFormRef} className="mb-4 rounded-xl border border-[#ededf1] bg-[#fafafb] p-3">
-                <p className="mb-3 text-xs font-bold uppercase tracking-wide text-[#8b8d96]">
-                    {editing ? `Edit ${editing.name}` : 'Add a language'}
+        <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-brand-gray">
+                    {total} {total === 1 ? 'language' : 'languages'} creators can select
+                    {isFetching && !isLoading ? ' · updating' : ''}
                 </p>
-                <Field label="Language">
-                    <input
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        onKeyDown={(event) => {
-                            if (event.key === 'Enter') {
-                                if (editing) save();
-                                else add();
-                            }
-                        }}
-                        placeholder="Hindi"
-                        className={fieldClass}
-                    />
-                </Field>
-                <div className="mt-3 flex gap-2">
-                    {editing && (
-                        <button
-                            type="button"
-                            onClick={resetLanguageForm}
-                            className="h-11 rounded-xl border border-[#dce8f0] bg-white px-4 text-sm font-bold text-brand-ink"
-                        >
+                {canManage && (
+                    <button type="button" className={primaryButtonClass} onClick={beginAdd}>
+                        <Plus size={16} className="mr-1.5" />
+                        Add language
+                    </button>
+                )}
+            </div>
+            {error && !formOpen && <p className="text-xs font-semibold text-red-500">{error}</p>}
+            <Panel>
+                {isLoading ? <LoadingRow /> : (
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full text-left text-sm">
+                            <thead className="border-b border-gray-100 text-[11px] uppercase tracking-wider text-brand-gray">
+                                <tr>
+                                    <th className="px-4 py-3 font-bold">Language</th>
+                                    <th className="px-4 py-3 font-bold">On profile</th>
+                                    {canManage && <th className="px-4 py-3 font-bold">Actions</th>}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {items.map((item) => (
+                                    <tr key={item.id} className={`border-b border-gray-50 ${editing?.id === item.id ? 'bg-[#fff7f2]' : ''}`}>
+                                        <td className="px-4 py-3 font-semibold text-brand-ink">{item.name}</td>
+                                        <td className="px-4 py-3">
+                                            <StatusPill status={item.is_active ? 'active' : 'inactive'} label={item.is_active ? 'Shown' : 'Hidden'} />
+                                        </td>
+                                        {canManage && (
+                                            <td className="px-4 py-3">
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    <RowButton label="Edit" onClick={() => beginEdit(item)} />
+                                                    <RowButton
+                                                        label={item.is_active ? 'Hide' : 'Show'}
+                                                        disabled={updateItem.isPending}
+                                                        onClick={async () => {
+                                                            setError(null);
+                                                            try {
+                                                                await updateItem.mutateAsync({ id: item.id, is_active: !item.is_active });
+                                                                onSuccess(item.is_active ? `${item.name} hidden` : `${item.name} shown`);
+                                                            } catch (err) {
+                                                                setError(getApiErrorMessage(err, 'Could not update this language.'));
+                                                            }
+                                                        }}
+                                                    />
+                                                    <RowButton
+                                                        label="Delete"
+                                                        tone="danger"
+                                                        onClick={() => {
+                                                            setDeleteError(null);
+                                                            setPendingDelete(item);
+                                                        }}
+                                                    />
+                                                </div>
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))}
+                                {items.length === 0 && (
+                                    <tr>
+                                        <td colSpan={canManage ? 3 : 2} className="px-4 py-12 text-center text-sm text-brand-gray">
+                                            No languages yet.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </Panel>
+            <Pager page={page} total={total} noun="languages" onChange={setPage} />
+            {formOpen && (
+                <Modal title={editing ? `Edit ${editing.name}` : 'Add a language'} onClose={() => !saving && resetLanguageForm()}>
+                    <Field label="Language">
+                        <input
+                            value={name}
+                            onChange={(event) => setName(event.target.value)}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter') {
+                                    if (editing) save();
+                                    else add();
+                                }
+                            }}
+                            placeholder="Hindi"
+                            className={fieldClass}
+                            autoFocus
+                        />
+                    </Field>
+                    {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
+                    <div className="mt-4 flex gap-2">
+                        <button type="button" onClick={resetLanguageForm} disabled={saving} className="h-11 flex-1 rounded-xl border border-[#dce8f0] text-sm font-bold text-brand-ink disabled:opacity-45">
                             Cancel
                         </button>
-                    )}
-                    <button
-                        type="button"
-                        onClick={editing ? save : add}
-                        disabled={(editing ? updateItem.isPending : createItem.isPending) || !name.trim()}
-                        className="h-11 rounded-xl bg-brand-orange px-4 text-sm font-bold text-white disabled:opacity-45"
-                    >
-                        {editing ? 'Save language' : 'Add language'}
-                    </button>
-                </div>
-            </div>
-            {error && <p className="mb-3 text-xs text-red-500">{error}</p>}
-            {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin text-[#8b8d96]" />
-            ) : (
-                <ul className="divide-y divide-[#ededf1]">
-                    {items.map((item) => (
-                        <li
-                            key={item.id}
-                            className={`flex items-center justify-between gap-3 py-2.5 ${editing?.id === item.id ? 'bg-[#fff7f2]' : ''}`}
-                        >
-                            <span className={item.is_active ? 'text-sm font-semibold' : 'text-sm text-[#8b8d96] line-through'}>
-                                {item.name}
-                            </span>
-                            <div className="flex shrink-0 gap-1.5">
-                                <IconAction label="Edit" tone="edit" onClick={() => beginEdit(item)}>
-                                    <Pencil size={15} />
-                                </IconAction>
-                                <IconAction
-                                    label={item.is_active ? 'Hide' : 'Show'}
-                                    onClick={async () => {
-                                        setError(null);
-                                        try {
-                                            await updateItem.mutateAsync({ id: item.id, is_active: !item.is_active });
-                                            onSuccess(item.is_active ? `${item.name} hidden` : `${item.name} shown`);
-                                        } catch (err) {
-                                            setError(getApiErrorMessage(err, 'Could not update this language.'));
-                                        }
-                                    }}
-                                >
-                                    {item.is_active ? <EyeOff size={15} /> : <Eye size={15} />}
-                                </IconAction>
-                                <IconAction
-                                    label="Delete"
-                                    tone="danger"
-                                    onClick={() => {
-                                        setDeleteError(null);
-                                        setPendingDelete(item);
-                                    }}
-                                >
-                                    <Trash2 size={15} />
-                                </IconAction>
-                            </div>
-                        </li>
-                    ))}
-                    {items.length === 0 && <li className="py-3 text-sm text-[#8b8d96]">Nothing added yet.</li>}
-                </ul>
+                        <button type="button" onClick={editing ? save : add} disabled={saving || !name.trim()} className={`${primaryButtonClass} flex-1`}>
+                            {saving ? 'Saving...' : editing ? 'Save language' : 'Add language'}
+                        </button>
+                    </div>
+                </Modal>
             )}
-            <Pager page={page} total={total} noun="languages" onChange={setPage} />
             {pendingDelete && (
                 <DeleteDialog
                     title={`Delete ${pendingDelete.name}?`}
@@ -345,11 +361,11 @@ function LanguagesPanel({ onSuccess }: { onSuccess: (message: string) => void })
                     onConfirm={confirmDelete}
                 />
             )}
-        </section>
+        </div>
     );
 }
 
-function CitiesPanel({ onSuccess }: { onSuccess: (message: string) => void }) {
+function CitiesPanel({ canManage, onSuccess }: { canManage: boolean; onSuccess: (message: string) => void }) {
     const [page, setPage] = useState(1);
     const [country, setCountry] = useState(DEFAULT_COUNTRY);
     const [searchInput, setSearchInput] = useState('');
@@ -358,11 +374,11 @@ function CitiesPanel({ onSuccess }: { onSuccess: (message: string) => void }) {
     const [stateName, setStateName] = useState('');
     const [addCountry, setAddCountry] = useState(DEFAULT_COUNTRY);
     const [error, setError] = useState<string | null>(null);
+    const [adding, setAdding] = useState(false);
     const [editing, setEditing] = useState<CatalogItem | null>(null);
     const [pendingDelete, setPendingDelete] = useState<CatalogItem | null>(null);
     const [deleteError, setDeleteError] = useState<string | null>(null);
     const skipSearchReset = useRef(true);
-    const cityFormRef = useRef<HTMLDivElement>(null);
 
     const { data: countries = [] } = useAdminCountries();
     const countryOptions = countries.length ? countries : [DEFAULT_COUNTRY];
@@ -408,18 +424,28 @@ function CitiesPanel({ onSuccess }: { onSuccess: (message: string) => void }) {
 
     const resetCityForm = () => {
         setEditing(null);
+        setAdding(false);
         setCity('');
         setStateName('');
-        setAddCountry(DEFAULT_COUNTRY);
+        setAddCountry(country || DEFAULT_COUNTRY);
+    };
+
+    const beginAdd = () => {
+        setEditing(null);
+        setCity('');
+        setStateName('');
+        setAddCountry(country || DEFAULT_COUNTRY);
+        setError(null);
+        setAdding(true);
     };
 
     const beginEdit = (item: CatalogItem) => {
+        setAdding(false);
         setEditing(item);
         setCity(item.city || '');
         setStateName(item.state || '');
         setAddCountry(item.country || DEFAULT_COUNTRY);
         setError(null);
-        cityFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
 
     const add = async () => {
@@ -480,131 +506,125 @@ function CitiesPanel({ onSuccess }: { onSuccess: (message: string) => void }) {
         }
     };
 
+    const formOpen = adding || !!editing;
+    const saving = editing ? updateItem.isPending : createItem.isPending;
+    const canSave = !!city.trim() && !!stateName.trim() && !!addCountry.trim();
+
     return (
-        <section className="rounded-2xl border border-[#e7e7ed] bg-white p-5">
-            <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className="text-lg font-bold text-brand-ink">Cities</h2>
-                {isFetching && !isLoading && <Loader2 className="h-4 w-4 animate-spin text-[#8b8d96]" />}
-            </div>
-            <div className="mb-4 grid gap-2 sm:grid-cols-[180px_1fr]">
-                <Select
-                    showSearch
-                    value={country}
-                    onChange={(value) => {
-                        setCountry(value);
-                        setPage(1);
-                    }}
-                    options={countryOptions.map((name) => ({ value: name, label: name }))}
-                    optionFilterProp="label"
-                    className="h-11 w-full"
-                    popupMatchSelectWidth={false}
-                />
-                <input
-                    value={searchInput}
-                    onChange={(event) => setSearchInput(event.target.value)}
-                    placeholder="Search city or state"
-                    className={fieldClass}
-                />
-            </div>
-            <div ref={cityFormRef} className="mb-4 rounded-xl border border-[#ededf1] bg-[#fafafb] p-3">
-                <p className="mb-3 text-xs font-bold uppercase tracking-wide text-[#8b8d96]">
-                    {editing ? `Edit ${editing.city}` : 'Add a city'}
-                </p>
-                <div className="grid gap-3 sm:grid-cols-3">
-                    <Field label="City">
-                        <input
-                            value={city}
-                            onChange={(event) => setCity(event.target.value)}
-                            placeholder="Mumbai"
-                            className={fieldClass}
-                        />
-                    </Field>
-                    <Field label="State">
-                        <input
-                            value={stateName}
-                            onChange={(event) => setStateName(event.target.value)}
-                            placeholder="Maharashtra"
-                            className={fieldClass}
-                        />
-                    </Field>
-                    <Field label="Country">
-                        <Select
-                            showSearch
-                            value={addCountry}
-                            onChange={setAddCountry}
-                            options={formCountries.map((option) => ({ value: option, label: option }))}
-                            optionFilterProp="label"
-                            className="h-11 w-full"
-                            popupMatchSelectWidth={false}
-                        />
-                    </Field>
+        <div className="space-y-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+                <div className="grid flex-1 gap-2 sm:grid-cols-[180px_minmax(0,1fr)]">
+                    <Select
+                        showSearch
+                        value={country}
+                        onChange={(value) => {
+                            setCountry(value);
+                            setPage(1);
+                        }}
+                        options={countryOptions.map((name) => ({ value: name, label: name }))}
+                        optionFilterProp="label"
+                        className="h-11 w-full"
+                        popupMatchSelectWidth={false}
+                    />
+                    <input
+                        value={searchInput}
+                        onChange={(event) => setSearchInput(event.target.value)}
+                        placeholder="Search city or state"
+                        className={fieldClass}
+                    />
                 </div>
-                <div className="mt-3 flex gap-2">
-                    {editing && (
-                        <button
-                            type="button"
-                            onClick={resetCityForm}
-                            className="h-11 rounded-xl border border-[#dce8f0] bg-white px-4 text-sm font-bold text-brand-ink"
-                        >
+                {canManage && (
+                    <button type="button" className={primaryButtonClass} onClick={beginAdd}>
+                        <Plus size={16} className="mr-1.5" />
+                        Add city
+                    </button>
+                )}
+            </div>
+            <p className="text-sm text-brand-gray">
+                {total} {total === 1 ? 'city' : 'cities'} in {country}
+                {isFetching && !isLoading ? ' · updating' : ''}
+            </p>
+            {error && !formOpen && <p className="text-xs font-semibold text-red-500">{error}</p>}
+            <Panel>
+                {isLoading ? <LoadingRow /> : (
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full text-left text-sm">
+                            <thead className="border-b border-gray-100 text-[11px] uppercase tracking-wider text-brand-gray">
+                                <tr>
+                                    <th className="px-4 py-3 font-bold">City</th>
+                                    <th className="px-4 py-3 font-bold">State</th>
+                                    <th className="px-4 py-3 font-bold">Country</th>
+                                    {canManage && <th className="px-4 py-3 font-bold">Actions</th>}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {items.map((item) => (
+                                    <tr key={item.id} className={`border-b border-gray-50 ${editing?.id === item.id ? 'bg-[#fff7f2]' : ''}`}>
+                                        <td className="px-4 py-3 font-semibold text-brand-ink">{item.city}</td>
+                                        <td className="px-4 py-3 text-brand-ink">{item.state}</td>
+                                        <td className="px-4 py-3 text-brand-gray">{item.country}</td>
+                                        {canManage && (
+                                            <td className="px-4 py-3">
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    <RowButton label="Edit" onClick={() => beginEdit(item)} />
+                                                    <RowButton
+                                                        label="Delete"
+                                                        tone="danger"
+                                                        onClick={() => {
+                                                            setDeleteError(null);
+                                                            setPendingDelete(item);
+                                                        }}
+                                                    />
+                                                </div>
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))}
+                                {items.length === 0 && (
+                                    <tr>
+                                        <td colSpan={canManage ? 4 : 3} className="px-4 py-12 text-center text-sm text-brand-gray">
+                                            {search ? 'No cities match this search.' : 'No cities for this country.'}
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </Panel>
+            <Pager page={page} total={total} noun="cities" onChange={setPage} />
+            {formOpen && (
+                <Modal title={editing ? `Edit ${editing.city}` : 'Add a city'} onClose={() => !saving && resetCityForm()}>
+                    <div className="grid gap-3">
+                        <Field label="City">
+                            <input value={city} onChange={(event) => setCity(event.target.value)} placeholder="Mumbai" className={fieldClass} autoFocus />
+                        </Field>
+                        <Field label="State">
+                            <input value={stateName} onChange={(event) => setStateName(event.target.value)} placeholder="Maharashtra" className={fieldClass} />
+                        </Field>
+                        <Field label="Country">
+                            <Select
+                                showSearch
+                                value={addCountry}
+                                onChange={setAddCountry}
+                                options={formCountries.map((option) => ({ value: option, label: option }))}
+                                optionFilterProp="label"
+                                className="h-11 w-full"
+                                popupMatchSelectWidth={false}
+                            />
+                        </Field>
+                    </div>
+                    {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
+                    <div className="mt-4 flex gap-2">
+                        <button type="button" onClick={resetCityForm} disabled={saving} className="h-11 flex-1 rounded-xl border border-[#dce8f0] text-sm font-bold text-brand-ink disabled:opacity-45">
                             Cancel
                         </button>
-                    )}
-                    <button
-                        type="button"
-                        onClick={editing ? save : add}
-                        disabled={
-                            (editing ? updateItem.isPending : createItem.isPending) ||
-                            !city.trim() ||
-                            !stateName.trim() ||
-                            !addCountry.trim()
-                        }
-                        className="h-11 rounded-xl bg-brand-orange px-4 text-sm font-bold text-white disabled:opacity-45"
-                    >
-                        {editing ? 'Save city' : 'Add city'}
-                    </button>
-                </div>
-            </div>
-            {error && <p className="mb-3 text-xs text-red-500">{error}</p>}
-            {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin text-[#8b8d96]" />
-            ) : (
-                <ul className="divide-y divide-[#ededf1]">
-                    {items.map((item) => (
-                            <li
-                                key={item.id}
-                                className={`flex items-start justify-between gap-3 py-3 ${editing?.id === item.id ? 'bg-[#fff7f2]' : ''}`}
-                            >
-                                <div className="min-w-0">
-                                    <p className="truncate text-sm font-semibold text-brand-ink">{item.city}</p>
-                                    <p className="truncate text-xs text-[#8b8d96]">
-                                        {item.state}, {item.country}
-                                    </p>
-                                </div>
-                                <div className="flex shrink-0 gap-1.5">
-                                    <IconAction label="Edit" tone="edit" onClick={() => beginEdit(item)}>
-                                        <Pencil size={15} />
-                                    </IconAction>
-                                    <IconAction
-                                        label="Delete"
-                                        tone="danger"
-                                        onClick={() => {
-                                            setDeleteError(null);
-                                            setPendingDelete(item);
-                                        }}
-                                    >
-                                        <Trash2 size={15} />
-                                    </IconAction>
-                                </div>
-                            </li>
-                        ))}
-                    {items.length === 0 && (
-                        <li className="py-3 text-sm text-[#8b8d96]">
-                            {search ? 'No cities match this search.' : 'No cities for this country.'}
-                        </li>
-                    )}
-                </ul>
+                        <button type="button" onClick={editing ? save : add} disabled={saving || !canSave} className={`${primaryButtonClass} flex-1`}>
+                            {saving ? 'Saving...' : editing ? 'Save city' : 'Add city'}
+                        </button>
+                    </div>
+                </Modal>
             )}
-            <Pager page={page} total={total} noun="cities" onChange={setPage} />
             {pendingDelete && (
                 <DeleteDialog
                     title={`Delete ${pendingDelete.city}?`}
@@ -615,11 +635,13 @@ function CitiesPanel({ onSuccess }: { onSuccess: (message: string) => void }) {
                     onConfirm={confirmDelete}
                 />
             )}
-        </section>
+        </div>
     );
 }
 
 export default function AdminSettings() {
+    const me = useAdminMe();
+    const canManage = adminCan(me.data, 'SETTINGS_MANAGE');
     const [tab, setTab] = useState<CatalogKind>('locations');
     const [toast, setToast] = useState<{ id: number; text: string } | null>(null);
 
@@ -632,36 +654,22 @@ export default function AdminSettings() {
     const notify = (text: string) => setToast({ id: Date.now(), text });
 
     return (
-        <div className="mx-auto max-w-3xl">
-            <h1 className="mb-1 text-2xl font-extrabold text-brand-ink">Settings</h1>
-            <p className="mb-6 text-sm text-[#70727b]">
-                Cities and languages shown when creators finish onboarding.
-            </p>
-            <div className="mb-4 flex gap-2" role="tablist">
-                <button
-                    type="button"
-                    role="tab"
-                    aria-selected={tab === 'locations'}
-                    onClick={() => setTab('locations')}
-                    className={`rounded-full px-4 py-2 text-sm font-bold ${
-                        tab === 'locations' ? 'bg-brand-orange text-white' : 'border border-[#e7e7ed] bg-white text-brand-ink'
-                    }`}
-                >
+        <div className="space-y-5">
+            <PageHeader
+                title="Profile options"
+                description="Cities and languages creators can choose on their profile, and again during onboarding."
+            />
+            <TabGroup>
+                <TabButton active={tab === 'locations'} onClick={() => setTab('locations')}>
+                    <MapPin size={15} />
                     Cities
-                </button>
-                <button
-                    type="button"
-                    role="tab"
-                    aria-selected={tab === 'languages'}
-                    onClick={() => setTab('languages')}
-                    className={`rounded-full px-4 py-2 text-sm font-bold ${
-                        tab === 'languages' ? 'bg-brand-orange text-white' : 'border border-[#e7e7ed] bg-white text-brand-ink'
-                    }`}
-                >
+                </TabButton>
+                <TabButton active={tab === 'languages'} onClick={() => setTab('languages')}>
+                    <Languages size={15} />
                     Languages
-                </button>
-            </div>
-            {tab === 'locations' ? <CitiesPanel onSuccess={notify} /> : <LanguagesPanel onSuccess={notify} />}
+                </TabButton>
+            </TabGroup>
+            {tab === 'locations' ? <CitiesPanel canManage={canManage} onSuccess={notify} /> : <LanguagesPanel canManage={canManage} onSuccess={notify} />}
             {toast && <SuccessToast message={toast.text} />}
         </div>
     );

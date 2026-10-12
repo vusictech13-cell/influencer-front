@@ -24,7 +24,7 @@ export default function CreatorMediaKit() {
     const hasRates = hasCreatorRates(rates);
 
     return (
-        <div className="mx-auto max-w-[980px]">
+        <div className="w-full">
             <div className="mb-5 flex items-end justify-between gap-4">
                 <div>
                     <h1 className="mb-1.5 text-[31px] font-extrabold leading-[1.06] tracking-[-1.3px]">Media kit</h1>
