@@ -75,7 +75,9 @@ export default function AdminTeam() {
         if (me.data?.is_super_admin) return true;
         return role.code !== 'SUPER_ADMIN' && role.code !== 'ADMIN';
     });
-    const shownRoles = editing ? roleOptions : assignableRoles;
+    const keepAssignable = (codes: string[]) => (
+        me.data?.is_super_admin ? codes : codes.filter((code) => code !== 'SUPER_ADMIN' && code !== 'ADMIN')
+    );
 
     const openCreate = () => {
         setEditing(null);
@@ -93,7 +95,7 @@ export default function AdminTeam() {
             email: account.email,
             password: '',
             phone: account.phone || '',
-            roleCodes: account.roles.map((role) => role.code),
+            roleCodes: keepAssignable(account.roles.map((role) => role.code)),
         });
     };
 
@@ -117,11 +119,14 @@ export default function AdminTeam() {
                         name: form.name,
                         phone: form.phone,
                         password: form.password || undefined,
-                        roleCodes: form.roleCodes,
+                        roleCodes: keepAssignable(form.roleCodes),
                     },
                 });
             } else {
-                await mutations.createAccount.mutateAsync(form);
+                await mutations.createAccount.mutateAsync({
+                    ...form,
+                    roleCodes: keepAssignable(form.roleCodes),
+                });
             }
             setForm(null);
         } catch (err) {
@@ -305,7 +310,7 @@ export default function AdminTeam() {
                         <fieldset>
                             <legend className="text-xs font-semibold text-[#5c6570]">Roles</legend>
                             <div className="mt-2 space-y-2">
-                                {(shownRoles.length ? shownRoles : [{ id: 0, name: 'Staff', code: 'STAFF', permissions: [] }]).map((role) => (
+                                {(assignableRoles.length ? assignableRoles : [{ id: 0, name: 'Staff', code: 'STAFF', permissions: [] }]).map((role) => (
                                     <label key={role.code} className="flex items-center gap-2 text-sm">
                                         <input
                                             type="checkbox"

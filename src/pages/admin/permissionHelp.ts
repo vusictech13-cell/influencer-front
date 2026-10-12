@@ -42,8 +42,12 @@ export function summarizeRole(codes: string[]) {
     if (on.has('REPORT_EXPORT')) lines.push('Can open Reports and download spreadsheets.');
     else if (on.has('REPORT_VIEW')) lines.push('Can open Reports and see totals.');
 
-    if (on.has('SUPPORT_MANAGE')) lines.push('Can read support, reply, change ticket status, and edit FAQs and the bot.');
+    if (on.has('SUPPORT_MANAGE')) lines.push('Can read support, reply, and change ticket status.');
     else if (on.has('SUPPORT_VIEW')) lines.push('Can read support tickets and FAQs, but cannot reply or change status.');
+    if (on.has('SUPPORT_FAQ_EDIT')) lines.push('Can add and edit the questions on the support page.');
+    if (on.has('SUPPORT_FAQ_DELETE')) lines.push('Can delete a question from the support page.');
+    if (on.has('SUPPORT_BOT_EDIT')) lines.push('Can add and edit chat bot options.');
+    if (on.has('SUPPORT_BOT_DELETE')) lines.push('Can delete a chat bot option.');
 
     if (on.has('ACTIVITY_VIEW_USERS') && on.has('ACTIVITY_VIEW_ADMINS')) lines.push('Can see creator, brand, and admin activity.');
     else if (on.has('ACTIVITY_VIEW_USERS')) lines.push('Can see creator and brand activity.');

@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 
 export function formatWhen(value?: string | null) {
     if (!value) return '—';
@@ -135,7 +135,17 @@ export function Modal({
     return createPortal(
         <div className="fixed inset-0 z-[80] flex min-h-dvh w-full items-center justify-center bg-[#0b2744]/45 p-4" role="dialog" aria-modal="true">
             <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#e7e7ed] bg-white p-5 shadow-[0_24px_60px_rgba(11,39,68,0.28)]">
-                <h3 className="text-base font-bold text-brand-ink">{title}</h3>
+                <div className="flex items-start justify-between gap-3">
+                    <h3 className="text-base font-bold text-brand-ink">{title}</h3>
+                    <button
+                        type="button"
+                        aria-label="Close"
+                        onClick={onClose}
+                        className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[#8d9098] hover:bg-[#f4f6f8] hover:text-brand-ink"
+                    >
+                        <X className="h-4 w-4" />
+                    </button>
+                </div>
                 <div className="mt-4">{children}</div>
             </div>
         </div>,

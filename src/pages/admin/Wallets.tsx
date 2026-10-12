@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { getApiErrorMessage } from '@/api/axios';
 import { adminCan, useAdminMe } from '@/hooks/useAdminAccess';
-import { useAdminOpsMutations, useAdminWallets } from '@/hooks/useAdminOps';
+import { useAdminWallets } from '@/hooks/useAdminOps';
 import { formatCurrency } from '@/hooks/useWallet';
-import { fieldClass, LoadingRow, Modal, Notice, PageHeader, Panel, primaryButtonClass } from './adminUi';
+import { fieldClass, LoadingRow, Notice, PageHeader, Panel, primaryButtonClass } from './adminUi';
 
 export default function AdminWallets() {
     const me = useAdminMe();
@@ -11,10 +11,6 @@ export default function AdminWallets() {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
     const wallets = useAdminWallets(page, search);
-    const { adjustWallet } = useAdminOpsMutations();
-    const [open, setOpen] = useState(false);
-    const [form, setForm] = useState({ email: '', amount: '', direction: 'credit' as 'credit' | 'debit', description: '' });
-    const [error, setError] = useState('');
     const items = wallets.data?.items || [];
     const pages = Math.max(1, Math.ceil((wallets.data?.total || 0) / 20));
 
@@ -23,7 +19,12 @@ export default function AdminWallets() {
             <PageHeader
                 title="Wallets"
                 description="Available balance can be changed. Money locked in a campaign stays locked."
-                action={canManage ? <button type="button" className={primaryButtonClass} onClick={() => { setError(''); setOpen(true); }}>Adjust balance</button> : undefined}
+                action={canManage ? (
+                    <div className="flex flex-col items-end">
+                        <button type="button" className={`${primaryButtonClass} disabled:cursor-not-allowed`} disabled>Adjust balance</button>
+                        <p className="mt-1 text-[11px] font-medium text-brand-gray">Coming soon</p>
+                    </div>
+                ) : undefined}
             />
             <input className={`${fieldClass} max-w-sm`} placeholder="Search name or email" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} />
             <Panel>
@@ -60,35 +61,6 @@ export default function AdminWallets() {
                     <span className="text-xs text-brand-gray">{page} of {pages}</span>
                     <button type="button" className="rounded-full border px-3 py-1 text-xs font-bold disabled:opacity-40" disabled={page >= pages} onClick={() => setPage((current) => current + 1)}>Older</button>
                 </div>
-            )}
-            {open && (
-                <Modal title="Adjust balance" onClose={() => !adjustWallet.isPending && setOpen(false)}>
-                    <form className="space-y-3" onSubmit={(event) => {
-                        event.preventDefault();
-                        adjustWallet.mutate({ ...form, amount: Number(form.amount) }, {
-                            onSuccess: () => setOpen(false),
-                            onError: (err) => setError(getApiErrorMessage(err, 'Could not adjust this wallet.')),
-                        });
-                    }}>
-                        {error && <Notice>{error}</Notice>}
-                        <label className="block text-xs font-semibold text-[#5c6570]">Email
-                            <input className={`${fieldClass} mt-1`} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} />
-                        </label>
-                        <label className="block text-xs font-semibold text-[#5c6570]">Amount
-                            <input className={`${fieldClass} mt-1`} inputMode="decimal" value={form.amount} onChange={(event) => setForm({ ...form, amount: event.target.value })} />
-                        </label>
-                        <label className="block text-xs font-semibold text-[#5c6570]">Action
-                            <select className={`${fieldClass} mt-1`} value={form.direction} onChange={(event) => setForm({ ...form, direction: event.target.value as 'credit' | 'debit' })}>
-                                <option value="credit">Add available balance</option>
-                                <option value="debit">Remove available balance</option>
-                            </select>
-                        </label>
-                        <label className="block text-xs font-semibold text-[#5c6570]">Note
-                            <input className={`${fieldClass} mt-1`} value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} />
-                        </label>
-                        <button type="submit" className={`${primaryButtonClass} w-full`} disabled={adjustWallet.isPending}>{adjustWallet.isPending ? 'Saving...' : 'Save'}</button>
-                    </form>
-                </Modal>
             )}
         </div>
     );

@@ -157,6 +157,10 @@ export default function AdminSupport() {
     const me = useAdminMe();
     const permissionsReady = Boolean(me.data);
     const canManage = adminCan(me.data, 'SUPPORT_MANAGE');
+    const canEditFaq = adminCan(me.data, 'SUPPORT_FAQ_EDIT');
+    const canDeleteFaq = adminCan(me.data, 'SUPPORT_FAQ_DELETE');
+    const canEditBot = adminCan(me.data, 'SUPPORT_BOT_EDIT');
+    const canDeleteBot = adminCan(me.data, 'SUPPORT_BOT_DELETE');
     const [tab, setTab] = useState<'inbox' | 'faqs' | 'bot'>('inbox');
     const [status, setStatus] = useState<(typeof STATUS_FILTERS)[number]['key']>('all');
     const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -316,9 +320,9 @@ export default function AdminSupport() {
             </div>
 
             {tab === 'faqs' ? (
-                <AdminFaqManager canManage={canManage} />
+                <AdminFaqManager canEdit={canEditFaq} canDelete={canDeleteFaq} />
             ) : tab === 'bot' ? (
-                <AdminBotManager canManage={canManage} />
+                <AdminBotManager canEdit={canEditBot} canDelete={canDeleteBot} />
             ) : (
                 <div className="grid gap-4 lg:h-[calc(100dvh-16rem)] lg:min-h-[480px] lg:grid-cols-[320px_1fr] lg:overflow-hidden">
                     <aside
@@ -864,7 +868,7 @@ function AdminInboxEmptyState() {
     );
 }
 
-function AdminFaqManager({ canManage }: { canManage: boolean }) {
+function AdminFaqManager({ canEdit, canDelete }: { canEdit: boolean; canDelete: boolean }) {
     const { data: faqs = [], isLoading } = useAdminFaqs();
     const saveFaq = useAdminSaveFaq();
     const deleteFaq = useAdminDeleteFaq();
@@ -909,7 +913,7 @@ function AdminFaqManager({ canManage }: { canManage: boolean }) {
                                         <th className="px-4 py-3 font-bold">Question</th>
                                         <th className="px-4 py-3 font-bold">Category</th>
                                         <th className="px-4 py-3 font-bold">On support</th>
-                                        {canManage && <th className="px-4 py-3 font-bold">Actions</th>}
+                                        {(canEdit || canDelete) && <th className="px-4 py-3 font-bold">Actions</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -923,11 +927,11 @@ function AdminFaqManager({ canManage }: { canManage: boolean }) {
                                             <td className="px-4 py-3">
                                                 <StatusPill status={faq.is_active ? 'active' : 'inactive'} label={faq.is_active ? 'Shown' : 'Hidden'} />
                                             </td>
-                                            {canManage && (
+                                            {(canEdit || canDelete) && (
                                                 <td className="px-4 py-3">
                                                     <div className="flex flex-wrap gap-1.5">
-                                                        <button type="button" className="rounded-full border border-[#dce8f0] px-2.5 py-1 text-[11px] font-bold text-brand-ink" onClick={() => setForm(faq)}>Edit</button>
-                                                        <button type="button" className="rounded-full border border-red-100 px-2.5 py-1 text-[11px] font-bold text-red-500" onClick={() => deleteFaq.mutate(faq.id)}>Delete</button>
+                                                        {canEdit && <button type="button" className="rounded-full border border-[#dce8f0] px-2.5 py-1 text-[11px] font-bold text-brand-ink" onClick={() => setForm(faq)}>Edit</button>}
+                                                        {canDelete && <button type="button" className="rounded-full border border-red-100 px-2.5 py-1 text-[11px] font-bold text-red-500" onClick={() => deleteFaq.mutate(faq.id)}>Delete</button>}
                                                     </div>
                                                 </td>
                                             )}
@@ -935,7 +939,7 @@ function AdminFaqManager({ canManage }: { canManage: boolean }) {
                                     ))}
                                     {!faqs.length && (
                                         <tr>
-                                            <td colSpan={canManage ? 4 : 3} className="px-4 py-12 text-center text-sm text-brand-gray">No questions yet.</td>
+                                            <td colSpan={canEdit || canDelete ? 4 : 3} className="px-4 py-12 text-center text-sm text-brand-gray">No questions yet.</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -945,7 +949,7 @@ function AdminFaqManager({ canManage }: { canManage: boolean }) {
                 </Panel>
             </div>
 
-            {canManage && <form onSubmit={onSubmit} className="h-fit space-y-3 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+            {canEdit && <form onSubmit={onSubmit} className="h-fit space-y-3 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
                 <h2 className="text-sm font-bold text-brand-ink">{form.id ? 'Edit question' : 'Add a question'}</h2>
                 <label className="block space-y-1">
                     <span className="text-xs font-semibold text-gray-700">Category</span>
@@ -1058,7 +1062,7 @@ function optionIcon(node: SupportBotNode) {
     return MessageCircle;
 }
 
-function AdminBotManager({ canManage }: { canManage: boolean }) {
+function AdminBotManager({ canEdit, canDelete }: { canEdit: boolean; canDelete: boolean }) {
     const { data: nodes = [], isLoading } = useAdminBotNodes();
     const saveNode = useAdminSaveBotNode();
     const deleteNode = useAdminDeleteBotNode();
@@ -1183,7 +1187,7 @@ function AdminBotManager({ canManage }: { canManage: boolean }) {
     }
 
     function renderAddOption(parentId: number | null, accent: 'orange' | 'gray' = 'gray') {
-        if (!canManage) return null;
+        if (!canEdit) return null;
         const isRoot = parentId == null;
         const isDraftHere = !form.id && (form.parent_id ?? null) === parentId && (form.sort_order ?? 0) > 0;
         const orange = accent === 'orange' || isDraftHere;
@@ -1234,23 +1238,23 @@ function AdminBotManager({ canManage }: { canManage: boolean }) {
                     </div>
 
                     <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
-                        {canManage && <div className="flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
-                            <button
+                        {(canEdit || canDelete) && <div className="flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+                            {canEdit && <button
                                 type="button"
                                 title="Edit"
                                 onClick={() => startEdit(node)}
                                 className="grid h-8 w-8 place-items-center rounded-md text-gray-400 hover:bg-gray-50 hover:text-[#00B4EB]"
                             >
                                 <Pencil size={14} />
-                            </button>
-                            <button
+                            </button>}
+                            {canDelete && <button
                                 type="button"
                                 title="Delete"
                                 onClick={() => setPendingDelete(node)}
                                 className="grid h-8 w-8 place-items-center rounded-md text-gray-400 hover:bg-red-50 hover:text-red-500"
                             >
                                 <Trash2 size={14} />
-                            </button>
+                            </button>}
                         </div>}
                         {canExpand && (
                             <button
@@ -1318,17 +1322,17 @@ function AdminBotManager({ canManage }: { canManage: boolean }) {
 
                             {renderAddOption(null)}
 
-                            {canManage && <p className="pt-1 text-[11px] text-gray-400">
+                            {(canEdit || canDelete) && <p className="pt-1 text-[11px] text-gray-400">
                                 <span className="font-semibold text-gray-500">Tip:</span> Hover over any option to
-                                edit or delete it. Use <span className="font-semibold text-gray-500">+ Add option</span>{' '}
-                                to create the next step in the conversation.
+                                {canEdit ? ' edit' : ''}{canEdit && canDelete ? ' or' : ''}{canDelete ? ' delete' : ''} it.
+                                {canEdit && <> Use <span className="font-semibold text-gray-500">+ Add option</span> to create the next step in the conversation.</>}
                             </p>}
                         </div>
                     )}
                 </div>
             </div>
 
-            {canManage && <form onSubmit={onSubmit} className="h-fit space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+            {canEdit && <form onSubmit={onSubmit} className="h-fit space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
                 <div>
                     <h2 className="text-sm font-semibold text-gray-900">
                         {form.id ? 'Edit option' : 'New option'}

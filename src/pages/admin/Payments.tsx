@@ -1,19 +1,15 @@
 import { useState } from 'react';
 import { getApiErrorMessage } from '@/api/axios';
 import { adminCan, useAdminMe } from '@/hooks/useAdminAccess';
-import { useAdminOpsMutations, useAdminPayments } from '@/hooks/useAdminOps';
+import { useAdminPayments } from '@/hooks/useAdminOps';
 import { formatCurrency } from '@/hooks/useWallet';
-import { fieldClass, formatWhen, LoadingRow, Modal, Notice, PageHeader, Panel, primaryButtonClass } from './adminUi';
+import { formatWhen, LoadingRow, Notice, PageHeader, Panel, primaryButtonClass } from './adminUi';
 
 export default function AdminPayments() {
     const me = useAdminMe();
     const canManage = adminCan(me.data, 'PAYMENT_MANAGE');
     const [page, setPage] = useState(1);
     const payments = useAdminPayments(page);
-    const { recordPayment } = useAdminOpsMutations();
-    const [open, setOpen] = useState(false);
-    const [form, setForm] = useState({ email: '', amount: '', description: '' });
-    const [error, setError] = useState('');
     const items = payments.data?.items || [];
     const pages = Math.max(1, Math.ceil((payments.data?.total || 0) / 20));
 
@@ -22,7 +18,12 @@ export default function AdminPayments() {
             <PageHeader
                 title="Payments"
                 description="Wallet top-ups recorded for creators and brands."
-                action={canManage ? <button type="button" className={primaryButtonClass} onClick={() => { setError(''); setForm({ email: '', amount: '', description: '' }); setOpen(true); }}>Record top-up</button> : undefined}
+                action={canManage ? (
+                    <div className="flex flex-col items-end">
+                        <button type="button" className={`${primaryButtonClass} disabled:cursor-not-allowed`} disabled>Record top-up</button>
+                        <p className="mt-1 text-[11px] font-medium text-brand-gray">Coming soon</p>
+                    </div>
+                ) : undefined}
             />
             <Panel>
                 {payments.isLoading ? <LoadingRow /> : payments.isError ? <div className="p-4"><Notice>{getApiErrorMessage(payments.error, 'Could not load payments.')}</Notice></div> : (
@@ -53,29 +54,6 @@ export default function AdminPayments() {
                 )}
             </Panel>
             {pages > 1 && <Pager page={page} pages={pages} setPage={setPage} />}
-            {open && (
-                <Modal title="Record top-up" onClose={() => !recordPayment.isPending && setOpen(false)}>
-                    <form className="space-y-3" onSubmit={(event) => {
-                        event.preventDefault();
-                        recordPayment.mutate({ email: form.email, amount: Number(form.amount), description: form.description }, {
-                            onSuccess: () => setOpen(false),
-                            onError: (err) => setError(getApiErrorMessage(err, 'Could not record the top-up.')),
-                        });
-                    }}>
-                        {error && <Notice>{error}</Notice>}
-                        <label className="block text-xs font-semibold text-[#5c6570]">Email
-                            <input className={`${fieldClass} mt-1`} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} />
-                        </label>
-                        <label className="block text-xs font-semibold text-[#5c6570]">Amount
-                            <input className={`${fieldClass} mt-1`} inputMode="decimal" value={form.amount} onChange={(event) => setForm({ ...form, amount: event.target.value })} />
-                        </label>
-                        <label className="block text-xs font-semibold text-[#5c6570]">Note
-                            <input className={`${fieldClass} mt-1`} value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} />
-                        </label>
-                        <button type="submit" className={`${primaryButtonClass} w-full`} disabled={recordPayment.isPending}>{recordPayment.isPending ? 'Saving...' : 'Add to wallet'}</button>
-                    </form>
-                </Modal>
-            )}
         </div>
     );
 }
