@@ -22,9 +22,10 @@ export type AccountPayload = {
 
 type AccountPage = { items: AdminAccount[]; page: number; limit: number; total: number };
 
-export function useAdminAccounts(page: number, search: string) {
+export function useAdminAccounts(page: number, search: string, enabled = true) {
     return useQuery({
         queryKey: ['admin', 'accounts', page, search],
+        enabled,
         queryFn: async () => {
             const response = await api.get('/admin/accounts', { params: { page, limit: 20, search } });
             return response.data.data as AccountPage;

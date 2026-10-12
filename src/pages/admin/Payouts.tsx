@@ -44,12 +44,10 @@ export default function AdminPayouts() {
                                         <td className="px-4 py-3 text-xs text-brand-gray">{formatWhen(payout.released_at || payout.release_at)}</td>
                                         {canManage && (
                                             <td className="px-4 py-3">
-                                                {payout.status === 'scheduled' && (
-                                                    <div className="flex gap-1.5">
-                                                        <button type="button" className="rounded-full bg-brand-orange px-2.5 py-1 text-[11px] font-bold text-white disabled:opacity-40" disabled={payoutAction.isPending} onClick={() => payoutAction.mutate({ id: payout.id, action: 'release' })}>Release</button>
-                                                        <button type="button" className="rounded-full border border-[#ffd7c2] px-2.5 py-1 text-[11px] font-bold text-brand-orange disabled:opacity-40" disabled={payoutAction.isPending} onClick={() => payoutAction.mutate({ id: payout.id, action: 'cancel' })}>Cancel</button>
-                                                    </div>
-                                                )}
+                                                <div className="flex gap-1.5">
+                                                    <button type="button" className="rounded-full bg-brand-orange px-2.5 py-1 text-[11px] font-bold text-white disabled:cursor-not-allowed disabled:opacity-40" disabled={payoutAction.isPending || payout.status !== 'scheduled'} onClick={() => payoutAction.mutate({ id: payout.id, action: 'release' })}>Release</button>
+                                                    <button type="button" className="rounded-full border border-[#ffd7c2] px-2.5 py-1 text-[11px] font-bold text-brand-orange disabled:cursor-not-allowed disabled:opacity-40" disabled={payoutAction.isPending || payout.status !== 'scheduled'} onClick={() => payoutAction.mutate({ id: payout.id, action: 'cancel' })}>Cancel</button>
+                                                </div>
                                             </td>
                                         )}
                                     </tr>

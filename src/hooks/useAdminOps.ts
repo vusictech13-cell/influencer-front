@@ -92,11 +92,18 @@ export function useAdminContent(page: number) {
     return usePage<AdminContentRow>('admin-content', '/admin/content', page);
 }
 
-export function useAdminReport() {
+export type ReportRange = { from?: string; to?: string };
+
+export function useAdminReport(range: ReportRange = {}) {
     return useQuery({
-        queryKey: ['admin-report'],
+        queryKey: ['admin-report', range.from || '', range.to || ''],
         queryFn: async () => {
-            const response = await api.get('/admin/reports');
+            const response = await api.get('/admin/reports', {
+                params: {
+                    from: range.from || undefined,
+                    to: range.to || undefined,
+                },
+            });
             return response.data.data as {
                 creators: number;
                 brands: number;
@@ -186,12 +193,20 @@ export async function searchCampaignBrands(search: string) {
     return response.data.data as { id: number; name: string; email: string }[];
 }
 
-export async function downloadReport(kind: string) {
-    const response = await api.get('/admin/reports/export', { params: { kind }, responseType: 'blob' });
+export type ReportFormat = 'xlsx' | 'csv' | 'pdf';
+
+export async function downloadReport(kind: string, range: ReportRange = {}, format: ReportFormat = 'xlsx') {
+    const response = await api.get('/admin/reports/export', {
+        params: { kind, format, from: range.from || undefined, to: range.to || undefined },
+        responseType: 'blob',
+    });
+    const disposition = String(response.headers['content-disposition'] || '');
+    const named = /filename="([^"]+)"/.exec(disposition)?.[1];
+    const extension = format === 'xlsx' ? 'xlsx' : format;
     const url = URL.createObjectURL(response.data);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${kind}.csv`;
+    link.download = named || `${kind}.${extension}`;
     link.click();
     URL.revokeObjectURL(url);
 }

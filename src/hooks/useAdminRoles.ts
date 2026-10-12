@@ -20,9 +20,10 @@ export type AdminRole = {
     permissions: string[];
 };
 
-export function useAdminRoles() {
+export function useAdminRoles(enabled = true) {
     return useQuery({
         queryKey: ['admin', 'roles'],
+        enabled,
         queryFn: async () => {
             const response = await api.get('/admin/roles');
             return response.data.data as AdminRole[];
