@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Pagination, Select } from 'antd';
 import { Check, Languages, MapPin, Plus } from 'lucide-react';
 import { getApiErrorMessage } from '@/api/axios';
@@ -6,6 +7,7 @@ import { adminCan, useAdminMe } from '@/hooks/useAdminAccess';
 import { fieldClass, LoadingRow, Modal, PageHeader, Panel, primaryButtonClass, StatusPill, TabButton, TabGroup } from './adminUi';
 import {
     useAdminCountries,
+    useAdminStates,
     useAdminLanguages,
     useAdminLocations,
     useCreateCatalogItem,
@@ -94,14 +96,8 @@ function DeleteDialog({
         };
     }, [onCancel, pending]);
 
-    return (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true">
-            <button
-                type="button"
-                className="absolute inset-0 bg-[#0b2744]/45"
-                aria-label="Dismiss"
-                onClick={() => !pending && onCancel()}
-            />
+    return createPortal(
+        <div className="fixed inset-0 z-[80] flex min-h-dvh w-full items-center justify-center bg-[#0b2744]/45 p-4" role="dialog" aria-modal="true">
             <div className="relative w-full max-w-sm rounded-2xl border border-[#e7e7ed] bg-white p-5 shadow-[0_24px_60px_rgba(11,39,68,0.28)]">
                 <h3 className="text-center text-base font-bold text-brand-ink">{title}</h3>
                 <p className="mt-2 text-center text-sm leading-relaxed text-[#70727b]">{description}</p>
@@ -125,7 +121,8 @@ function DeleteDialog({
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 }
 
@@ -381,10 +378,12 @@ function CitiesPanel({ canManage, onSuccess }: { canManage: boolean; onSuccess: 
     const skipSearchReset = useRef(true);
 
     const { data: countries = [] } = useAdminCountries();
+    const { data: states = [], isFetching: statesLoading } = useAdminStates(adding || editing ? addCountry : '');
     const countryOptions = countries.length ? countries : [DEFAULT_COUNTRY];
     const formCountries = addCountry && !countryOptions.includes(addCountry)
         ? [addCountry, ...countryOptions]
         : countryOptions;
+    const stateOptions = stateName && !states.includes(stateName) ? [stateName, ...states] : states;
     const { data, isLoading, isFetching } = useAdminLocations({
         page,
         limit: PAGE_SIZE,
@@ -409,6 +408,11 @@ function CitiesPanel({ canManage, onSuccess }: { canManage: boolean; onSuccess: 
         }
         setPage(1);
     }, [search]);
+
+    useEffect(() => {
+        if (!(adding || editing) || statesLoading || !states.length) return;
+        if (stateName && !states.includes(stateName)) setStateName('');
+    }, [adding, editing, stateName, states, statesLoading]);
 
     useEffect(() => {
         if (countries.length && !countries.includes(country)) {
@@ -600,13 +604,28 @@ function CitiesPanel({ canManage, onSuccess }: { canManage: boolean; onSuccess: 
                             <input value={city} onChange={(event) => setCity(event.target.value)} placeholder="Mumbai" className={fieldClass} autoFocus />
                         </Field>
                         <Field label="State">
-                            <input value={stateName} onChange={(event) => setStateName(event.target.value)} placeholder="Maharashtra" className={fieldClass} />
+                            <Select
+                                showSearch
+                                value={stateName || undefined}
+                                onChange={setStateName}
+                                placeholder={statesLoading ? 'Loading states...' : 'Select a state'}
+                                options={stateOptions.map((name) => ({ value: name, label: name }))}
+                                optionFilterProp="label"
+                                loading={statesLoading}
+                                disabled={!addCountry}
+                                className="h-11 w-full"
+                                popupMatchSelectWidth={false}
+                                notFoundContent={statesLoading ? 'Loading states...' : 'No states match'}
+                            />
                         </Field>
                         <Field label="Country">
                             <Select
                                 showSearch
                                 value={addCountry}
-                                onChange={setAddCountry}
+                                onChange={(value) => {
+                                    setAddCountry(value);
+                                    setStateName('');
+                                }}
                                 options={formCountries.map((option) => ({ value: option, label: option }))}
                                 optionFilterProp="label"
                                 className="h-11 w-full"

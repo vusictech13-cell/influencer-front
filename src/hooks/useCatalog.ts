@@ -94,11 +94,25 @@ export function useAdminCountries() {
     });
 }
 
+export function useAdminStates(country: string) {
+    const name = country.trim();
+    return useQuery({
+        queryKey: ['admin', 'location-states', name],
+        enabled: !!name,
+        queryFn: async () => {
+            const res = await api.get('/admin/locations/states', { params: { country: name } });
+            return res.data.data as string[];
+        },
+        staleTime: 5 * 60 * 1000,
+    });
+}
+
 function invalidateCatalog(queryClient: ReturnType<typeof useQueryClient>, kind: CatalogKind) {
     queryClient.invalidateQueries({ queryKey: ['admin', kind] });
     queryClient.invalidateQueries({ queryKey: [kind] });
     if (kind === 'locations') {
         queryClient.invalidateQueries({ queryKey: ['admin', 'location-countries'] });
+        queryClient.invalidateQueries({ queryKey: ['admin', 'location-states'] });
     }
 }
 

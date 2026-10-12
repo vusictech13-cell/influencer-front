@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Loader2 } from 'lucide-react';
 
 export function formatWhen(value?: string | null) {
@@ -118,14 +119,27 @@ export function Modal({
     children: ReactNode;
     onClose: () => void;
 }) {
-    return (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true">
-            <button type="button" className="absolute inset-0 bg-[#0b2744]/45" aria-label="Dismiss" onClick={onClose} />
+    useEffect(() => {
+        const onKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') onClose();
+        };
+        const previous = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', onKey);
+        return () => {
+            document.body.style.overflow = previous;
+            document.removeEventListener('keydown', onKey);
+        };
+    }, [onClose]);
+
+    return createPortal(
+        <div className="fixed inset-0 z-[80] flex min-h-dvh w-full items-center justify-center bg-[#0b2744]/45 p-4" role="dialog" aria-modal="true">
             <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#e7e7ed] bg-white p-5 shadow-[0_24px_60px_rgba(11,39,68,0.28)]">
                 <h3 className="text-base font-bold text-brand-ink">{title}</h3>
                 <div className="mt-4">{children}</div>
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 }
 
